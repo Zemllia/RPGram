@@ -1,4 +1,4 @@
-# RPGGram
+# RPGram
 
 ## Dependencies
 - [TelegramBots](https://mvnrepository.com/artifact/org.telegram/telegrambots)
