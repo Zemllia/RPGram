@@ -9,3 +9,8 @@ $ git clone https://github.com/Zemllia/RPGram.git
 $ cd RPGram
 $ mvn compile
 ```
+
+## Running the botOptions
+```
+$ mvn exec:java
+```
