@@ -10,7 +10,7 @@ $ cd RPGram
 $ mvn compile
 ```
 
-## Running the botOptions
+## Running the bot
 ```
 $ mvn exec:java
 ```
