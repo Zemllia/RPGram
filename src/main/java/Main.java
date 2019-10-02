@@ -29,6 +29,7 @@ public class Main {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        bot.init();
         System.out.println("Server successfully started!");
     }
 }

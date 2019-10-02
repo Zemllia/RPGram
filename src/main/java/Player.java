@@ -10,7 +10,7 @@ public class Player extends GameObject {
     Position oldPos = new Position(0,0);
 
     int HP = 100;
-    int energy  = 200;
+    int energy  = 20000;
     int fieldOfView = 10;
     int level = 1;
     int xp = 2;
@@ -27,6 +27,7 @@ public class Player extends GameObject {
         oldPos = pos;
         this.name = name;
         this.id = id;
+        mapIcon = name.charAt(0);
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
     }
 
@@ -42,7 +43,7 @@ public class Player extends GameObject {
                     randInt +" HP");
             HP -= looseHP;
         }
-        oldPos = new Position(oldPos.x + deltaX, oldPos.y);
+        oldPos = new Position(position.x, position.y);
         position.x += deltaX;
         System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
         energy -= Math.abs(deltaX);
@@ -59,7 +60,7 @@ public class Player extends GameObject {
                     randInt +" HP");
             HP -= looseHP;
         }
-        oldPos = new Position(oldPos.x, oldPos.y + deltaY);
+        oldPos = new Position(position.x, position.y);
         position.y += deltaY;
         System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
         energy -= Math.abs(deltaY);
@@ -103,13 +104,13 @@ public class Player extends GameObject {
                 answer = ": Меня зовут: " + name + "\n" +
                         "HP: " + HP + "\n" +
                         "Энергия: " + energy + "\n" +
-                        "Радиус обзора: " + fieldOfView;
+                        "Радиус обзора \u26BD: " + fieldOfView;
             } else {
                 answer = ": Меня окружает только тьма...";
             }
         } else if (commandArray[0].toLowerCase().equals("спать")){
             if(energy <= 50) {
-                energy += 100;
+                energy += 99;
                 answer =  ": Z-z-z-z...";
             } else {
                 answer = ": Я пока не устал!";
@@ -141,11 +142,7 @@ public class Player extends GameObject {
     public int getFOV() {
         return fieldOfView;
     }
-    public int getPosX() {
-        return position.x;
+    public Position getPos() {
+        return position;
     }
-    public int getPosY() {
-        return position.y;
-    }
-
 }

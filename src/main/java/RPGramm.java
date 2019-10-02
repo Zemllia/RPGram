@@ -18,6 +18,10 @@ public class RPGramm extends TelegramLongPollingBot {
 
     public Map map = new Map(500, 500, 5, 5, 3);
 
+    public void init(){
+        map.generateMap();
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -28,15 +32,19 @@ public class RPGramm extends TelegramLongPollingBot {
                     while(map.gameMap[4][pos.x][pos.y] == '@'){
                         pos = new Position(Random.randInt(0,500), Random.randInt(0,500));
                     }
-                    players.add(new Player(update.getMessage().getFrom().getFirstName(), pos, userId));
+                    Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId);
+                    players.add(newPlayer);
+                    map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon);
+                } else {
+                    changePos(userId);
                 }
+
+
                 SendMessage message = new SendMessage()
                         .setChatId(update.getMessage().getChatId())
-                        .setText(update.getMessage().getFrom().getFirstName() +
-                                executePlayerCommand(update.getMessage().getFrom().getId(),
-                                        update.getMessage().getText()));
+                        .setText(executePlayerCommand(update.getMessage().getFrom().getId(),
+                                        update.getMessage().getText())).enableHtml(true);
 
-                changePlayerPosition(update.getMessage().getFrom().getId());
 
                 try {
                     execute(message);
@@ -56,7 +64,7 @@ public class RPGramm extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "SECRET_TOKEN";
+        return "658606256:AAG3O_p83oGSI8feIGLFadJFWzZY4rbch4c";
     }
 
     public boolean checkIfExists(int id){
@@ -74,19 +82,20 @@ public class RPGramm extends TelegramLongPollingBot {
             if(item.id == id){
                 String[] commandArray = command.split(" ");
                 if(commandArray[0].toLowerCase().equals("осмотреть") && commandArray[1].toLowerCase().equals("местность")){
-                    return map.viewMapArea(item.getPosX(), item.getPosY(), item.fieldOfView);
+                    System.out.println("Trying to look at map");
+                    return map.viewMapArea(item.getPos(), item.fieldOfView);
                 }
-                String answer = item.executeCommand(command);
+                String answer = item.name + item.executeCommand(command);
                 return answer;
             }
         }
         return "Шото непонятно...";
     }
 
-    void changePlayerPosition(int id){
+    void changePos(int id){
         for (Player item: players) {
             if(item.id == id){
-                map.changePlayerPos(item.oldPos.x, item.oldPos.y, item.getPosX(), item.getPosY());
+                map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon);
             }
         }
     }

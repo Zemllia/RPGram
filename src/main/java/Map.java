@@ -1,3 +1,4 @@
+import core.Position;
 import core.utils.Random;
 
 public class Map {
@@ -59,52 +60,69 @@ public class Map {
         }
     }
 
-    String viewMapArea (int xPos, int yPos, int radius) {
+    String viewMapArea (Position pos, int radius) {
 
         char[][] renderArray = new char[radius * 2][radius * 2];
 
         String answer = "";
 
+        System.out.println(pos.x+ "  " +  pos.y+ "   " + radius);
+
         for (int t = 0; t < 5; t++) {
             int diffX = 0;
             int diffY = 0;
-            if(xPos - radius < 0){
-                diffX = Math.abs(xPos - radius);
+            if(pos.x - radius < 0){
+                diffX = Math.abs(pos.x - radius);
             }
-            if(yPos - radius < 0){
-                diffY = Math.abs(yPos - radius);
+            if(pos.y - radius < 0){
+                diffY = Math.abs(pos.y - radius);
             }
             for (int i = 0; i < radius * 2; i++){
                 for (int j = 0; j < radius * 2; j++) {
                     if (renderArray[i][j] == 0) {
                         if (i > diffX-1 && j > diffY-1) {
-                            renderArray[i][j] = gameMap[4 - t][xPos + i - radius][yPos + j - radius];
+                            renderArray[i][j] = gameMap[4 - t][pos.x + i - radius][pos.y + j - radius];
                         }
                     }
                 }
             }
         }
-        for (int i = 0; i < radius * 2; i++) {
-            for (int j = 0; j < radius * 2; j++){
-                answer = answer + renderArray[i][j] + "  ";
-            }
-            answer = answer + "\n";
+        answer = answer + "<code>";
+        for (int i = 0; i < radius * 2; i++){
+            answer = answer + " -";
         }
+        answer = answer + "\n";
+        for (int i = 0; i < radius * 2; i++) {
+            answer = answer + "|";
+            for (int j = 0; j < radius * 2; j++){
+                answer = answer + renderArray[i][j] + " ";
+            }
+            answer = answer + "|\n";
+        }
+        for (int i = 0; i < radius * 2; i++){
+            answer = answer + " -";
+        }
+        answer = answer + "</code>";
+        answer = answer + "\nСудя по карте моя позиция - x=" + pos.x + " y=" + pos.y;
         return answer;
     }
 
-    void changePlayerPos (int oldPosX, int oldPosY, int newPosX, int newPosY) {
-        if(newPosX >= 0 && newPosX <= maxXBound && newPosY >= 0 && newPosY <= maxYBound) {
-            gameMap[4][oldPosX][oldPosY] = 0;
-            gameMap[4][newPosY][newPosX] = '@';
+    void instantiateNewPlayer(Position pos, char playerChar){
+        gameMap[4][pos.x][pos.y] = playerChar;
+    }
+
+    void changePlayerPos (Position oldPos, Position newPos, char playerChar) {
+        if(newPos.x >= 0 && newPos.x <= maxXBound && newPos.y >= 0 && newPos.y <= maxYBound) {
+            gameMap[4][oldPos.x][oldPos.y] = 0;
+            gameMap[4][newPos.x][newPos.y] = playerChar;
         }
     }
 
     private void clearMap(){
         for (int i = 0; i < maxXBound; i++) {
             for (int j = 0; j < maxYBound; j++) {
-                gameMap[1][i][j] = '*';
-                gameMap[0][i][j] = '*';
+                gameMap[1][i][j] = ' ';
+                gameMap[0][i][j] = ' ';
             }
         }
     }
