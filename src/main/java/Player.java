@@ -1,10 +1,14 @@
 import core.GameObject;
 import core.Position;
 import core.utils.Random;
+import javafx.geometry.Pos;
 
 public class Player extends GameObject {
     int id = 0;
     String name = "Безымянный Скиталец";
+
+    Position oldPos = new Position(0,0);
+
     int HP = 100;
     int energy  = 200;
     int fieldOfView = 10;
@@ -18,8 +22,9 @@ public class Player extends GameObject {
     public String[] welcomeMessages = {" прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
             " был добавлен в мир"};
 
-    public Player(String name, int id){
-        super("name", new Position(0,0), 200, '@');
+    public Player(String name, Position pos, int id){
+        super("name", pos, 200, '@');
+        oldPos = pos;
         this.name = name;
         this.id = id;
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
@@ -37,6 +42,7 @@ public class Player extends GameObject {
                     randInt +" HP");
             HP -= looseHP;
         }
+        oldPos = new Position(oldPos.x + deltaX, oldPos.y);
         position.x += deltaX;
         System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
         energy -= Math.abs(deltaX);
@@ -53,19 +59,12 @@ public class Player extends GameObject {
                     randInt +" HP");
             HP -= looseHP;
         }
-        super.position.y += deltaY;
+        oldPos = new Position(oldPos.x, oldPos.y + deltaY);
+        position.y += deltaY;
         System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
         energy -= Math.abs(deltaY);
     }
 
-    public void sleep() {
-        if(energy <= 50) {
-            System.out.println(name + ": Z-z-z-z...");
-            energy += 100;
-        } else {
-            System.out.println(name + ": Я пока не устал!");
-        }
-    }
 
     public String executeCommand(String command) {
 
@@ -82,28 +81,41 @@ public class Player extends GameObject {
                 "осмотреть <местность/себя> - увидеть карту в поле вашего зрения/узнать статы своего персонажа\n",
                 "спать - восстановить энергию, если ее мало"};
 
-        if (commandArray[0].toLowerCase().equals("идти")){
+        if (commandArray[0].toLowerCase().equals("идти")) {
             System.out.println(commandArray[1].toLowerCase());
-            if(commandArray[1].toLowerCase().equals("вправо")){
-                moveX(Integer.parseInt(commandArray[2]));
-            } else if (commandArray[1].toLowerCase().equals("влево")){
-                moveX(Integer.parseInt(commandArray[2]) * -1);
-            } else if (commandArray[1].toLowerCase().equals("вниз")){
-                moveY(Integer.parseInt(commandArray[2]));
-            } else if (commandArray[1].toLowerCase().equals("вверх")){
-                System.out.println("Вверх");
-                moveY(Integer.parseInt(commandArray[2]) * -1);
+            if (energy >= Integer.parseInt(commandArray[2])) {
+                if (commandArray[1].toLowerCase().equals("вправо")) {
+                    moveX(Integer.parseInt(commandArray[2]));
+                } else if (commandArray[1].toLowerCase().equals("влево")) {
+                    moveX(Integer.parseInt(commandArray[2]) * -1);
+                } else if (commandArray[1].toLowerCase().equals("вниз")) {
+                    moveY(Integer.parseInt(commandArray[2]));
+                } else if (commandArray[1].toLowerCase().equals("вверх")) {
+                    System.out.println("Вверх");
+                    moveY(Integer.parseInt(commandArray[2]) * -1);
+                }
+                answer = ": Моя позиция: x=" + Integer.toString(position.x) + ", y=" + Integer.toString(position.y);
+            } else {
+                answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
             }
-            answer = "Моя позиция: x=" + Integer.toString(position.x) + ", y=" + Integer.toString(position.y);
         } else if (commandArray[0].toLowerCase().equals("осмотреть")){
             if (commandArray[1].toLowerCase().equals("себя")){
-                answer = "Меня зовут: " + name + "\n" +
+                answer = ": Меня зовут: " + name + "\n" +
                         "HP: " + HP + "\n" +
                         "Энергия: " + energy + "\n" +
                         "Радиус обзора: " + fieldOfView;
+            } else {
+                answer = ": Меня окружает только тьма...";
+            }
+        } else if (commandArray[0].toLowerCase().equals("спать")){
+            if(energy <= 50) {
+                energy += 100;
+                answer =  ": Z-z-z-z...";
+            } else {
+                answer = ": Я пока не устал!";
             }
         } else {
-            answer = name + randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
+            answer = randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
             for (String item: commands) {
                 answer = answer + item;
             }
