@@ -1,7 +1,6 @@
 import core.GameObject;
 import core.Position;
 import core.utils.Random;
-import javafx.geometry.Pos;
 
 public class Player extends GameObject {
     int id = 0;
@@ -86,16 +85,15 @@ public class Player extends GameObject {
             System.out.println(commandArray[1].toLowerCase());
             if (energy >= Integer.parseInt(commandArray[2])) {
                 if (commandArray[1].toLowerCase().equals("вправо")) {
-                    moveX(Integer.parseInt(commandArray[2]));
-                } else if (commandArray[1].toLowerCase().equals("влево")) {
-                    moveX(Integer.parseInt(commandArray[2]) * -1);
-                } else if (commandArray[1].toLowerCase().equals("вниз")) {
                     moveY(Integer.parseInt(commandArray[2]));
-                } else if (commandArray[1].toLowerCase().equals("вверх")) {
-                    System.out.println("Вверх");
+                } else if (commandArray[1].toLowerCase().equals("влево")) {
                     moveY(Integer.parseInt(commandArray[2]) * -1);
+                } else if (commandArray[1].toLowerCase().equals("вниз")) {
+                    moveX(Integer.parseInt(commandArray[2]));
+                } else if (commandArray[1].toLowerCase().equals("вверх")) {
+                    moveX(Integer.parseInt(commandArray[2]) * -1);
                 }
-                answer = ": Моя позиция: x=" + Integer.toString(position.x) + ", y=" + Integer.toString(position.y);
+                answer = ": Моя позиция: x=" + Integer.toString(position.y) + ", y=" + Integer.toString(position.x);
             } else {
                 answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
             }
