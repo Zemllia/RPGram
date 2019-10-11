@@ -10,15 +10,15 @@ import java.util.ArrayList;
 
 public class RPGramm extends TelegramLongPollingBot {
 
-    public RPGramm(DefaultBotOptions options) {
+    RPGramm(DefaultBotOptions options) {
         super(options);
     }
 
-    public ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Player> players = new ArrayList<Player>();
 
-    public Map map = new Map(500, 500, 5, 5, 3);
+    private Map map = new Map(500, 500, 5, 5, 3);
 
-    public void init(){
+    void init(){
         map.generateMap();
     }
 
@@ -35,10 +35,13 @@ public class RPGramm extends TelegramLongPollingBot {
                     Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId);
                     players.add(newPlayer);
                     map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon);
+                    System.out.println("Created new player: Name=" + newPlayer.name + " id=" + newPlayer.id +
+                            " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().x);
                 } else {
                     changePos(userId);
                 }
 
+                System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
 
                 SendMessage message = new SendMessage()
                         .setChatId(update.getMessage().getChatId())
@@ -52,7 +55,7 @@ public class RPGramm extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             } else {
-
+                //TODO Работа с беседами
             }
         }
     }
@@ -67,9 +70,8 @@ public class RPGramm extends TelegramLongPollingBot {
         return "658606256:AAG3O_p83oGSI8feIGLFadJFWzZY4rbch4c";
     }
 
-    public boolean checkIfExists(int id){
+    private boolean checkIfExists(int id){
         for (Player item: players) {
-            System.out.println(item.id);
             if(item.id == id){
                 return true;
             }
@@ -77,32 +79,31 @@ public class RPGramm extends TelegramLongPollingBot {
         return false;
     }
 
-    String executePlayerCommand(int id, String command){
+    private String executePlayerCommand(int id, String command){
         for (Player item: players) {
             if(item.id == id){
                 String[] commandArray = command.split(" ");
                 if(commandArray[0].toLowerCase().equals("осмотреть") && commandArray[1].toLowerCase().equals("местность")){
-                    System.out.println("Trying to look at map");
                     return map.viewMapArea(item.getPos(), item.fieldOfView);
                 }
-                String answer = item.name + item.executeCommand(command);
-                return answer;
+                return item.name + item.executeCommand(command);
             }
         }
-        return "Шото непонятно...";
+        return null;
     }
 
-    void changePos(int id){
+    private void changePos(int id){
         for (Player item: players) {
             if(item.id == id){
+                if(item.getPos().x > map.maxXBound){
+                    item.teleportPlayer(new Position(item.getPos().x - map.maxXBound, item.getPos().y));
+                }
                 map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon);
             }
         }
     }
 
-    public boolean isUser(long id){
-        System.out.println(id);
+    private boolean isUser(long id){
         return id > 0;
     }
 }
-
