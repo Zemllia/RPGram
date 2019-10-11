@@ -70,6 +70,8 @@ public class Map {
 
         String answer = "";
 
+        String[] treesArray = {"\uD83C\uDF33", "\uD83C\uDF32"};
+
         System.out.println(pos.x+ "  " +  pos.y+ "   " + radius);
 
         for (int t = 0; t < Layer.values().length; t++) {
@@ -102,7 +104,7 @@ public class Map {
             for (int j = 0; j < radius * 2; j++) {
                 if (renderArray[i][j] <= 127) {
                     if(renderArray[i][j] == 'T'){
-                        answer += "</code>" +  "\uD83C\uDF32" + "<code>";
+                        answer += "</code>" +  treesArray[Random.randInt(0, treesArray.length-1)] + "<code>";
                     } else {
                         answer += renderArray[i][j] + " ";
                     }
