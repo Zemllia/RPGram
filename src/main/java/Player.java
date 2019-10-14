@@ -13,6 +13,8 @@ public class Player extends GameObject {
     int level = 1;
     int xp = 2;
 
+    int toUpdateMessageID;
+
     String state;
 
     static final char[] ICONS = {
