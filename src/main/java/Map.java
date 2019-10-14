@@ -30,7 +30,7 @@ public class Map {
 
     void generateMap(){
         clearMap();
-        generateSomeTrees();
+        generateSomeEnvironment();
         generateSwamp();
     }
 
@@ -71,6 +71,7 @@ public class Map {
         String answer = "";
 
         String[] treesArray = {"\uD83C\uDF33", "\uD83C\uDF32"};
+        String[] flowersArray = {"\uD83C\uDF39", "\uD83C\uDF37", "\uD83C\uDF31"};
 
         System.out.println(pos.x+ "  " +  pos.y+ "   " + radius);
 
@@ -105,6 +106,8 @@ public class Map {
                 if (renderArray[i][j] <= 127) {
                     if(renderArray[i][j] == 'T'){
                         answer += "</code>" +  treesArray[Random.randInt(0, treesArray.length-1)] + "<code>";
+                    } else if (renderArray[i][j] == 'F'){
+                        answer += "</code>" +  flowersArray[Random.randInt(0, flowersArray.length-1)] + "<code>";
                     } else {
                         answer += renderArray[i][j] + " ";
                     }
@@ -126,12 +129,14 @@ public class Map {
         gameMap[4][pos.x][pos.y] = playerChar;
     }
 
-    private void generateSomeTrees(){
+    private void generateSomeEnvironment(){
         for (int i = 0; i < maxXBound; i++) {
             for (int j = 0; j < maxYBound; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
                     gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
+                } else if(randChance > 50 && randChance < 60){
+                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'F';
                 }
             }
         }
