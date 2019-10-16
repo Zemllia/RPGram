@@ -33,8 +33,18 @@ public class RPGramm extends TelegramLongPollingBot {
                         pos = new Position(Random.randInt(0,500), Random.randInt(0,500));
                     }
                     Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId);
+                    newPlayer.state = "";
+                    newPlayer.worldState = "worldMap";
                     players.add(newPlayer);
-                    map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon);
+                    if(newPlayer.worldState == "worldMap") {
+                        map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, -1);
+                    } else {
+                        String[] worldStateSplited = newPlayer.worldState.split(" ");
+                        if(worldStateSplited[0] == "village"){
+                            map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, Integer.parseInt(worldStateSplited[1]));
+                        }
+                    }
+
                     System.out.println("Created new player: Name=" + newPlayer.name + " id=" + newPlayer.id +
                             " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().x);
                 } else {
@@ -82,11 +92,7 @@ public class RPGramm extends TelegramLongPollingBot {
     private String executePlayerCommand(int id, String command){
         for (Player item: players) {
             if(item.id == id){
-                String[] commandArray = command.split(" ");
-                if(commandArray[0].toLowerCase().equals("осмотреть") && commandArray[1].toLowerCase().equals("местность")){
-                    return map.viewMapArea(item.getPos(), item.fieldOfView);
-                }
-                return item.name + item.executeCommand(command);
+                return item.name + item.executeCommand(command, map);
             }
         }
         return null;
@@ -98,7 +104,14 @@ public class RPGramm extends TelegramLongPollingBot {
                 if(item.getPos().x > map.maxXBound){
                     item.teleportPlayer(new Position(item.getPos().x - map.maxXBound, item.getPos().y));
                 }
-                map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon);
+                if(item.worldState.equals("worldMap")) {
+                    map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, -1);
+                } else {
+                    String[] worldStateSplited = item.worldState.split(" ");
+                    if(worldStateSplited[0].equals("village")){
+                        map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, Integer.parseInt(worldStateSplited[1]));
+                    }
+                }
             }
         }
     }

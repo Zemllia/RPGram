@@ -1,5 +1,8 @@
+import core.NamesGenerator;
 import core.Position;
 import core.utils.Random;
+
+import java.util.ArrayList;
 
 public class Map {
     int maxXBound;
@@ -21,6 +24,10 @@ public class Map {
     char [][][] gameMap;
     char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'T', '3'}, {'R', '0'}, {'%', '5'}};
 
+
+
+    ArrayList<Village> villages = new ArrayList<Village>();
+
     public Map (int maxXBound, int maxYBound, int villagesCount, int cavesCount, int swampCount){
         this.maxXBound = maxXBound;
         this.maxYBound = maxYBound;
@@ -34,9 +41,18 @@ public class Map {
         clearMap();
         generateSomeEnvironment();
         generateSwamp();
+        generateSomeVillages();
     }
 
-    String viewMapArea (Position pos, int radius) {
+    String viewMapArea (Position pos, int radius, int mapId) {
+
+        char[][][] renderMap;
+
+        if(mapId == -1){
+            renderMap = gameMap;
+        } else {
+            renderMap = villages.get(mapId).getMap();
+        }
 
         int diameter = radius * 2;
 
@@ -44,8 +60,8 @@ public class Map {
 
         String answer = "";
 
-        String[] treesArray = {"\uD83C\uDF33", "\uD83C\uDF32"};
-        String[] flowersArray = {"\uD83C\uDF39", "\uD83C\uDF37", "\uD83C\uDF31"};
+        String[] treesArray = {"\uD83C\uDF32"};
+        // String[] flowersArray = {"\uD83C\uDF39", "\uD83C\uDF37", "\uD83C\uDF31"};
 
         System.out.println(pos.x+ "  " +  pos.y+ "   " + radius);
 
@@ -61,8 +77,8 @@ public class Map {
             for (int i = 0; i < diameter; i++){
                 for (int j = 0; j < diameter; j++) {
                     if (i > diffX-1 && j > diffY-1) {
-                        if (gameMap[t][pos.x + i - radius][pos.y + j - radius] != 0) {
-                            renderArray[i][j] = gameMap[t][pos.x + i - radius][pos.y + j - radius];
+                        if (renderMap[t][pos.x + i - radius][pos.y + j - radius] != 0) {
+                            renderArray[i][j] = renderMap[t][pos.x + i - radius][pos.y + j - radius];
                         }
                     }
                 }
@@ -82,10 +98,12 @@ public class Map {
                 if (renderArray[i][j] <= 127) {
                     if(renderArray[i][j] == 'T'){
                         answer += "</code>" +  treesArray[Random.randInt(0, treesArray.length-1)] + "<code>";
-                    } else if (renderArray[i][j] == 'F'){
-                        answer += "</code>" +  flowersArray[Random.randInt(0, flowersArray.length-1)] + "<code>";
                     } else if (renderArray[i][j] == 'N'){
                         answer += "</code>" +  "\uD83C\uDF2B" + "<code>";
+                    } else if (renderArray[i][j] == 'V') {
+                        answer += "</code>" +  "\uD83C\uDFD8" + "<code>";
+                    } else if (renderArray[i][j] == 'D') {
+                        answer += "</code>" +  "\uD83C\uDFDA" + "<code>";
                     } else {
                         answer += renderArray[i][j] + " ";
                     }
@@ -100,11 +118,33 @@ public class Map {
         return answer;
     }
 
-    void instantiateNewPlayer(Position pos, char playerChar){
-        gameMap[Layer.PLAYERS.ordinal()][pos.x][pos.y] = playerChar;
-        gameMap[Layer.WEIGHTS.ordinal()][pos.x][pos.y] = '9';
+    void instantiateNewPlayer(Position pos, char playerChar, int mapId){
+        char[][][] curMap;
+
+        if(mapId == -1){
+            curMap = gameMap;
+        } else {
+            curMap = villages.get(mapId).getMap();
+        }
+        curMap[Layer.PLAYERS.ordinal()][pos.x][pos.y] = playerChar;
+        curMap[Layer.WEIGHTS.ordinal()][pos.x][pos.y] = '9';
     }
 
+    void changePlayerPos (Position oldPos, Position newPos, char playerChar, int mapId) {
+        char[][][] curMap;
+
+        if(mapId == -1){
+            curMap = gameMap;
+        } else {
+            curMap = villages.get(mapId).getMap();
+        }
+        if(newPos.x >= 0 && newPos.x <= maxXBound && newPos.y >= 0 && newPos.y <= maxYBound) {
+            curMap[Layer.PLAYERS.ordinal()][oldPos.x][oldPos.y] = 0;
+            curMap[Layer.PLAYERS.ordinal()][newPos.x][newPos.y] = playerChar;
+            curMap[Layer.WEIGHTS.ordinal()][oldPos.x][oldPos.y] = recalculateCellWeight(oldPos);
+            curMap[Layer.WEIGHTS.ordinal()][newPos.x][newPos.y] = '9';
+        }
+    }
 
     private void generateSomeEnvironment(){
         for (int i = 0; i < maxXBound; i++) {
@@ -112,8 +152,6 @@ public class Map {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
                     gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
-                } else if(randChance > 50 && randChance < 60){
-                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'F';
                 }
             }
         }
@@ -121,7 +159,17 @@ public class Map {
 
     private void generateSomeVillages(){
         for(int i = 0; i < villagesCount; i++){
-
+            Position vilgPosition = new Position(Random.randInt(0, maxYBound), Random.randInt(0, maxYBound));
+            Village vilg = new Village(
+                    i,
+                    NamesGenerator.villageNames[Random.randInt(0, NamesGenerator.villageNames.length - 1)],
+                    NamesGenerator.npcNames[Random.randInt(0, NamesGenerator.npcNames.length-1)],
+                    Random.randInt(0, 9999),
+                    false,
+                    vilgPosition
+            );
+            gameMap[Layer.ENVIRONMENT.ordinal()][vilg.villagePos.x][vilg.villagePos.y] = 'V';
+            villages.add(vilg);
         }
     }
 
@@ -155,15 +203,6 @@ public class Map {
         }
     }
 
-    void changePlayerPos (Position oldPos, Position newPos, char playerChar) {
-        if(newPos.x >= 0 && newPos.x <= maxXBound && newPos.y >= 0 && newPos.y <= maxYBound) {
-            gameMap[Layer.PLAYERS.ordinal()][oldPos.x][oldPos.y] = 0;
-            gameMap[Layer.PLAYERS.ordinal()][newPos.x][newPos.y] = playerChar;
-            gameMap[Layer.WEIGHTS.ordinal()][oldPos.x][oldPos.y] = recalculateCellWeight(oldPos);
-            gameMap[Layer.WEIGHTS.ordinal()][newPos.x][newPos.y] = '9';
-        }
-    }
-
     char recalculateCellWeight(Position pos){
         int curWeight = 0;
         for(int i = 0; i < Layer.values().length; i++){
@@ -187,5 +226,16 @@ public class Map {
                 gameMap[Layer.WEIGHTS.ordinal()][i][j] = '1';
             }
         }
+    }
+
+    public Village checkVillage(Position villagePos){
+        for(Village item: villages){
+            System.out.println("DEBUG: vlg item pos is x=" + item.villagePos.x + " y=" + item.villagePos.y);
+            if(item.villagePos.x == villagePos.x && item.villagePos.y == villagePos.y){
+                System.out.println("DEBUG: trying to return");
+                return item;
+            }
+        }
+        return null;
     }
 }

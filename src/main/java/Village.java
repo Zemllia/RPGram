@@ -6,7 +6,10 @@ public class Village {
     String villageName;
     String ownerName;
     int ownerID;
+    //TODO Сделать возможность добавлять совладельцев (Строить в деревне могут только владельцы);
     int[] coOwnersID;
+    //TODO Сделать возможность прописаться в поселении и спавн рандомных NPC
+    int villagersCount;
     boolean isBuildedByPlayer;
 
     Position villagePos;
@@ -24,12 +27,15 @@ public class Village {
     char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'T', '3'}, {'R', '0'}, {'%', '5'}};
 
 
-    public Village (int villageID, String villageName, String ownerName, int ownerID, boolean isBuildedByPlayer) {
+    public Village (int villageID, String villageName, String ownerName, int ownerID, boolean isBuildedByPlayer, Position villagePos) {
         this.villageID = villageID;
         this.villageName = villageName;
         this.ownerName = ownerName;
         this.ownerID = ownerID;
         this.isBuildedByPlayer = isBuildedByPlayer;
+        this.villagePos = villagePos;
+        generateVillage();
+        System.out.println("Деревня сгенерировалась x=" + villagePos.x + " y=" + villagePos.y);
     }
 
     void generateVillage(){
@@ -58,7 +64,7 @@ public class Village {
     private void generateBrokenHouses(){
         int numberOfHouses = Random.randInt(3,8);
         for (int i = 0; i < numberOfHouses; i++) {
-            villageMap[Map.Layer.ENVIRONMENT.ordinal()][Random.randInt(0,50)][Random.randInt(0,50)] = 'D';
+            villageMap[Layer.ENVIRONMENT.ordinal()][Random.randInt(0,49)][Random.randInt(0,49)] = 'D';
         }
     }
 
@@ -67,9 +73,7 @@ public class Village {
             for (int j = 0; j < 50; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
-                    villageMap[Map.Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
-                } else if(randChance > 50 && randChance < 60){
-                    villageMap[Map.Layer.ENVIRONMENT.ordinal()][i][j] = 'F';
+                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
                 }
             }
         }
@@ -78,10 +82,30 @@ public class Village {
     private void clearMap() {
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                villageMap[Map.Layer.GROUND.ordinal()][i][j] = ' ';
-                villageMap[Map.Layer.CAVES.ordinal()][i][j] = ' ';
-                villageMap[Map.Layer.WEIGHTS.ordinal()][i][j] = '1';
+                villageMap[Layer.GROUND.ordinal()][i][j] = ' ';
+                villageMap[Layer.CAVES.ordinal()][i][j] = ' ';
+                villageMap[Layer.WEIGHTS.ordinal()][i][j] = '1';
             }
         }
+    }
+
+    public char[][][] getMap(){
+        return villageMap;
+    }
+    public int getVillageID(){
+        return villageID;
+    }
+    public String getVillageName(){
+        return villageName;
+    }
+    public String getOwnerName(){
+        return ownerName;
+    }
+    public int getVillagersCount(){
+        return villagersCount;
+    }
+
+    public void setVillagePos(Position pos){
+        villagePos = pos;
     }
 }
