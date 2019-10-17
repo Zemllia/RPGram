@@ -2,6 +2,7 @@ import core.GameObject;
 import core.Position;
 import core.utils.Random;
 import items.InventoryItem;
+import items.Rock;
 import items.money;
 import items.wood;
 
@@ -142,7 +143,7 @@ public class Player extends GameObject {
                 answer = ": Меня окружает только тьма...";
             }
 
-        } else if (command.equals("зайти")) {
+        } else if (command.toLowerCase().equals("зайти")) {
             String[] worldStateArray = worldState.split(" ");
             System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
             Village curVillage = map.checkVillage(this.position);
@@ -174,6 +175,8 @@ public class Player extends GameObject {
 
         } else if (commandArray[0].toLowerCase().equals("инвентарь")) {
             sortInventory();
+            sortInventory();
+            sortInventory();
             answer = ": Вот что в моем мешке:\n";
             int counter = 1;
             for(InventoryItem item : inventory){
@@ -183,8 +186,21 @@ public class Player extends GameObject {
         } else if (commandArray[0].toLowerCase().equals("добыть")) {
             if(commandArray[1].toLowerCase().equals("дерево")){
                 if(map.gameMap[3][position.x][position.y] == 'T'){
-                    inventory.add(new wood(25));
+                    int addedWood = Random.randInt(15, 30);
+                    inventory.add(new wood(addedWood));
                     map.gameMap[3][position.x][position.y] = 0;
+                    answer = ": Добыл немного дерева (x" + addedWood + ")";
+                } else {
+                    answer = ": Я не могу добыть то, чего нет";
+                }
+            } else if(commandArray[1].toLowerCase().equals("камень")){
+                if(map.gameMap[3][position.x][position.y] == 'R'){
+                    int addedRock = Random.randInt(5, 15);
+                    inventory.add(new Rock(addedRock));
+                    map.gameMap[3][position.x][position.y] = 0;
+                    answer = ": Добыл немного камня (x" + addedRock + ")";
+                } else {
+                    answer = ": Я не могу добыть то, чего нет";
                 }
             }
         } else {

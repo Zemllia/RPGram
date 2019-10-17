@@ -104,11 +104,13 @@ public class Map {
                         answer += "</code>" +  "\uD83C\uDFD8" + "<code>";
                     } else if (renderArray[i][j] == 'D') {
                         answer += "</code>" +  "\uD83C\uDFDA" + "<code>";
+                    } else if (renderArray[i][j] == 'R') {
+                        answer += "</code>" +  "\uD83D\uDDFB" + "<code>";
                     } else {
                         answer += renderArray[i][j] + " ";
                     }
                 } else {
-                    answer += "</code>" + renderArray[i][j] + "<code>";
+                    answer += "</code> " + renderArray[i][j] + " <code>";
                 }
             }
             answer = answer + "\n";
@@ -150,8 +152,10 @@ public class Map {
         for (int i = 0; i < maxXBound; i++) {
             for (int j = 0; j < maxYBound; j++) {
                 int randChance = Random.randInt(0, 100);
-                if (randChance < 50) {
+                if (randChance < 30) {
                     gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
+                } else if (randChance > 30 && randChance < 35) {
+                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'R';
                 }
             }
         }
