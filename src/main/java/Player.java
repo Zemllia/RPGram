@@ -196,17 +196,6 @@ public class Player extends GameObject {
                     answer = ": Я не могу добыть то, чего нет";
                 }
             }
-        } else if (commandArray[0].toLowerCase().equals("путь")){
-            ArrayList<Position> path = pathFinding.findPath(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])),
-                    position,
-                    map
-            );
-
-            for(Position item: path){
-                System.out.println("DEBUG: x=" + item.x + " y=" + item.y);
-            }
-
-            answer = "Эээээм...";
         } else {
             answer = randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
             for (String item: commands) {
@@ -219,10 +208,7 @@ public class Player extends GameObject {
     void sortInventory(){
         for (int i = 0; i < inventory.size(); i++) {
             for (int j = i+1; j < inventory.size(); j++) {
-                System.out.println("DEBUGi: " + inventory.get(i).getName() + inventory.get(i).getCount());
-                System.out.println("DEBUGj: " + inventory.get(j).getName() + inventory.get(j).getCount());
                 if (inventory.get(i).getName().equals(inventory.get(j).getName())){
-                    System.out.println("DEBUG1: " + inventory.get(i).getName() + inventory.get(i).getCount());
                     inventory.get(i).increaseCount(inventory.get(j).getCount());
                     inventory.remove(j);
                 }

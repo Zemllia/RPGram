@@ -8,7 +8,7 @@ public class Map {
     int maxXBound;
     int maxYBound;
 
-    enum Layer {
+    public enum Layer {
         WEIGHTS,
         CAVES,
         GROUND,
@@ -107,10 +107,10 @@ public class Map {
                     } else if (renderArray[i][j] == 'R') {
                         answer += "</code>" +  "\uD83D\uDDFB" + "<code>";
                     } else {
-                        answer += renderArray[i][j] + " ";
+                        answer += renderArray[i][j] + "  ";
                     }
                 } else {
-                    answer += "</code> " + renderArray[i][j] + " <code>";
+                    answer += "</code>" + renderArray[i][j] + "<code>";
                 }
             }
             answer = answer + "\n";

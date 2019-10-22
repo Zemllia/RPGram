@@ -128,4 +128,9 @@ class PathFinding {
             return NodeList;
         }
     }
+
+    public void convertMapToNodes(Map map){
+        Node[][] nodeMap;
+        for(int i = 0; i<=)
+    }
 }
