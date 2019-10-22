@@ -15,19 +15,17 @@ public class Player extends GameObject {
 
     Position oldPos;
 
-    int HP = 100;
-    int fieldOfView = 10;
-    int level = 1;
-    int xp = 2;
-
-    int toUpdateMessageID;
+    private int HP = 100;
+    private int fieldOfView = 10;
 
     String state;
     String worldState;
 
-    List<InventoryItem> inventory = new ArrayList<InventoryItem>();
+    private PathFinding pathFinding = new PathFinding();
 
-    static final char[] ICONS = {
+    private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
+
+    private static final char[] ICONS = {
             '☃',
             '☠',
             '☭'
@@ -111,16 +109,11 @@ public class Player extends GameObject {
                 "спать - восстановить энергию, если ее мало"};
 
         if (commandArray[0].toLowerCase().equals("идти")) {
-            if (getEnergy() >= Integer.parseInt(commandArray[2])) {
-                if (commandArray[1].toLowerCase().equals("вправо")) {
-                    moveY(Integer.parseInt(commandArray[2]));
-                } else if (commandArray[1].toLowerCase().equals("влево")) {
-                    moveY(Integer.parseInt(commandArray[2]) * -1);
-                } else if (commandArray[1].toLowerCase().equals("вниз")) {
-                    moveX(Integer.parseInt(commandArray[2]));
-                } else if (commandArray[1].toLowerCase().equals("вверх")) {
-                    moveX(Integer.parseInt(commandArray[2]) * -1);
-                }
+            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2]));
+            ArrayList<Position> path = pathFinding.findPath(targetPosition, position, map);
+            if (getEnergy() >= path.size()) {
+                position = targetPosition;
+                changeEnergy(path.size() * -1);
                 answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
             } else {
                 answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
@@ -203,6 +196,17 @@ public class Player extends GameObject {
                     answer = ": Я не могу добыть то, чего нет";
                 }
             }
+        } else if (commandArray[0].toLowerCase().equals("путь")){
+            ArrayList<Position> path = pathFinding.findPath(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])),
+                    position,
+                    map
+            );
+
+            for(Position item: path){
+                System.out.println("DEBUG: x=" + item.x + " y=" + item.y);
+            }
+
+            answer = "Эээээм...";
         } else {
             answer = randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
             for (String item: commands) {
@@ -226,21 +230,10 @@ public class Player extends GameObject {
         }
     }
 
-    public int getXP(){
-        return xp;
-    }
-    public int getLevel(){
-        return level;
-    }
     public String getName() {
         return name;
     }
-    public int getHP() {
-        return HP;
-    }
-    public int getFOV() {
-        return fieldOfView;
-    }
+
     public Position getPos() {
         return position;
     }
