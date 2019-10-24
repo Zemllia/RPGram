@@ -33,7 +33,7 @@ class PathFinding {
                 return generateFinalPath(curNode);
             }
 
-            ArrayList<Node> neighbours = curNode.getNeighbours(nodeMap);
+            ArrayList<Node> neighbours = curNode.getNeighbours(nodeMap, map);
 
             for(Node neighbour: neighbours){
                 if(/*!neighbour.Walkable || */ closedSet.contains(neighbour)){
@@ -111,14 +111,15 @@ class PathFinding {
             this.isWalkable = isWalkable;
         }
 
-        ArrayList<Node> getNeighbours(Node[][] nodeMap){
+        ArrayList<Node> getNeighbours(Node[][] nodeMap, Map map){
             ArrayList<Node> NodeList = new ArrayList<Node>();
             for(int i = -1; i <= 1; i++){
                 for(int j = -1; j <= 1; j++){
                     if(i == 0 && j ==0){
                         continue;
                     }
-                    if((coordinates.x - i >= 0 && coordinates.x - i < 500) && (coordinates.y - j >= 0 && coordinates.y - j < 500)) {
+                    if((coordinates.x + i >= 0 && coordinates.x + i < map.maxXBound - 1)
+                            && (coordinates.y + j >= 0 && coordinates.y + j < map.maxYBound - 1)) {
                         if (nodeMap[coordinates.x + i][coordinates.y + j].isWalkable) {
                             NodeList.add(nodeMap[coordinates.x + i][coordinates.y + j]);
                         }

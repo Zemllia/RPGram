@@ -3,10 +3,14 @@ import core.utils.Random;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RPGramm extends TelegramLongPollingBot {
 
@@ -58,6 +62,15 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setText(executePlayerCommand(update.getMessage().getFrom().getId(),
                                         update.getMessage().getText())).enableHtml(true);
 
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
+                rowInline.add(new InlineKeyboardButton().setText("Автоматическое обновление карты").setCallbackData("update_msg_text"));
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
 
                 try {
                     execute(message);
@@ -66,6 +79,28 @@ public class RPGramm extends TelegramLongPollingBot {
                 }
             } else {
                 //TODO Работа с беседами
+            }
+        }  else if (update.hasCallbackQuery()) {
+            // Set variables
+            String call_data = update.getCallbackQuery().getData();
+            long message_id = update.getCallbackQuery().getMessage().getMessageId();
+            int chat_id = update.getCallbackQuery().getMessage().getFrom().getId();
+            Player curPlayer = getPlayer(chat_id);
+            int playerWorld = getUserWorld(curPlayer);
+
+            String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
+
+            if (call_data.equals("update_msg_text")) {
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true);
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -116,7 +151,29 @@ public class RPGramm extends TelegramLongPollingBot {
         }
     }
 
+
+    public Player getPlayer (int id) {
+        for (Player item: players) {
+            if(item.id == id){
+               return item;
+            }
+        }
+        return players.get(0);
+    }
+
     private boolean isUser(long id){
         return id > 0;
+    }
+
+    int getUserWorld (Player player) {
+        if(player.worldState == "worldMap") {
+            return -1;
+        } else {
+            String[] worldStateSplited = player.worldState.split(" ");
+            if(worldStateSplited[0] == "village"){
+                return Integer.parseInt(worldStateSplited[1]);
+            }
+        }
+        return -1;
     }
 }

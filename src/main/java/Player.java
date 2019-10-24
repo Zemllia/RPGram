@@ -16,7 +16,7 @@ public class Player extends GameObject {
     Position oldPos;
 
     private int HP = 100;
-    private int fieldOfView = 10;
+    int fieldOfView = 10;
 
     String state;
     String worldState;
@@ -25,13 +25,9 @@ public class Player extends GameObject {
 
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    private static final char[] ICONS = {
-            '☃',
-            '☠',
-            '☭'
-    };
-
     char mapIcon = '@';
+
+    long autoUpdateMessageId = 0;
 
     private String[] welcomeMessages = {" прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
             " был добавлен в мир"};
@@ -41,7 +37,7 @@ public class Player extends GameObject {
         oldPos = pos;
         this.name = name;
         this.id = id;
-        mapIcon = ICONS[Random.randInt(0, ICONS.length - 1)];
+        mapIcon = name.charAt(0);
         changeEnergy(100);
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
         inventory.add(new money(25));
@@ -51,41 +47,6 @@ public class Player extends GameObject {
         inventory.add(new money(40));
         inventory.add(new wood(25));
         inventory.add(new wood(25));
-    }
-
-    private void moveX(int deltaX) {
-        int dangerChance = 10;
-        if(deltaX > fieldOfView) {
-            dangerChance = 75;
-        }
-        int randInt = Random.randInt(0,100);
-        if(randInt<=dangerChance){
-            int looseHP = Random.randInt(5, 30);
-            System.out.println(name + ": так быстро бежал, что по дороге не заметил яму, споткнулся и потерял " +
-                    randInt +" HP");
-            HP -= looseHP;
-        }
-        oldPos = new Position(position.x, position.y);
-        position.x += deltaX;
-        System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
-        changeEnergy(Math.abs(deltaX) * -1);
-    }
-    private void moveY(int deltaY) {
-        int dangerChanse = 10;
-        if(deltaY > fieldOfView) {
-            dangerChanse = 75;
-        }
-        int randInt = Random.randInt(0, 100);
-        if(randInt<=dangerChanse){
-            int looseHP = Random.randInt(5, 30);
-            System.out.println(name + ": так быстро бежал, что по дороге не заметил яму, споткнулся и потерял " +
-                    randInt +" HP");
-            HP -= looseHP;
-        }
-        oldPos = new Position(position.x, position.y);
-        position.y += deltaY;
-        System.out.println(name + ": Моя позиция: " + position.x + ", " + position.y);
-        changeEnergy(Math.abs(deltaY) * -1);
     }
 
     void teleportPlayer(Position newPosition){

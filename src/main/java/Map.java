@@ -3,12 +3,45 @@ import core.Position;
 import core.utils.Random;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Map {
     int maxXBound;
     int maxYBound;
 
-    public enum Layer {
+    enum Legend {
+        CHEST('=', "Chest"),
+        WALL('#', "Wall"),
+        TREE('^', "Tree"),
+        SWAMP('%', "Swamp"),
+        ROCK('o', "A rock or a big stone");
+
+        private char value;
+        private String description;
+
+        Legend(char value, String description) {
+            this.value = value;
+            this.description = description;
+        }
+
+        /**
+         * Get value of a map object.
+         * @return Object character.
+         */
+        public char getValue() {
+            return this.value;
+        }
+
+        /**
+         * Get description of a map object.
+         * @return Object description.
+         */
+        public String getDescription() {
+            return this.description;
+        }
+    }
+
+    enum Layer {
         WEIGHTS,
         CAVES,
         GROUND,
@@ -87,7 +120,7 @@ public class Map {
         for(int i = 0; i < diameter; i++) {
             for(int j = 0; j < diameter; j++) {
                 if(renderArray[i][j] == 0) {
-                    renderArray[i][j] = 'N';
+                    renderArray[i][j] = Legend.WALL.getValue();
                 }
             }
         }
@@ -96,19 +129,7 @@ public class Map {
         for (int i = 0; i < radius * 2; i++) {
             for (int j = 0; j < radius * 2; j++) {
                 if (renderArray[i][j] <= 127) {
-                    if(renderArray[i][j] == 'T'){
-                        answer += "</code>" +  treesArray[Random.randInt(0, treesArray.length-1)] + "<code>";
-                    } else if (renderArray[i][j] == 'N'){
-                        answer += "</code>" +  "\uD83C\uDF2B" + "<code>";
-                    } else if (renderArray[i][j] == 'V') {
-                        answer += "</code>" +  "\uD83C\uDFD8" + "<code>";
-                    } else if (renderArray[i][j] == 'D') {
-                        answer += "</code>" +  "\uD83C\uDFDA" + "<code>";
-                    } else if (renderArray[i][j] == 'R') {
-                        answer += "</code>" +  "\uD83D\uDDFB" + "<code>";
-                    } else {
-                        answer += renderArray[i][j] + "  ";
-                    }
+                    answer += renderArray[i][j] + " ";
                 } else {
                     answer += "</code>" + renderArray[i][j] + "<code>";
                 }
@@ -153,9 +174,9 @@ public class Map {
             for (int j = 0; j < maxYBound; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 30) {
-                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
+                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = Legend.TREE.getValue();
                 } else if (randChance > 30 && randChance < 35) {
-                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'R';
+                    gameMap[Layer.ENVIRONMENT.ordinal()][i][j] = Legend.ROCK.getValue();
                 }
             }
         }
@@ -192,12 +213,12 @@ public class Map {
             int randomOffset = Random.randInt(-2, 2);
             if (i <= (startPointX + endPointX) / 2) {
                 for (int j = startPointY; j <= startPointY + verticalScale; j++) {
-                    gameMap[Layer.ENVIRONMENT.ordinal()][i][(j + randomOffset) % maxXBound] = '%';
+                    gameMap[Layer.ENVIRONMENT.ordinal()][i][(j + randomOffset) % maxXBound] = Legend.SWAMP.getValue();
                     verticalScale += Random.randInt(0,2);
                 }
             } else {
                 for (int j = startPointY; j <= startPointY + verticalScale; j++) {
-                    gameMap[Layer.GROUND.ordinal()][i][(j + randomOffset) % maxXBound] = '%';
+                    gameMap[Layer.GROUND.ordinal()][i][(j + randomOffset) % maxXBound] = Legend.SWAMP.getValue();
                     verticalScale -= Random.randInt(0, 2);
                     if (verticalScale <= 1) {
                         verticalScale = 1;
