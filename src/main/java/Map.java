@@ -2,6 +2,7 @@ import core.NamesGenerator;
 import core.Position;
 import core.utils.Random;
 
+import javax.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -75,6 +76,7 @@ public class Map {
         generateSomeEnvironment();
         generateSwamp();
         generateSomeVillages();
+        generateRoadsBetweenVillages();
     }
 
     String viewMapArea (Position pos, int radius, int mapId) {
@@ -195,6 +197,23 @@ public class Map {
             );
             gameMap[Layer.ENVIRONMENT.ordinal()][vilg.villagePos.x][vilg.villagePos.y] = 'V';
             villages.add(vilg);
+        }
+    }
+
+    private void generateRoadsBetweenVillages (){
+        PathFinding pathFinding = new PathFinding();
+        for (Village item: villages) {
+            for(int i = 0; i <= Random.randInt(0,2); i++) {
+                Village villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
+                while (villageForRoad.villageID == item.villageID) {
+                    villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
+                }
+                ArrayList<Position> roadPath = pathFinding.findPath(item.villagePos, villageForRoad.villagePos, this);
+
+                for (Position roadElement : roadPath) {
+                    gameMap[Layer.GROUND.ordinal()][roadElement.x][roadElement.y] = '◼';
+                }
+            }
         }
     }
 

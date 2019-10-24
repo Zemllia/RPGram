@@ -61,6 +61,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setChatId(update.getMessage().getChatId())
                         .setText(executePlayerCommand(update.getMessage().getFrom().getId(),
                                         update.getMessage().getText())).enableHtml(true);
+                
 
                 message.setReplyMarkup(getKeyBoardOfArrows());
 

@@ -44,7 +44,6 @@ class PathFinding {
                     neighbour.gCost =  newMovementCostToNeighbour;
                     neighbour.hCost = GetDistance(neighbour, targetNode);
                     neighbour.parent = curNode;
-                    //print("Added " + curNode.name + " to open list");
                     if(!openSet.contains(neighbour)) openSet.add(neighbour);
                 }
 

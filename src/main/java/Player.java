@@ -70,8 +70,15 @@ public class Player extends GameObject {
                 "спать - восстановить энергию, если ее мало"};
 
         if (commandArray[0].toLowerCase().equals("идти")) {
-            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[0]));
-            answer = movePlayer(targetPosition, map);
+            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2]));
+            ArrayList<Position> path = pathFinding.findPath(targetPosition, position, map);
+            if (getEnergy() >= path.size()) {
+                position = targetPosition;
+                changeEnergy(path.size() * -1);
+                answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
+            } else {
+                answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
+            }
 
         } else if (commandArray[0].toLowerCase().equals("осмотреть")){
             if (commandArray[1].toLowerCase().equals("себя")){
