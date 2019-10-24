@@ -62,15 +62,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setText(executePlayerCommand(update.getMessage().getFrom().getId(),
                                         update.getMessage().getText())).enableHtml(true);
 
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
-                rowInline.add(new InlineKeyboardButton().setText("Автоматическое обновление карты").setCallbackData("update_msg_text"));
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
+                message.setReplyMarkup(getKeyBoardOfArrows());
 
                 try {
                     execute(message);
@@ -88,14 +80,91 @@ public class RPGramm extends TelegramLongPollingBot {
             Player curPlayer = getPlayer(chat_id);
             int playerWorld = getUserWorld(curPlayer);
 
-            String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
-
-            if (call_data.equals("update_msg_text")) {
+            if (call_data.equals("go_up")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
+                changePos(curPlayer.id);
+                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
                 EditMessageText new_message = new EditMessageText()
                         .setChatId(update.getCallbackQuery().getMessage().getChatId())
                         .setMessageId((int) message_id)
                         .setText(answ)
-                        .enableHtml(true);
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("go_right")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1), map);
+                changePos(curPlayer.id);
+                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("go_left")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1), map);
+                changePos(curPlayer.id);
+                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("go_down")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
+                changePos(curPlayer.id);
+                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("inventory")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("инвентарь", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("map")) {
+                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("осмотреть местность", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows());
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -175,5 +244,28 @@ public class RPGramm extends TelegramLongPollingBot {
             }
         }
         return -1;
+    }
+
+    InlineKeyboardMarkup getKeyBoardOfArrows(){
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
+        List<InlineKeyboardButton> rowInlineUp = new ArrayList<InlineKeyboardButton>();
+        List<InlineKeyboardButton> rowInlineMiddle = new ArrayList<InlineKeyboardButton>();
+        List<InlineKeyboardButton> rowInlineDown = new ArrayList<InlineKeyboardButton>();
+        List<InlineKeyboardButton> rowInlineFooter = new ArrayList<InlineKeyboardButton>();
+        rowInlineUp.add(new InlineKeyboardButton().setText("^").setCallbackData("go_up"));
+        rowInlineMiddle.add(new InlineKeyboardButton().setText("<").setCallbackData("go_left"));
+        rowInlineMiddle.add(new InlineKeyboardButton().setText(">").setCallbackData("go_right"));
+        rowInlineDown.add(new InlineKeyboardButton().setText("v").setCallbackData("go_down"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
+        // Set the keyboard to the markup
+        rowsInline.add(rowInlineUp);
+        rowsInline.add(rowInlineMiddle);
+        rowsInline.add(rowInlineDown);
+        rowsInline.add(rowInlineFooter);
+        // Add it to the message
+        markupInline.setKeyboard(rowsInline);
+        return markupInline;
     }
 }

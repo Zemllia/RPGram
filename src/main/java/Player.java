@@ -16,7 +16,7 @@ public class Player extends GameObject {
     Position oldPos;
 
     private int HP = 100;
-    int fieldOfView = 10;
+    int fieldOfView = 5;
 
     String state;
     String worldState;
@@ -27,7 +27,7 @@ public class Player extends GameObject {
 
     char mapIcon = '@';
 
-    long autoUpdateMessageId = 0;
+    long autoUpdateMessageId = -1;
 
     private String[] welcomeMessages = {" прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
             " был добавлен в мир"};
@@ -70,15 +70,8 @@ public class Player extends GameObject {
                 "спать - восстановить энергию, если ее мало"};
 
         if (commandArray[0].toLowerCase().equals("идти")) {
-            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2]));
-            ArrayList<Position> path = pathFinding.findPath(targetPosition, position, map);
-            if (getEnergy() >= path.size()) {
-                position = targetPosition;
-                changeEnergy(path.size() * -1);
-                answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
-            } else {
-                answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
-            }
+            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[0]));
+            answer = movePlayer(targetPosition, map);
 
         } else if (commandArray[0].toLowerCase().equals("осмотреть")){
             if (commandArray[1].toLowerCase().equals("себя")){
@@ -139,7 +132,7 @@ public class Player extends GameObject {
             }
         } else if (commandArray[0].toLowerCase().equals("добыть")) {
             if(commandArray[1].toLowerCase().equals("дерево")){
-                if(map.gameMap[3][position.x][position.y] == 'T'){
+                if(map.gameMap[3][position.x][position.y] == '^'){
                     int addedWood = Random.randInt(15, 30);
                     inventory.add(new wood(addedWood));
                     map.gameMap[3][position.x][position.y] = 0;
@@ -148,7 +141,7 @@ public class Player extends GameObject {
                     answer = ": Я не могу добыть то, чего нет";
                 }
             } else if(commandArray[1].toLowerCase().equals("камень")){
-                if(map.gameMap[3][position.x][position.y] == 'R'){
+                if(map.gameMap[3][position.x][position.y] == 'o'){
                     int addedRock = Random.randInt(5, 15);
                     inventory.add(new Rock(addedRock));
                     map.gameMap[3][position.x][position.y] = 0;
@@ -183,5 +176,27 @@ public class Player extends GameObject {
 
     public Position getPos() {
         return position;
+    }
+
+    public String movePlayer(Position targetPos, Map map){
+        String answer;
+        ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
+        if (getEnergy() >= path.size()) {
+            oldPos=position;
+            position = targetPos;
+            changeEnergy(path.size() * -1);
+            answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
+        } else {
+            answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
+        }
+        return answer;
+    }
+
+    public long getAutoUpdateMessageId(){
+        return autoUpdateMessageId;
+    }
+
+    public void setAutoUpdateMessageId(long id){
+        autoUpdateMessageId = id;
     }
 }
