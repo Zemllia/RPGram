@@ -142,7 +142,6 @@ public class RPGramm extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             } else if (call_data.equals("inventory")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
                 changePos(curPlayer.id);
                 String answ = curPlayer.executeCommand("инвентарь", map);
                 EditMessageText new_message = new EditMessageText()
@@ -157,7 +156,6 @@ public class RPGramm extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             } else if (call_data.equals("map")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
                 changePos(curPlayer.id);
                 String answ = curPlayer.executeCommand("осмотреть местность", map);
                 EditMessageText new_message = new EditMessageText()
@@ -254,6 +252,7 @@ public class RPGramm extends TelegramLongPollingBot {
         List<InlineKeyboardButton> rowInlineMiddle = new ArrayList<InlineKeyboardButton>();
         List<InlineKeyboardButton> rowInlineDown = new ArrayList<InlineKeyboardButton>();
         List<InlineKeyboardButton> rowInlineFooter = new ArrayList<InlineKeyboardButton>();
+        List<InlineKeyboardButton> rowInlineUnderFooter = new ArrayList<InlineKeyboardButton>();
         rowInlineUp.add(new InlineKeyboardButton().setText("^").setCallbackData("go_up"));
         rowInlineMiddle.add(new InlineKeyboardButton().setText("<").setCallbackData("go_left"));
         rowInlineMiddle.add(new InlineKeyboardButton().setText(">").setCallbackData("go_right"));
