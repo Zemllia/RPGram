@@ -1,8 +1,12 @@
+import core.Position;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Main {
 
@@ -19,6 +23,8 @@ public class Main {
 
         botOptions.setProxyHost(PROXY_HOST);
         botOptions.setProxyPort(PROXY_PORT);
+
+        NPC npc = new NPC(0,"George", null, new Position(0,0),0);
 
         botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
         RPGramm bot = new RPGramm(botOptions);

@@ -1,7 +1,7 @@
 package items;
 
-public class money extends InventoryItem {
-    public money (int count){
+public class Money extends InventoryItem {
+    public Money(int count){
         this.icon = "";
         this.count = count;
         this.itemID = 1;

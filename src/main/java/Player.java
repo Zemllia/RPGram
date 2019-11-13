@@ -3,8 +3,8 @@ import core.Position;
 import core.utils.Random;
 import items.InventoryItem;
 import items.Rock;
-import items.money;
-import items.wood;
+import items.Money;
+import items.Wood;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +40,13 @@ public class Player extends GameObject {
         mapIcon = name.charAt(0);
         changeEnergy(100);
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
-        inventory.add(new money(25));
-        inventory.add(new money(35));
-        inventory.add(new wood(25));
-        inventory.add(new wood(25));
-        inventory.add(new money(40));
-        inventory.add(new wood(25));
-        inventory.add(new wood(25));
+        inventory.add(new Money(25));
+        inventory.add(new Money(35));
+        inventory.add(new Wood(25));
+        inventory.add(new Wood(25));
+        inventory.add(new Money(40));
+        inventory.add(new Wood(25));
+        inventory.add(new Wood(25));
     }
 
     void teleportPlayer(Position newPosition){
@@ -143,7 +143,7 @@ public class Player extends GameObject {
             if(commandArray[1].toLowerCase().equals("дерево")){
                 if(map.gameMap[3][position.x][position.y] == '^'){
                     int addedWood = Random.randInt(15, 30);
-                    inventory.add(new wood(addedWood));
+                    inventory.add(new Wood(addedWood));
                     map.gameMap[3][position.x][position.y] = 0;
                     answer = ": Добыл немного дерева (x" + addedWood + ")";
                 } else {
