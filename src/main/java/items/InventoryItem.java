@@ -14,6 +14,9 @@ public class InventoryItem {
     public int getCount(){
         return count;
     }
+    public String getType(){
+        return type;
+    }
 
     public void increaseCount(int delta){
         count += delta;

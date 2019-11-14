@@ -1,5 +1,8 @@
 import core.Position;
+import items.Food;
 import items.InventoryItem;
+import items.Money;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +11,14 @@ public class NPC {
     private int id;
     private String name;
     private String race;
+
+    enum State {
+        CALM,
+        HUNGRY,
+        THIRSTY,
+        NEED_MONEY,
+        WORKING
+    }
 
     // TODO Дописать про идеологию
     private String ideology;
@@ -21,14 +32,12 @@ public class NPC {
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
     int HP = 100;
-    int hunger = 100;
-    int thirst = 100;
-    int fatigue = 100;
+    int hunger = 1000;
+    int thirst = 1000;
+    int fatigue = 1000;
 
-    String state = "calm";
+    State state = State.CALM;
     String curNeed = null;
-
-    ArrayList<String> needsQuery = new ArrayList<>();
 
     public NPC(int id, String name, Quest[] quests, Position position, int mapID) {
         this.id = id;
@@ -40,17 +49,36 @@ public class NPC {
     }
 
     public void makeAction(){
-        if(state.equals("calm")){
-            hunger -= 1;
-            thirst -= 2;
-            fatigue -= 1;
-            if(needsQuery.size() != 0 && curNeed != null){
-                curNeed = needsQuery.get(0);
-                needsQuery.remove(0);
-            }
-            if (curNeed.equals("food")){
+        switch (state) {
+            case CALM:
+                hunger -= 1;
+                thirst -= 2;
+                fatigue -= 1;
+                if(hunger <= 200) {
+                    state = State.HUNGRY;
+                }
+                break;
 
+            case HUNGRY:
+                hunger -= 1;
+                thirst -= 2;
+                fatigue -= 1;
+
+                Food item = (Food) getIfExistsInInventoryByItemType("eatable");
+                if(item != null){
+                    hunger += item.getNutritionalValue();
+                }
+
+                break;
+        }
+    }
+
+    private InventoryItem getIfExistsInInventoryByItemType(String type){
+        for(InventoryItem item : inventory){
+            if(item.getType().equals(type)){
+                return item;
             }
         }
+        return null;
     }
 }
