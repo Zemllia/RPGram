@@ -5,6 +5,7 @@ public class InventoryItem {
     protected int itemID = 0;
     protected String name = "NaN";
     protected int count = 0;
+    protected String type = "building_material";
 
     public String getName(){
         return name;

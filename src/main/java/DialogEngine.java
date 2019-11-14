@@ -10,21 +10,33 @@ import java.io.IOException;
 
 public class DialogEngine {
 
-    private boolean haveQuests;
+    private Quest[] quests;
     private String characterName;
 
-    public DialogEngine(boolean haveQuests, String characterName){
-        this.haveQuests = haveQuests;
+    public DialogEngine(Quest[] quests, String characterName){
+        this.quests = quests;
         this.characterName = characterName;
     }
 
-    public String getDialog(){
+    public Object getDialog(String messageType){
         JSONObject obj;
-        JSONArray arr;
+        JSONArray arr = null;
         try {
             obj = (JSONObject) new JSONParser().parse(new FileReader("resources/dialogs/"+ characterName + "_dialogs.json"));
-            arr = (JSONArray) obj.get("hello_phrases");
-            return (String) arr.get(Random.randInt(0, arr.size() - 1));
+            if(messageType == "hello") {
+                arr = (JSONArray) obj.get("hello_phrases");
+            } else if (messageType == "random"){
+                arr = (JSONArray) obj.get("random_phrases");
+            } else if (messageType == "by"){
+                arr = (JSONArray) obj.get("by_phrases");
+            } else if (messageType == "quest"){
+                if(quests != null){
+                    return quests[0];
+                } else {
+                    return null;
+                }
+            }
+            return arr.get(Random.randInt(0, arr.size() - 1));
         } catch (FileNotFoundException ex) {
 
         } catch (IOException | ParseException ex) {

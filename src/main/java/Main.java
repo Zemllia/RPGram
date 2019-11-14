@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Main {
 
-    private static String PROXY_HOST = "localhost" /* proxy host */;
+    private static String PROXY_HOST = "127.0.0.1" /* proxy host */;
     private static Integer PROXY_PORT = 9050 /* proxy port */;
 
     public static void main(String[] args){
@@ -25,6 +25,7 @@ public class Main {
         botOptions.setProxyPort(PROXY_PORT);
 
         NPC npc = new NPC(0,"George", null, new Position(0,0),0);
+
 
         botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
         RPGramm bot = new RPGramm(botOptions);

@@ -6,5 +6,6 @@ public class Money extends InventoryItem {
         this.count = count;
         this.itemID = 1;
         this.name = "Coins";
+        this.type = "money";
     }
 }

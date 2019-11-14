@@ -1,14 +1,6 @@
 import core.Position;
-import core.utils.Random;
 import items.InventoryItem;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +20,15 @@ public class NPC {
 
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
+    int HP = 100;
+    int hunger = 100;
+    int thirst = 100;
+    int fatigue = 100;
+
+    String state = "calm";
+    String curNeed = null;
+
+    ArrayList<String> needsQuery = new ArrayList<>();
 
     public NPC(int id, String name, Quest[] quests, Position position, int mapID) {
         this.id = id;
@@ -35,14 +36,21 @@ public class NPC {
         this.mapID = mapID;
         this.quests = quests;
         this.position = position;
-        if(this.quests != null){
-            de = new DialogEngine(true);
-        } else {
-            de = new DialogEngine(false);
-        }
+        de = new DialogEngine(quests, name);
     }
 
     public void makeAction(){
+        if(state.equals("calm")){
+            hunger -= 1;
+            thirst -= 2;
+            fatigue -= 1;
+            if(needsQuery.size() != 0 && curNeed != null){
+                curNeed = needsQuery.get(0);
+                needsQuery.remove(0);
+            }
+            if (curNeed.equals("food")){
 
+            }
+        }
     }
 }
