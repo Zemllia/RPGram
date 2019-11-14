@@ -40,11 +40,11 @@ public class RPGramm extends TelegramLongPollingBot {
                     newPlayer.state = "";
                     newPlayer.worldState = "worldMap";
                     players.add(newPlayer);
-                    if(newPlayer.worldState == "worldMap") {
+                    if(newPlayer.worldState.equals("worldMap")) {
                         map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, -1);
                     } else {
                         String[] worldStateSplited = newPlayer.worldState.split(" ");
-                        if(worldStateSplited[0] == "village"){
+                        if(worldStateSplited[0].equals("village")){
                             map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, Integer.parseInt(worldStateSplited[1]));
                         }
                     }
@@ -77,13 +77,14 @@ public class RPGramm extends TelegramLongPollingBot {
             // Set variables
             String call_data = update.getCallbackQuery().getData();
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
-            int chat_id = update.getCallbackQuery().getMessage().getFrom().getId();
+            long chat_id = update.getCallbackQuery().getMessage().getChatId();
             Player curPlayer = getPlayer(chat_id);
             int playerWorld = getUserWorld(curPlayer);
 
             if (call_data.equals("go_up")) {
                 curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
                 changePos(curPlayer.id);
+                System.out.println(curPlayer.name);
                 String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
                 EditMessageText new_message = new EditMessageText()
                         .setChatId(update.getCallbackQuery().getMessage().getChatId())
@@ -220,7 +221,7 @@ public class RPGramm extends TelegramLongPollingBot {
     }
 
 
-    public Player getPlayer (int id) {
+    public Player getPlayer (long id) {
         for (Player item: players) {
             if(item.id == id){
                return item;
