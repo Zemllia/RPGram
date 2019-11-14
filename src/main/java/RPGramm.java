@@ -50,7 +50,7 @@ public class RPGramm extends TelegramLongPollingBot {
                     }
 
                     System.out.println("Created new player: Name=" + newPlayer.name + " id=" + newPlayer.id +
-                            " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().x);
+                            " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().y);
                 } else {
                     changePos(userId);
                 }
