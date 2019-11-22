@@ -73,7 +73,10 @@ public class Village {
             for (int j = 0; j < 50; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
-                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'T';
+                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = '^';
+                }
+                if (randChance > 50 && randChance < 70) {
+                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'o';
                 }
             }
         }
