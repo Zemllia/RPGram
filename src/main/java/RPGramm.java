@@ -18,7 +18,7 @@ public class RPGramm extends TelegramLongPollingBot {
         super(options);
     }
 
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Player> players = new ArrayList<>();
 
     private Map map = new Map(500, 500, 5, 5, 3);
 
@@ -36,7 +36,7 @@ public class RPGramm extends TelegramLongPollingBot {
                     while(map.gameMap[4][pos.x][pos.y] == '@'){
                         pos = new Position(Random.randInt(0,500), Random.randInt(0,500));
                     }
-                    Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId);
+                    Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, map);
                     newPlayer.state = "";
                     newPlayer.worldState = "worldMap";
                     players.add(newPlayer);
@@ -70,8 +70,6 @@ public class RPGramm extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            } else {
-                //TODO Работа с беседами
             }
         }  else if (update.hasCallbackQuery()) {
             // Set variables
@@ -79,152 +77,72 @@ public class RPGramm extends TelegramLongPollingBot {
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
             Player curPlayer = getPlayer(chat_id);
-            int playerWorld = getUserWorld(curPlayer);
 
-            if (call_data.equals("go_up")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
-                changePos(curPlayer.id);
-                System.out.println(curPlayer.name);
-                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+            switch (call_data) {
+                case "go_up": {
+                    String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("go_right")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1), map);
-                changePos(curPlayer.id);
-                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "go_right": {
+                    String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1), map);
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("go_left")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1), map);
-                changePos(curPlayer.id);
-                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "go_left": {
+                    String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1), map);
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("go_down")) {
-                curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
-                changePos(curPlayer.id);
-                String answ = map.viewMapArea (curPlayer.getPos(), curPlayer.fieldOfView, playerWorld);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "go_down": {
+                    String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("inventory")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("инвентарь", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "inventory": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.inventory();
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("map")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("осмотреть местность", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "map": {
+                    changePos(curPlayer.id);
+                    String answ = map.viewMapArea(curPlayer.getPos(), curPlayer.fieldOfView, getUserWorld(curPlayer));
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("getWood")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("добыть дерево", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "getWood": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.getResource("дерево");
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("getRock")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("добыть камень", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "getRock": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.getResource("камень");
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("enter")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("зайти", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "enter": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.enterToVillage();
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+
+                    break;
                 }
-            } else if (call_data.equals("getDirt")) {
-                changePos(curPlayer.id);
-                String answ = curPlayer.executeCommand("добыть землю", map);
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                        .setMessageId((int) message_id)
-                        .setText(answ)
-                        .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                case "getDirt": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.getResource("землю");
+                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    break;
                 }
             }
         }
@@ -277,7 +195,7 @@ public class RPGramm extends TelegramLongPollingBot {
     }
 
 
-    public Player getPlayer (long id) {
+    private Player getPlayer(long id) {
         for (Player item: players) {
             if(item.id == id){
                return item;
@@ -290,7 +208,7 @@ public class RPGramm extends TelegramLongPollingBot {
         return id > 0;
     }
 
-    int getUserWorld (Player player) {
+    private int getUserWorld(Player player) {
         if(player.worldState.equals("worldMap")) {
             return -1;
         } else {
@@ -302,14 +220,28 @@ public class RPGramm extends TelegramLongPollingBot {
         return -1;
     }
 
-    InlineKeyboardMarkup getKeyBoardOfArrows(Player player){
+    private void sendEditedMessage(Update update, int message_id, String answ, Player curPlayer){
+        EditMessageText new_message = new EditMessageText()
+                .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                .setMessageId(message_id)
+                .setText(answ)
+                .enableHtml(true)
+                .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+        try {
+            execute(new_message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private InlineKeyboardMarkup getKeyBoardOfArrows(Player player){
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-        List<InlineKeyboardButton> rowInlineUp = new ArrayList<InlineKeyboardButton>();
-        List<InlineKeyboardButton> rowInlineMiddle = new ArrayList<InlineKeyboardButton>();
-        List<InlineKeyboardButton> rowInlineDown = new ArrayList<InlineKeyboardButton>();
-        List<InlineKeyboardButton> rowInlineFooter = new ArrayList<InlineKeyboardButton>();
-        List<InlineKeyboardButton> rowInlineUnderFooter = new ArrayList<InlineKeyboardButton>();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineMiddle = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineDown = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineFooter = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineUnderFooter = new ArrayList<>();
         rowInlineUp.add(new InlineKeyboardButton().setText("^").setCallbackData("go_up"));
         rowInlineMiddle.add(new InlineKeyboardButton().setText("<").setCallbackData("go_left"));
         rowInlineMiddle.add(new InlineKeyboardButton().setText(">").setCallbackData("go_right"));

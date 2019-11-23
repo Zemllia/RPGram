@@ -26,16 +26,19 @@ public class Player extends GameObject {
 
     long autoUpdateMessageId = -1;
 
+    Map map;
+
     private String[] welcomeMessages = {" прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
             " был добавлен в мир"};
 
-    Player(String name, Position pos, int id){
+    Player(String name, Position pos, int id, Map map){
         super("name", pos, 200, '@');
         oldPos = pos;
         this.name = name;
         this.id = id;
         mapIcon = name.charAt(0);
         changeEnergy(100);
+        this.map = map;
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
         inventory.add(new Money(25));
         inventory.add(new Money(35));
@@ -68,121 +71,9 @@ public class Player extends GameObject {
                 "Зайти - зайти в деревню"
         };
 
-        if (commandArray[0].toLowerCase().equals("идти")) {
-            Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2]));
-            ArrayList<Position> path = pathFinding.findPath(targetPosition, position, map);
-            if (getEnergy() >= path.size()) {
-                //position = targetPosition;
-                int curWorld;
-                if(worldState.equals("worldMap")){
-                    curWorld = -1;
-                } else {
-                    curWorld = Integer.parseInt(worldState.split(" ")[1]);
-                }
-                map.changePlayerPos(oldPos, position, mapIcon, curWorld);
-                changeEnergy(path.size() * -1);
-                answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
-            } else {
-                answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
-            }
-
-        } else if (commandArray[0].toLowerCase().equals("осмотреть")){
-            if (commandArray[1].toLowerCase().equals("себя")){
-                answer = ": Меня зовут: " + name + "\n" +
-                        "HP: " + HP + "\n" +
-                        "Энергия: " + getEnergy() + "\n" +
-                        "Радиус обзора: " + fieldOfView;
-            } else if (commandArray[1].toLowerCase().equals("местность")){
-                String[] worldStateArray = worldState.split(" ");
-                if(worldState.equals("worldMap")) {
-                    return map.viewMapArea(getPos(), fieldOfView, -1);
-                } else if(worldStateArray[0].equals("village")){
-                    return map.viewMapArea(getPos(), fieldOfView,  Integer.parseInt(worldStateArray[1]));
-                }
-            } else {
-                answer = ": Меня окружает только тьма...";
-            }
-
-        } else if (command.toLowerCase().equals("зайти")) {
-            String[] worldStateArray = worldState.split(" ");
-            System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
-            Village curVillage = map.checkVillage(this.position);
-            if(worldStateArray[0].equals("worldMap") && curVillage != null){
-                worldState = "village " + curVillage.getVillageID();
-                position = new Position(25, 25);
-                oldPos = position;
-                answer = ": Хм, в поселении можно отдохнуть \n" +
-                        "Информация о поселении:\n" +
-                        "Название: " + curVillage.getVillageName() + "\n" +
-                        "Владелец: " + curVillage.getOwnerName() + "\n" +
-                        "Население: " + curVillage.getVillagersCount();
-                map.instantiateNewPlayer(position, mapIcon, curVillage.getVillageID());
-
-            } else {
-                answer = ": Здесь некуда заходить";
-            }
-
-        } else if (command.toLowerCase().equals("выйти")){
-            String worldStateSplitted[] = worldState.split(" ");
-            if(worldStateSplitted[0].equals("village")) {
-                Village curVillage = map.villages.get(Integer.parseInt(worldStateSplitted[1]));
-                worldState = "worldMap";
-                position = new Position(curVillage.villagePos.x, curVillage.villagePos.y);
-                oldPos = position;
-                answer = ": Пора продолжать приключения";
-                map.instantiateNewPlayer(position, mapIcon, -1);
-            }
-        } else if (commandArray[0].toLowerCase().equals("спать")){
-            if(getEnergy() <= 50) {
-                changeEnergy(99);
-                answer =  ": Z-z-z-z...";
-            } else {
-                answer = ": Я пока не устал!";
-            }
-
-        } else if (commandArray[0].toLowerCase().equals("тп")){
+        if (commandArray[0].toLowerCase().equals("тп")){
             teleportPlayer(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
             answer = ": Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!";
-
-        } else if (commandArray[0].toLowerCase().equals("инвентарь")) {
-            sortInventory();
-            sortInventory();
-            sortInventory();
-            answer = ": Вот что в моем мешке:\n";
-            int counter = 1;
-            for(InventoryItem item : inventory){
-                answer += counter + ") " + item.getName() + " x" + item.getCount()+ "\n";
-                counter++;
-            }
-        } else if (commandArray[0].toLowerCase().equals("добыть")) {
-            if(commandArray[1].toLowerCase().equals("дерево")){
-                if(map.gameMap[3][position.x][position.y] == '^'){
-                    int addedWood = Random.randInt(15, 30);
-                    inventory.add(new Wood(addedWood));
-                    map.gameMap[3][position.x][position.y] = 0;
-                    answer = ": Добыл немного дерева (x" + addedWood + ")";
-                } else {
-                    answer = ": Я не могу добыть то, чего нет";
-                }
-            } else if(commandArray[1].toLowerCase().equals("камень")){
-                if(map.gameMap[3][position.x][position.y] == 'o'){
-                    int addedRock = Random.randInt(5, 15);
-                    inventory.add(new Rock(addedRock));
-                    map.gameMap[3][position.x][position.y] = 0;
-                    answer = ": Добыл немного камня (x" + addedRock + ")";
-                } else {
-                    answer = ": Я не могу добыть то, чего нет";
-                }
-            }  else if(commandArray[1].toLowerCase().equals("землю")){
-                if(map.gameMap[3][position.x][position.y] == 0){
-                    int addedDirt = Random.randInt(5, 15);
-                    inventory.add(new Dirt(addedDirt));
-                    map.gameMap[3][position.x][position.y] = 0;
-                    answer = ": Добыл немного Земли (x" + addedDirt + ")";
-                } else {
-                    answer = ": Я не могу добыть то, чего нет";
-                }
-            }
         } else {
             answer = randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
             for (String item: commands) {
@@ -218,10 +109,127 @@ public class Player extends GameObject {
             oldPos=position;
             position = targetPos;
             changeEnergy(path.size() * -1);
-            answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
+            if(worldState.equals("worldMap")) {
+                map.changePlayerPos(oldPos, position, mapIcon, -1);
+            } else {
+                String[] worldStateSplited = worldState.split(" ");
+                if(worldStateSplited[0].equals("village")){
+                    map.changePlayerPos(oldPos, position, mapIcon, Integer.parseInt(worldStateSplited[1]));
+                }
+            }
+            answer = map.viewMapArea (position, fieldOfView, getUserWorld());
         } else {
             answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
         }
         return answer;
     }
+
+    public String enterToVillage(){
+        String answer;
+        String[] worldStateArray = worldState.split(" ");
+        System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
+        Village curVillage = map.checkVillage(this.position);
+        if(worldStateArray[0].equals("worldMap") && curVillage != null){
+            worldState = "village " + curVillage.getVillageID();
+            position = new Position(25, 25);
+            oldPos = position;
+            answer = ": Хм, в поселении можно отдохнуть \n" +
+                    "Информация о поселении:\n" +
+                    "Название: " + curVillage.getVillageName() + "\n" +
+                    "Владелец: " + curVillage.getOwnerName() + "\n" +
+                    "Население: " + curVillage.getVillagersCount();
+            map.instantiateNewPlayer(position, mapIcon, curVillage.getVillageID());
+
+        } else {
+            answer = ": Здесь некуда заходить";
+        }
+        return answer;
+    }
+
+    public String exitFromVillage(){
+        String answer;
+        String worldStateSplitted[] = worldState.split(" ");
+        if(worldStateSplitted[0].equals("village")) {
+            Village curVillage = map.villages.get(Integer.parseInt(worldStateSplitted[1]));
+            worldState = "worldMap";
+            position = new Position(curVillage.villagePos.x, curVillage.villagePos.y);
+            oldPos = position;
+            answer = ": Пора продолжать приключения";
+            map.instantiateNewPlayer(position, mapIcon, -1);
+        } else {
+            answer = "Мне неоткуда выходить";
+        }
+        return answer;
+    }
+
+    public String getResource( String whatToGet){
+        String answer = null;
+        if(whatToGet.toLowerCase().equals("дерево")){
+            if(map.gameMap[3][position.x][position.y] == '^'){
+                int addedWood = Random.randInt(15, 30);
+                inventory.add(new Wood(addedWood));
+                map.gameMap[3][position.x][position.y] = 0;
+                answer = ": Добыл немного дерева (x" + addedWood + ")";
+            } else {
+                answer = ": Я не могу добыть то, чего нет";
+            }
+        } else if(whatToGet.toLowerCase().equals("камень")){
+            if(map.gameMap[3][position.x][position.y] == 'o'){
+                int addedRock = Random.randInt(5, 15);
+                inventory.add(new Rock(addedRock));
+                map.gameMap[3][position.x][position.y] = 0;
+                answer = ": Добыл немного камня (x" + addedRock + ")";
+            } else {
+                answer = ": Я не могу добыть то, чего нет";
+            }
+        }  else if(whatToGet.toLowerCase().equals("землю")){
+            if(map.gameMap[3][position.x][position.y] == 0){
+                int addedDirt = Random.randInt(5, 15);
+                inventory.add(new Dirt(addedDirt));
+                map.gameMap[3][position.x][position.y] = 0;
+                answer = ": Добыл немного Земли (x" + addedDirt + ")";
+            } else {
+                answer = ": Я не могу добыть то, чего нет";
+            }
+        }
+        return answer;
+    }
+
+    public String inventory(){
+        String answer;
+        sortInventory();
+        sortInventory();
+        sortInventory();
+        answer = ": Вот что в моем мешке:\n";
+        int counter = 1;
+        for(InventoryItem item : inventory){
+            answer += counter + ") " + item.getName() + " x" + item.getCount()+ "\n";
+            counter++;
+        }
+        return answer;
+    }
+
+    public String sleep(){
+        String answer;
+        if(getEnergy() <= 50) {
+            changeEnergy(99);
+            answer =  ": Z-z-z-z...";
+        } else {
+            answer = ": Я пока не устал!";
+        }
+        return answer;
+    }
+
+    int getUserWorld () {
+        if(worldState.equals("worldMap")) {
+            return -1;
+        } else {
+            String[] worldStateSplited = worldState.split(" ");
+            if(worldStateSplited[0].equals("village")){
+                return Integer.parseInt(worldStateSplited[1]);
+            }
+        }
+        return -1;
+    }
+
 }
