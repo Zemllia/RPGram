@@ -51,12 +51,13 @@ public class Map {
         HEAVENS
     }
 
+
     int villagesCount;
     int cavesCount;
     int swampCount;
 
     char [][][] gameMap;
-    char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'T', '3'}, {'R', '0'}, {'%', '5'}};
+    char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'Y', '3'}, {'R', '0'}, {'%', '5'}};
 
 
 
@@ -95,7 +96,7 @@ public class Map {
 
         String answer = "";
 
-        String[] treesArray = {"\uD83C\uDF32"};
+        // String[] treesArray = {"\uD83C\uDF32"};
         // String[] flowersArray = {"\uD83C\uDF39", "\uD83C\uDF37", "\uD83C\uDF31"};
 
         System.out.println(pos.x+ "  " +  pos.y+ "   " + radius);
@@ -126,6 +127,7 @@ public class Map {
                 }
             }
         }
+        answer = answer + "\nСудя по карте моя позиция - x=" + pos.x + " y=" + pos.y;
         answer = answer + "<code>\n";
         answer = answer + "\n";
         for (int i = 0; i < radius * 2; i++) {
@@ -139,7 +141,6 @@ public class Map {
             answer = answer + "\n";
         }
         answer = answer + "\n</code>";
-        answer = answer + "\nСудя по карте моя позиция - x=" + pos.x + " y=" + pos.y;
         return answer;
     }
 
@@ -195,7 +196,7 @@ public class Map {
                     false,
                     vilgPosition
             );
-            gameMap[Layer.ENVIRONMENT.ordinal()][vilg.villagePos.x][vilg.villagePos.y] = 'V';
+            gameMap[Layer.ENVIRONMENT.ordinal()][vilg.villagePos.x][vilg.villagePos.y] = 'v';
             villages.add(vilg);
         }
     }
@@ -281,5 +282,9 @@ public class Map {
             }
         }
         return null;
+    }
+
+    public char getSymbolOnPosAndLayer(Position position, int layer){
+        return gameMap[layer][position.x][position.y];
     }
 }

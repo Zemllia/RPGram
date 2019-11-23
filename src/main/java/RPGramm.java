@@ -63,7 +63,7 @@ public class RPGramm extends TelegramLongPollingBot {
                                         update.getMessage().getText())).enableHtml(true);
                 
 
-                message.setReplyMarkup(getKeyBoardOfArrows());
+                message.setReplyMarkup(getKeyBoardOfArrows(getPlayer(userId)));
 
                 try {
                     execute(message);
@@ -91,7 +91,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -106,7 +106,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -121,7 +121,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -136,7 +136,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -150,7 +150,7 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -164,7 +164,63 @@ public class RPGramm extends TelegramLongPollingBot {
                         .setMessageId((int) message_id)
                         .setText(answ)
                         .enableHtml(true)
-                        .setReplyMarkup(getKeyBoardOfArrows());
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("getWood")) {
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("добыть дерево", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("getRock")) {
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("добыть камень", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("enter")) {
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("зайти", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (call_data.equals("getDirt")) {
+                changePos(curPlayer.id);
+                String answ = curPlayer.executeCommand("добыть землю", map);
+                EditMessageText new_message = new EditMessageText()
+                        .setChatId(update.getCallbackQuery().getMessage().getChatId())
+                        .setMessageId((int) message_id)
+                        .setText(answ)
+                        .enableHtml(true)
+                        .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -235,18 +291,18 @@ public class RPGramm extends TelegramLongPollingBot {
     }
 
     int getUserWorld (Player player) {
-        if(player.worldState == "worldMap") {
+        if(player.worldState.equals("worldMap")) {
             return -1;
         } else {
             String[] worldStateSplited = player.worldState.split(" ");
-            if(worldStateSplited[0] == "village"){
+            if(worldStateSplited[0].equals("village")){
                 return Integer.parseInt(worldStateSplited[1]);
             }
         }
         return -1;
     }
 
-    InlineKeyboardMarkup getKeyBoardOfArrows(){
+    InlineKeyboardMarkup getKeyBoardOfArrows(Player player){
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
         List<InlineKeyboardButton> rowInlineUp = new ArrayList<InlineKeyboardButton>();
@@ -260,11 +316,22 @@ public class RPGramm extends TelegramLongPollingBot {
         rowInlineDown.add(new InlineKeyboardButton().setText("v").setCallbackData("go_down"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
+        char curChar = map.getSymbolOnPosAndLayer(player.getPos(), 3);
+        if(curChar == '^'){
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
+        } else if (curChar == 'o') {
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть камень").setCallbackData("getRock"));
+        } else if (curChar == 'V') {
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
+        } else {
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
+        }
         // Set the keyboard to the markup
         rowsInline.add(rowInlineUp);
         rowsInline.add(rowInlineMiddle);
         rowsInline.add(rowInlineDown);
         rowsInline.add(rowInlineFooter);
+        rowsInline.add(rowInlineUnderFooter);
         // Add it to the message
         markupInline.setKeyboard(rowsInline);
         return markupInline;

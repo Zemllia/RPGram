@@ -1,10 +1,7 @@
 import core.GameObject;
 import core.Position;
 import core.utils.Random;
-import items.InventoryItem;
-import items.Rock;
-import items.Money;
-import items.Wood;
+import items.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +72,14 @@ public class Player extends GameObject {
             Position targetPosition = new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2]));
             ArrayList<Position> path = pathFinding.findPath(targetPosition, position, map);
             if (getEnergy() >= path.size()) {
-                position = targetPosition;
+                //position = targetPosition;
+                int curWorld;
+                if(worldState.equals("worldMap")){
+                    curWorld = -1;
+                } else {
+                    curWorld = Integer.parseInt(worldState.split(" ")[1]);
+                }
+                map.changePlayerPos(oldPos, position, mapIcon, curWorld);
                 changeEnergy(path.size() * -1);
                 answer = ": Моя позиция: x=" + position.x + ", y=" + position.y;
             } else {
@@ -113,10 +117,21 @@ public class Player extends GameObject {
                         "Владелец: " + curVillage.getOwnerName() + "\n" +
                         "Население: " + curVillage.getVillagersCount();
                 map.instantiateNewPlayer(position, mapIcon, curVillage.getVillageID());
+
             } else {
                 answer = ": Здесь некуда заходить";
             }
 
+        } else if (command.toLowerCase().equals("выйти")){
+            String worldStateSplitted[] = worldState.split(" ");
+            if(worldStateSplitted[0].equals("village")) {
+                Village curVillage = map.villages.get(Integer.parseInt(worldStateSplitted[1]));
+                worldState = "worldMap";
+                position = new Position(curVillage.villagePos.x, curVillage.villagePos.y);
+                oldPos = position;
+                answer = ": Пора продолжать приключения";
+                map.instantiateNewPlayer(position, mapIcon, -1);
+            }
         } else if (commandArray[0].toLowerCase().equals("спать")){
             if(getEnergy() <= 50) {
                 changeEnergy(99);
@@ -155,6 +170,15 @@ public class Player extends GameObject {
                     inventory.add(new Rock(addedRock));
                     map.gameMap[3][position.x][position.y] = 0;
                     answer = ": Добыл немного камня (x" + addedRock + ")";
+                } else {
+                    answer = ": Я не могу добыть то, чего нет";
+                }
+            }  else if(commandArray[1].toLowerCase().equals("землю")){
+                if(map.gameMap[3][position.x][position.y] == 0){
+                    int addedDirt = Random.randInt(5, 15);
+                    inventory.add(new Dirt(addedDirt));
+                    map.gameMap[3][position.x][position.y] = 0;
+                    answer = ": Добыл немного Земли (x" + addedDirt + ")";
                 } else {
                     answer = ": Я не могу добыть то, чего нет";
                 }
@@ -199,13 +223,5 @@ public class Player extends GameObject {
             answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
         }
         return answer;
-    }
-
-    public long getAutoUpdateMessageId(){
-        return autoUpdateMessageId;
-    }
-
-    public void setAutoUpdateMessageId(long id){
-        autoUpdateMessageId = id;
     }
 }
