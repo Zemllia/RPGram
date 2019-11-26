@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import sun.management.counter.perf.PerfLongArrayCounter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,13 @@ public class RPGramm extends TelegramLongPollingBot {
                             " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().y);
                 } else {
                     changePos(userId);
+                    ArrayList<Integer> messageSenders = getPlayer(userId).saySomethingToAll(players);
+                    if(messageSenders.size() != 0){
+                        for(int id : messageSenders){
+                            sendMessage(id, getPlayer(userId).name + ": " +update.getMessage().getText());
+                        }
+                        return;
+                    }
                 }
 
                 System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
@@ -78,70 +86,108 @@ public class RPGramm extends TelegramLongPollingBot {
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
             Player curPlayer = getPlayer(chat_id);
 
+            InlineKeyboardMarkup kmArrows;
+            InlineKeyboardMarkup kmActions = null;
+            kmArrows = getKeyBoardOfArrows(curPlayer);
+            kmActions = getKeyBoardOfActionsMenu();
             switch (call_data) {
+
                 case "go_up": {
                     String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "go_right": {
                     String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1), map);
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "go_left": {
                     String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1), map);
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "go_down": {
                     String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "inventory": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.inventory();
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
-                case "map": {
+                case "map":
+                case "back": {
                     changePos(curPlayer.id);
                     String answ = map.viewMapArea(curPlayer.getPos(), curPlayer.fieldOfView, getUserWorld(curPlayer));
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "getWood": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.getResource("дерево");
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "getRock": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.getResource("камень");
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "enter": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.enterToVillage();
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
 
                     break;
                 }
                 case "getDirt": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.getResource("землю");
-                    sendEditedMessage(update, (int) message_id, answ, curPlayer);
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                    break;
+                }
+                case "actions": {
+                    changePos(curPlayer.id);
+                    String answ = "Так, посмотрим, что я могу здесь сделать...";
+                    sendEditedMessage(update, (int) message_id, answ, kmActions);
+                    break;
+                }
+                case "talk": {
+                    changePos(curPlayer.id);
+                    String answ = "Что бы мне сказать?";
+                    curPlayer.state = "talking";
+                    sendEditedMessage(update, (int) message_id, answ, getKeyBoardOfStopTalking());
+                    break;
+                }
+                case "stop_talk": {
+                    changePos(curPlayer.id);
+                    String answ = "Так, посмотрим, что я могу здесь сделать...";
+                    curPlayer.state = "";
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                    break;
+                }
+                case "exit": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.exitFromVillage();
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                    break;
+                }
+                case "sleep": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.sleep();
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
                     break;
                 }
             }
@@ -220,13 +266,24 @@ public class RPGramm extends TelegramLongPollingBot {
         return -1;
     }
 
-    private void sendEditedMessage(Update update, int message_id, String answ, Player curPlayer){
+    private void sendMessage(int idToSend, String messageToSend){
+        SendMessage message = new SendMessage()
+                .setChatId((long) idToSend)
+                .setText(messageToSend).enableHtml(true);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendEditedMessage(Update update, int message_id, String answ, InlineKeyboardMarkup km){
         EditMessageText new_message = new EditMessageText()
                 .setChatId(update.getCallbackQuery().getMessage().getChatId())
                 .setMessageId(message_id)
                 .setText(answ)
                 .enableHtml(true)
-                .setReplyMarkup(getKeyBoardOfArrows(curPlayer));
+                .setReplyMarkup(km);
         try {
             execute(new_message);
         } catch (TelegramApiException e) {
@@ -248,6 +305,7 @@ public class RPGramm extends TelegramLongPollingBot {
         rowInlineDown.add(new InlineKeyboardButton().setText("v").setCallbackData("go_down"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText("Действия").setCallbackData("actions"));
         char curChar = map.getSymbolOnPosAndLayer(player.getPos(), 3);
         if(curChar == '^'){
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
@@ -256,7 +314,11 @@ public class RPGramm extends TelegramLongPollingBot {
         } else if (curChar == 'V') {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
         } else {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
+            if(!player.worldState.equals("worldMap")) {
+                rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
+            } else {
+                rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выйти из деревни").setCallbackData("exit"));
+            }
         }
         // Set the keyboard to the markup
         rowsInline.add(rowInlineUp);
@@ -268,4 +330,31 @@ public class RPGramm extends TelegramLongPollingBot {
         markupInline.setKeyboard(rowsInline);
         return markupInline;
     }
+
+    private InlineKeyboardMarkup getKeyBoardOfActionsMenu(){
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineTalk = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineSleep = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineBack = new ArrayList<>();
+        rowInlineTalk.add(new InlineKeyboardButton().setText("Поговорить с окружающими").setCallbackData("talk"));
+        rowInlineSleep.add(new InlineKeyboardButton().setText("Спать").setCallbackData("sleep"));
+        rowInlineBack.add(new InlineKeyboardButton().setText("Назад").setCallbackData("back"));
+        rowsInline.add(rowInlineTalk);
+        rowsInline.add(rowInlineSleep);
+        rowsInline.add(rowInlineBack);
+        markupInline.setKeyboard(rowsInline);
+        return markupInline;
+    }
+
+    private InlineKeyboardMarkup getKeyBoardOfStopTalking(){
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
+        rowInlineUp.add(new InlineKeyboardButton().setText("Закончить разговор").setCallbackData("stop_talk"));
+        rowsInline.add(rowInlineUp);
+        markupInline.setKeyboard(rowsInline);
+        return markupInline;
+    }
+
 }

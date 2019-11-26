@@ -83,6 +83,8 @@ public class Player extends GameObject {
         return answer;
     }
 
+
+
     void sortInventory(){
         for (int i = 0; i < inventory.size(); i++) {
             for (int j = i+1; j < inventory.size(); j++) {
@@ -154,7 +156,7 @@ public class Player extends GameObject {
             worldState = "worldMap";
             position = new Position(curVillage.villagePos.x, curVillage.villagePos.y);
             oldPos = position;
-            answer = ": Пора продолжать приключения";
+            answer = "Пора продолжать приключения";
             map.instantiateNewPlayer(position, mapIcon, -1);
         } else {
             answer = "Мне неоткуда выходить";
@@ -169,27 +171,27 @@ public class Player extends GameObject {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
                 map.gameMap[3][position.x][position.y] = 0;
-                answer = ": Добыл немного дерева (x" + addedWood + ")";
+                answer = "Добыл немного дерева (x" + addedWood + ")";
             } else {
-                answer = ": Я не могу добыть то, чего нет";
+                answer = "Я не могу добыть то, чего нет";
             }
         } else if(whatToGet.toLowerCase().equals("камень")){
             if(map.gameMap[3][position.x][position.y] == 'o'){
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
                 map.gameMap[3][position.x][position.y] = 0;
-                answer = ": Добыл немного камня (x" + addedRock + ")";
+                answer = "Добыл немного камня (x" + addedRock + ")";
             } else {
-                answer = ": Я не могу добыть то, чего нет";
+                answer = "Я не могу добыть то, чего нет";
             }
         }  else if(whatToGet.toLowerCase().equals("землю")){
             if(map.gameMap[3][position.x][position.y] == 0){
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
                 map.gameMap[3][position.x][position.y] = 0;
-                answer = ": Добыл немного Земли (x" + addedDirt + ")";
+                answer = "Добыл немного Земли (x" + addedDirt + ")";
             } else {
-                answer = ": Я не могу добыть то, чего нет";
+                answer = "Я не могу добыть то, чего нет";
             }
         }
         return answer;
@@ -200,7 +202,7 @@ public class Player extends GameObject {
         sortInventory();
         sortInventory();
         sortInventory();
-        answer = ": Вот что в моем мешке:\n";
+        answer = "Вот что в моем мешке:\n";
         int counter = 1;
         for(InventoryItem item : inventory){
             answer += counter + ") " + item.getName() + " x" + item.getCount()+ "\n";
@@ -209,13 +211,27 @@ public class Player extends GameObject {
         return answer;
     }
 
+    public ArrayList<Integer> saySomethingToAll(ArrayList<Player> players){
+        if (state != "talking"){
+            return new ArrayList<Integer>();
+        }
+        ArrayList<Integer> arrayToReturn = new ArrayList<>();
+        for (Player item: players) {
+            Position itemPos = item.position;
+            if(Math.abs(position.x - itemPos.x) <= fieldOfView || Math.abs(position.y - itemPos.y) <= fieldOfView){
+                arrayToReturn.add(item.id);
+            }
+        }
+        return arrayToReturn;
+    }
+
     public String sleep(){
         String answer;
         if(getEnergy() <= 50) {
             changeEnergy(99);
-            answer =  ": Z-z-z-z...";
+            answer =  "Z-z-z-z...";
         } else {
-            answer = ": Я пока не устал!";
+            answer = "Я пока не устал!";
         }
         return answer;
     }
