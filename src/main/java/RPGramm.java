@@ -1,5 +1,6 @@
 import core.Position;
 import core.utils.Random;
+import items.InventoryItem;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -190,6 +191,32 @@ public class RPGramm extends TelegramLongPollingBot {
                     sendEditedMessage(update, (int) message_id, answ, kmArrows);
                     break;
                 }
+                case "putItem": {
+                    changePos(curPlayer.id);
+                    String answ = "Что мне закопать?";
+                    sendEditedMessage(update, (int) message_id, answ, getKeyBoardOfListOfItems(curPlayer));
+                    break;
+                }
+                /*case "getGift": {
+                    changePos(curPlayer.id);
+                    String answ = curPlayer.sleep();
+                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                    break;
+                }*/
+            }
+            String str[] = call_data.split(" ");
+            if(str[0].equals("put")){
+                int id = Integer.parseInt(str[1]);
+                Treasure treasure = null;
+                for(Treasure item: map.treasures) {
+                    if(item.getTreasurePosition().equals(curPlayer.getPos())){
+                        item.addNewItem(curPlayer.getInventory().get(id));
+                    }
+                }
+                if(treasure == null){
+                    treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.name);
+                }
+                curPlayer.inventory.remove(id);
             }
         }
     }
@@ -310,9 +337,13 @@ public class RPGramm extends TelegramLongPollingBot {
         if(curChar == '^'){
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
         } else if (curChar == 'o') {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть камень").setCallbackData("getRock"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Зарыть предмет").setCallbackData("putItem"));
         } else if (curChar == 'V') {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
+        } else if (curChar == '*') {
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть камень").setCallbackData("getRock"));
+        } else if (curChar == 'x') {
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выкопать сокровише").setCallbackData("getGift"));
         } else {
             if(!player.worldState.equals("worldMap")) {
                 rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
@@ -353,6 +384,22 @@ public class RPGramm extends TelegramLongPollingBot {
         List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
         rowInlineUp.add(new InlineKeyboardButton().setText("Закончить разговор").setCallbackData("stop_talk"));
         rowsInline.add(rowInlineUp);
+        markupInline.setKeyboard(rowsInline);
+        return markupInline;
+    }
+
+    private InlineKeyboardMarkup getKeyBoardOfListOfItems(Player player){
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        int counter= 0;
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+        for(InventoryItem item: player.getInventory()) {
+            rowInline.add(new InlineKeyboardButton().setText(item.getName()).setCallbackData("put " + counter));
+            rowsInline.add(rowInline);
+            counter++;
+        }
+        rowInline.add(new InlineKeyboardButton().setText("Отмена").setCallbackData("remove_status_to_zero"));
+        rowsInline.add(rowInline);
         markupInline.setKeyboard(rowsInline);
         return markupInline;
     }

@@ -1,6 +1,7 @@
 import core.NamesGenerator;
 import core.Position;
 import core.utils.Random;
+import items.InventoryItem;
 
 import javax.ws.rs.Path;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class Map {
         WALL('#', "Wall"),
         TREE('^', "Tree"),
         SWAMP('%', "Swamp"),
-        ROCK('o', "A rock or a big stone");
+        ROCK('*', "A rock or a big stone"),
+        GROUNDHOLE('o', "Ground hole");
 
         private char value;
         private String description;
@@ -62,6 +64,7 @@ public class Map {
 
 
     ArrayList<Village> villages = new ArrayList<Village>();
+    ArrayList<Treasure> treasures = new ArrayList<>();
 
     public Map (int maxXBound, int maxYBound, int villagesCount, int cavesCount, int swampCount){
         this.maxXBound = maxXBound;
@@ -138,7 +141,7 @@ public class Map {
                     answer += "</code>" + renderArray[i][j] + "<code>";
                 }
             }
-            answer = answer + "\n";
+            answer += "\n";
         }
         answer = answer + "\n</code>";
         return answer;

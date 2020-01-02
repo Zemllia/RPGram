@@ -20,7 +20,7 @@ public class Player extends GameObject {
 
     private PathFinding pathFinding = new PathFinding();
 
-    private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
+    public List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
     char mapIcon = '@';
 
@@ -176,7 +176,7 @@ public class Player extends GameObject {
                 answer = "Я не могу добыть то, чего нет";
             }
         } else if(whatToGet.toLowerCase().equals("камень")){
-            if(map.gameMap[3][position.x][position.y] == 'o'){
+            if(map.gameMap[3][position.x][position.y] == '*'){
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
                 map.gameMap[3][position.x][position.y] = 0;
@@ -188,7 +188,7 @@ public class Player extends GameObject {
             if(map.gameMap[3][position.x][position.y] == 0){
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
-                map.gameMap[3][position.x][position.y] = 0;
+                map.gameMap[3][position.x][position.y] = 'o';
                 answer = "Добыл немного Земли (x" + addedDirt + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
@@ -248,4 +248,7 @@ public class Player extends GameObject {
         return -1;
     }
 
+    public List<InventoryItem> getInventory() {
+        return inventory;
+    }
 }
