@@ -5,7 +5,6 @@ import items.InventoryItem;
 
 import javax.ws.rs.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Map {
     int maxXBound;
@@ -54,13 +53,12 @@ public class Map {
     }
 
 
-    int villagesCount;
-    int cavesCount;
-    int swampCount;
+    private int villagesCount;
+    private int cavesCount;
+    private int swampCount;
 
     char [][][] gameMap;
-    char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'Y', '3'}, {'R', '0'}, {'%', '5'}};
-
+    private char [][] weightsOfObjects = {{' ', '1'}, {'F', '2'}, {'Y', '3'}, {'R', '0'}, {'%', '5'}};
 
 
     ArrayList<Village> villages = new ArrayList<Village>();
@@ -251,7 +249,7 @@ public class Map {
         }
     }
 
-    char recalculateCellWeight(Position pos){
+    private char recalculateCellWeight(Position pos){
         int curWeight = 0;
         for(int i = 0; i < Layer.values().length; i++){
             char checkChar = gameMap[i][pos.x][pos.y];
@@ -276,7 +274,7 @@ public class Map {
         }
     }
 
-    public Village checkVillage(Position villagePos){
+    Village checkVillage(Position villagePos){
         for(Village item: villages){
             System.out.println("DEBUG: vlg item pos is x=" + item.villagePos.x + " y=" + item.villagePos.y);
             if(item.villagePos.x == villagePos.x && item.villagePos.y == villagePos.y){
@@ -287,7 +285,7 @@ public class Map {
         return null;
     }
 
-    public char getSymbolOnPosAndLayer(Position position, int layer){
+    char getSymbolOnPosAndLayer(Position position, int layer){
         return gameMap[layer][position.x][position.y];
     }
 }
