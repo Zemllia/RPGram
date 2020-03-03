@@ -270,7 +270,7 @@ public class Player extends GameObject {
         level =+ 1;
         skillPoint += 1;
         XP = 0;
-        requiredXP = requiredXP + (requiredXP / 100 * 30);
+        requiredXP = requiredXP + (int)((float)requiredXP / 100 * 30);
         return "Уровень повышен";
     }
 
