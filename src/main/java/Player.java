@@ -16,7 +16,7 @@ public class Player extends GameObject {
     private int HP = 100;
     int fieldOfView = 5;
     private int XP = 0;
-    private int requiredXP = 100;
+    private int requiredXP = 10;
     private int level = 1;
     private int skillPoint = 0;
 
