@@ -12,6 +12,7 @@ public class Player extends GameObject {
 
     Position oldPos;
 
+    private int maxHP = 100;
     private int HP = 100;
     int fieldOfView = 5;
     private int XP = 0;
@@ -201,7 +202,14 @@ public class Player extends GameObject {
         sortInventory();
         sortInventory();
         sortInventory();
-        answer = "Вот что в моем мешке:\n";
+        answer = "Здоровье: " + HP + "\n";
+        answer += "Максимум здоровья: " + maxHP + "\n";
+        answer += "Радиус зрения: " + fieldOfView + "\n";
+        answer += "XP: " + XP + "\n";
+        answer += "Уровень: " + level + "\n";
+        answer += "Количество очков уровня: " + skillPoint + "\n";
+        answer += "Необходимо для следующего уровня: " + requiredXP + "\n\n";
+        answer += "Вот что в моем мешке:\n";
         int counter = 1;
         for(InventoryItem item : inventory){
             answer += counter + ") " + item.getName() + " x" + item.getCount()+ "\n";
@@ -262,12 +270,13 @@ public class Player extends GameObject {
         level =+ 1;
         skillPoint += 1;
         XP = 0;
+        requiredXP = requiredXP + (requiredXP / 100 * 30);
         return "Уровень повышен";
     }
 
     public String increaseHP(int HPToIncrease) {
         if(skillPoint > 0) {
-            HP += HPToIncrease;
+            maxHP += HPToIncrease;
             skillPoint -= 1;
             return ("Количество HP увеличено на " + HPToIncrease);
         } else {
