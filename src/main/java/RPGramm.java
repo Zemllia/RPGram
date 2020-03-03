@@ -378,14 +378,16 @@ public class RPGramm extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineTalk = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineSleep = new ArrayList<>();
+        List<InlineKeyboardButton> rowInlineLevelUp = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineBack = new ArrayList<>();
         rowInlineTalk.add(new InlineKeyboardButton().setText("Поговорить с окружающими").setCallbackData("talk"));
         rowInlineSleep.add(new InlineKeyboardButton().setText("Спать").setCallbackData("sleep"));
-        rowInlineSleep.add(new InlineKeyboardButton().setText("Увеличить радиус зрения").setCallbackData("increase_FOV"));
-        rowInlineSleep.add(new InlineKeyboardButton().setText("Увеличить здоровье").setCallbackData("increase_XP"));
+        rowInlineLevelUp.add(new InlineKeyboardButton().setText("Увеличить радиус зрения").setCallbackData("increase_FOV"));
+        rowInlineLevelUp.add(new InlineKeyboardButton().setText("Увеличить здоровье").setCallbackData("increase_XP"));
         rowInlineBack.add(new InlineKeyboardButton().setText("Назад").setCallbackData("back"));
         rowsInline.add(rowInlineTalk);
         rowsInline.add(rowInlineSleep);
+        rowsInline.add(rowInlineLevelUp);
         rowsInline.add(rowInlineBack);
         markupInline.setKeyboard(rowsInline);
         return markupInline;
