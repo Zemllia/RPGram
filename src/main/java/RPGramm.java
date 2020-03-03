@@ -197,6 +197,17 @@ public class RPGramm extends TelegramLongPollingBot {
                     sendEditedMessage(update, (int) message_id, answ, getKeyBoardOfListOfItems(curPlayer));
                     break;
                 }
+                case "increase_FOV": {
+                    String answer = curPlayer.increaseFOV(1);
+                    sendEditedMessage(update, (int) message_id, answer, kmActions);
+                    break;
+                }
+                case "increase_XP": {
+                    String answer = curPlayer.increaseHP(5);
+                    sendEditedMessage(update, (int) message_id, answer, kmActions);
+                    break;
+                }
+
                 /*case "getGift": {
                     changePos(curPlayer.id);
                     String answ = curPlayer.sleep();
@@ -370,6 +381,8 @@ public class RPGramm extends TelegramLongPollingBot {
         List<InlineKeyboardButton> rowInlineBack = new ArrayList<>();
         rowInlineTalk.add(new InlineKeyboardButton().setText("Поговорить с окружающими").setCallbackData("talk"));
         rowInlineSleep.add(new InlineKeyboardButton().setText("Спать").setCallbackData("sleep"));
+        rowInlineSleep.add(new InlineKeyboardButton().setText("Увеличить радиус зрения").setCallbackData("increase_FOV"));
+        rowInlineSleep.add(new InlineKeyboardButton().setText("Увеличить здоровье").setCallbackData("increase_XP"));
         rowInlineBack.add(new InlineKeyboardButton().setText("Назад").setCallbackData("back"));
         rowsInline.add(rowInlineTalk);
         rowsInline.add(rowInlineSleep);

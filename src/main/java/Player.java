@@ -14,6 +14,10 @@ public class Player extends GameObject {
 
     private int HP = 100;
     int fieldOfView = 5;
+    private int XP = 0;
+    private int requiredXP = 100;
+    private int level = 1;
+    private int skillPoint = 0;
 
     String state;
     String worldState;
@@ -22,7 +26,7 @@ public class Player extends GameObject {
 
     public List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    char mapIcon = '@';
+    char mapIcon;
 
     long autoUpdateMessageId = -1;
 
@@ -40,13 +44,7 @@ public class Player extends GameObject {
         changeEnergy(100);
         this.map = map;
         System.out.println(name + welcomeMessages[(int)(Math.random() * ((welcomeMessages.length)))]);
-        inventory.add(new Money(25));
-        inventory.add(new Money(35));
-        inventory.add(new Wood(25));
-        inventory.add(new Wood(25));
-        inventory.add(new Money(40));
-        inventory.add(new Wood(25));
-        inventory.add(new Wood(25));
+        inventory.add(new Money(1000));
     }
 
     void teleportPlayer(Position newPosition){
@@ -111,6 +109,7 @@ public class Player extends GameObject {
             oldPos=position;
             position = targetPos;
             changeEnergy(path.size() * -1);
+            increaseXP();
             if(worldState.equals("worldMap")) {
                 map.changePlayerPos(oldPos, position, mapIcon, -1);
             } else {
@@ -251,4 +250,41 @@ public class Player extends GameObject {
     public List<InventoryItem> getInventory() {
         return inventory;
     }
+
+    private void increaseXP(){
+        XP += 1;
+        if(XP >= requiredXP){
+            levelUP();
+        }
+    }
+
+    private String levelUP() {
+        level =+ 1;
+        skillPoint += 1;
+        XP = 0;
+        return "Уровень повышен";
+    }
+
+    public String increaseHP(int HPToIncrease) {
+        if(skillPoint > 0) {
+            HP += HPToIncrease;
+            skillPoint -= 1;
+            return ("Количество HP увеличено на " + HPToIncrease);
+        } else {
+            return ("У вас недостатачно очков опыта");
+        }
+
+    }
+
+    public String increaseFOV(int fieldOfViewToIncrease) {
+        if(skillPoint > 0) {
+            fieldOfView += fieldOfViewToIncrease;
+            skillPoint -= 1;
+            return ("Поле зрения увеличено на " + fieldOfViewToIncrease);
+        } else {
+            return ("У вас недостатачно очков опыта");
+        }
+    }
+
+
 }
