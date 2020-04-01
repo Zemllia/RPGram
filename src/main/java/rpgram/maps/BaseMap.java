@@ -103,10 +103,13 @@ public class BaseMap extends NamedObject {
     }
 
     public void moveObject(GameObject obj) {
-        if (obj.getPos().x >= 0 && obj.getPos().x <= areaWidth && obj.getPos().y >= 0 && obj.getPos().y <= areaHeight) {
-            setChar(MapLayers.PLAYERS, obj.getLastPos(), (char) 0);
+        if (isValidPoint(obj.getPos())) {
+            if (isValidPoint(obj.getLastPos())) {
+                setChar(MapLayers.PLAYERS, obj.getLastPos(), (char) 0);
+                setChar(MapLayers.WEIGHTS, obj.getLastPos(), recalculateCellWeight(obj.getLastPos()));
+            }
+
             setChar(MapLayers.PLAYERS, obj.getPos(), obj.getMapIcon());
-            setChar(MapLayers.WEIGHTS, obj.getLastPos(), recalculateCellWeight(obj.getLastPos()));
             setChar(MapLayers.WEIGHTS, obj.getPos(), obj.getMapWeight());
         }
     }
@@ -133,5 +136,9 @@ public class BaseMap extends NamedObject {
             }
         }
         return (char) (curWeight + '0');
+    }
+
+    public boolean isValidPoint(Position pos) {
+        return pos.x >= 0 && pos.x <= areaWidth && pos.y >= 0 && pos.y <= areaHeight;
     }
 }

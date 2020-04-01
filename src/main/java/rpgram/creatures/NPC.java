@@ -11,7 +11,7 @@ import rpgram.maps.BaseMap;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NPC extends GameObject {
+public class NPC extends Creature {
     private String race;
 
     // TODO Дописать про идеологию
@@ -22,7 +22,6 @@ public class NPC extends GameObject {
 
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    int HP = 100;
     int hunger = 1000;
     int thirst = 1000;
     int fatigue = 1000;
@@ -30,7 +29,7 @@ public class NPC extends GameObject {
     NPCState state = NPCState.CALM;
 
     public NPC(int id, String name, Quest[] quests, Position position, BaseMap map) {
-        super(id, name, position, 200, map, '@', '9');
+        super(id, name, map, '@', '9', position);
         this.quests = quests;
         de = new DialogEngine(quests, name);
     }

@@ -10,19 +10,14 @@ public class GameObject extends NamedObject {
     protected Position position;
     protected Position lastPos;
 
-    private int energy;
-
     public GameObject(
-        int id, String name, Position position,
-        int energy, BaseMap map, char mapIcon,
-        char mapWeight
+        int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position
     ) {
         super(id, name);
-        this.position = lastPos = position;
-        this.energy = energy;
         this.map = map;
         this.mapIcon = mapIcon;
         this.mapWeight = mapWeight;
+        this.position = lastPos = position;
     }
 
     public BaseMap getMap() {
@@ -43,13 +38,5 @@ public class GameObject extends NamedObject {
 
     public Position getLastPos() {
         return lastPos;
-    }
-
-    public int getEnergy() {
-        return this.energy;
-    }
-
-    public void changeEnergy(int delta) {
-        energy += delta;
     }
 }

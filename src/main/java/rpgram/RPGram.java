@@ -65,12 +65,20 @@ public class RPGram extends TelegramLongPollingBot {
 
                 System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
 
+                String command = update.getMessage().getText();
+                String[] commandArray = command.toLowerCase().trim().split(" ");
+
+                StringBuilder answer = new StringBuilder();
+                if (commandArray[0].equals("тп")) {
+                    p.teleport(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
+                    answer.append("Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!");
+                } else if (commandArray[0].equals("/start")) {
+                    answer.append("Привет от RPGram!");
+                }
+
                 SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText(p.getName() + ": " + p.executeCommand(
-                        update.getMessage().getText()
-                    )).enableHtml(true);
-
+                    .setText(p.getName() + ": " + answer).enableHtml(true);
 
                 message.setReplyMarkup(getKeyBoardOfArrows(p));
 
@@ -119,7 +127,7 @@ public class RPGram extends TelegramLongPollingBot {
             }
             case "map":
             case "back": {
-                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.fieldOfView);
+                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.getFieldOfView());
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
@@ -197,7 +205,6 @@ public class RPGram extends TelegramLongPollingBot {
             }
             }
 
-            sendEditedMessage(update, (int) message_id, answer, keyboard);
             String[] str = call_data.split(" ");
             if (str[0].equals("put") && curPlayer.getMap() instanceof GlobalMap) {
                 int id = Integer.parseInt(str[1]);
@@ -211,6 +218,8 @@ public class RPGram extends TelegramLongPollingBot {
                     treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.getName());
                 }
                 curPlayer.inventory.remove(id);
+            } else {
+                sendEditedMessage(update, (int) message_id, answer, keyboard);
             }
         }
     }
