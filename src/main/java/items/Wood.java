@@ -1,6 +1,6 @@
 package items;
 
-public class Wood extends InventoryItem{
+public class Wood extends InventoryItem {
     public Wood(int count) {
         this.icon = "";
         this.count = count;

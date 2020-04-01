@@ -8,20 +8,23 @@ public class InventoryItem {
     String description = "Разработчик забыл добавить описание предмету...";
     String type = "building_material";
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getCount(){
+    public int getCount() {
         return count;
     }
-    public String getType(){
+
+    public String getType() {
         return type;
     }
-    public String getDescription(){
+
+    public String getDescription() {
         return description;
     }
-    public void increaseCount(int delta){
+
+    public void increaseCount(int delta) {
         count += delta;
     }
 }

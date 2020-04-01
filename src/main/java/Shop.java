@@ -13,34 +13,34 @@ public class Shop extends GameObject {
 
     int shopMoney;
 
-    public Shop (String shopName, Position shopPosition, int shopId, char mapIcon, ShopItem[] shopItems, int shopMoney){
+    public Shop(String shopName, Position shopPosition, int shopId, char mapIcon, ShopItem[] shopItems, int shopMoney) {
         super(shopName, shopPosition, 0, 's');
         this.shopId = shopId;
         this.mapIcon = mapIcon;
         this.shopMoney = shopMoney;
-        for (ShopItem item: shopItems) {
+        for (ShopItem item : shopItems) {
             shopInventory.add(item);
         }
     }
 
-    public ShopItem getItem(int itemId){
-        if(itemId < shopInventory.size()-1) {
+    public ShopItem getItem(int itemId) {
+        if (itemId < shopInventory.size() - 1) {
             return shopInventory.get(itemId);
         }
         return null;
     }
 
-    public ArrayList<ShopItem> getItems(){
+    public ArrayList<ShopItem> getItems() {
         return shopInventory;
     }
 
-    public ShopItem buyItem(int itemId, int count){
-        if(itemId < shopInventory.size()-1) {
+    public ShopItem buyItem(int itemId, int count) {
+        if (itemId < shopInventory.size() - 1) {
             ShopItem itemToWork = shopInventory.get(itemId);
-            if(count <= itemToWork.getCount()) {
+            if (count <= itemToWork.getCount()) {
                 itemToWork.setCount(itemToWork.getCount() - count);
                 ShopItem itemToReturn = itemToWork;
-                if (itemToWork.getCount() == 0){
+                if (itemToWork.getCount() == 0) {
                     shopInventory.remove(itemToWork);
                 }
                 shopMoney += itemToReturn.getCost() * count;
