@@ -87,7 +87,7 @@ public class GlobalMap extends BaseMap {
             vPos
         );
 
-        layer(MapLayers.ENVIRONMENT)[vPos.x][vPos.y] = 'v';
+        setChar(MapLayers.ENVIRONMENT, vPos, 'v');
         villages.add(v);
     }
 
@@ -102,7 +102,7 @@ public class GlobalMap extends BaseMap {
                 ArrayList<Position> roadPath = pathFinding.findPath(village.getPosition(), villageForRoad.getPosition(), this);
 
                 for (Position roadElement : roadPath) {
-                    layer(MapLayers.GROUND)[roadElement.x][roadElement.y] = '◼';
+                    setChar(MapLayers.GROUND, roadElement, '◼');
                 }
             }
         }

@@ -2,7 +2,7 @@ package rpgram.core;
 
 public class NamedObject {
     private int id;
-    private String name;
+    protected String name;
 
     public NamedObject(int id, String name) {
         this.id = id;

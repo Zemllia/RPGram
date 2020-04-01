@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
+import rpgram.creatures.Creature;
+import rpgram.creatures.NPC;
 import rpgram.creatures.Player;
 import rpgram.creatures.PlayerState;
 import rpgram.items.InventoryItem;
@@ -21,16 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RPGram extends TelegramLongPollingBot {
-    private ArrayList<Player> players = new ArrayList<>();
+    private ArrayList<Creature> players = new ArrayList<>();
 
     private GlobalMap globalMap;
 
     RPGram(DefaultBotOptions options) {
         super(options);
         globalMap = new GlobalMap(500, 500, 5, 3);
-
-        //NPC npc = new NPC(0, "George", null, new Position(10, 10), -1);
-        //map.instantiateNewPlayer(npc.getPos(), npc.getMapIcon(), -1);
+        NPC npc = new NPC(0, "George", null, new Position(10, 10), globalMap);
+        players.add(npc);
     }
 
     @Override
@@ -42,18 +43,17 @@ public class RPGram extends TelegramLongPollingBot {
                 if (!checkIfPlayerExists(userId)) {
                     Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     // TODO: check this condition
-                    while (Character.isAlphabetic(globalMap.layer(MapLayers.PLAYERS)[pos.x][pos.y])) {
+                    while (Character.isAlphabetic(globalMap.getChar(MapLayers.PLAYERS, pos))) {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     }
                     p = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, globalMap);
                     players.add(p);
                     globalMap.addObject(p);
 
-                    System.out.println("Created new player: Name=" + p.getName() + " id=" + p.getId() +
+                    System.out.println("Created a new player: Name=" + p.getName() + " id=" + p.getId() +
                         " position=x" + p.getPos().x + ", y=" + p.getPos().y);
                 } else {
                     p = getPlayer(userId);
-                    p.updatePos();
                     ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
                     if (messageSenders.size() != 0) {
                         for (int id : messageSenders) {
@@ -100,28 +100,27 @@ public class RPGram extends TelegramLongPollingBot {
             switch (call_data) {
 
             case "go_up": {
-                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y));
+                answer = curPlayer.move(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_right": {
-                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1));
+                answer = curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_left": {
-                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1));
+                answer = curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_down": {
-                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y));
+                answer = curPlayer.move(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "inventory": {
-                curPlayer.updatePos();
-                answer = curPlayer.inventory();
+                answer = curPlayer.getStats();
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
@@ -132,63 +131,53 @@ public class RPGram extends TelegramLongPollingBot {
                 break;
             }
             case "getWood": {
-                curPlayer.updatePos();
                 answer = curPlayer.getResource("дерево");
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getRock": {
-                curPlayer.updatePos();
                 answer = curPlayer.getResource("камень");
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "enter": {
-                curPlayer.updatePos();
-                answer = curPlayer.enterToVillage();
+                answer = curPlayer.enterVillage();
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getDirt": {
-                curPlayer.updatePos();
                 answer = curPlayer.getResource("землю");
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "actions": {
-                curPlayer.updatePos();
                 answer = "Так, посмотрим, что я могу здесь сделать...";
                 keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             case "talk": {
-                curPlayer.updatePos();
                 answer = "Что бы мне сказать?";
                 curPlayer.state = PlayerState.TALKING;
                 keyboard = getKeyBoardOfStopTalking();
                 break;
             }
             case "stop_talk": {
-                curPlayer.updatePos();
                 answer = "Так, посмотрим, что я могу здесь сделать...";
                 curPlayer.state = PlayerState.NORMAL;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "exit": {
-                curPlayer.updatePos();
-                answer = curPlayer.exitFromVillage();
+                answer = curPlayer.exitVillage();
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "sleep": {
-                curPlayer.updatePos();
                 answer = curPlayer.sleep();
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "putItem": {
-                curPlayer.updatePos();
                 answer = "Что мне закопать?";
                 keyboard = getKeyBoardOfListOfItems(curPlayer);
                 break;
@@ -203,24 +192,26 @@ public class RPGram extends TelegramLongPollingBot {
                 keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
-            }
-
-            String[] str = call_data.split(" ");
-            if (str[0].equals("put") && curPlayer.getMap() instanceof GlobalMap) {
-                int id = Integer.parseInt(str[1]);
-                Treasure treasure = null;
-                for (Treasure item : ((GlobalMap) curPlayer.getMap()).treasures) {
-                    if (item.getTreasurePosition().equals(curPlayer.getPos())) {
-                        item.addNewItem(curPlayer.getInventory().get(id));
+            default: {
+                String[] str = call_data.split(" ");
+                if (str[0].equals("put") && curPlayer.getMap() instanceof GlobalMap) {
+                    int id = Integer.parseInt(str[1]);
+                    Treasure treasure = null;
+                    for (Treasure item : ((GlobalMap) curPlayer.getMap()).treasures) {
+                        if (item.getTreasurePosition().equals(curPlayer.getPos())) {
+                            item.addNewItem(curPlayer.getInventory().get(id));
+                        }
                     }
+                    if (treasure == null) {
+                        treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.getName());
+                    }
+                    curPlayer.inventory.remove(id);
+                    answer = "Зарыл " + treasure.getInventoryItem().get(0).getName();
+                    keyboard = getKeyBoardOfArrows(curPlayer);
                 }
-                if (treasure == null) {
-                    treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.getName());
-                }
-                curPlayer.inventory.remove(id);
-            } else {
-                sendEditedMessage(update, (int) message_id, answer, keyboard);
             }
+            }
+            sendEditedMessage(update, (int) message_id, answer, keyboard);
         }
     }
 
@@ -235,22 +226,17 @@ public class RPGram extends TelegramLongPollingBot {
     }
 
     public boolean checkIfPlayerExists(int id) {
-        for (Player item : players) {
-            if (item.getId() == id) {
-                return true;
-            }
-        }
-        return false;
+        return getPlayer(id) != null;
     }
 
 
     public Player getPlayer(long id) {
-        for (Player player : players) {
-            if (player.getId() == id) {
-                return player;
+        for (Creature creature : players) {
+            if (creature instanceof Player && creature.getId() == id) {
+                return (Player) creature;
             }
         }
-        return players.get(0);
+        return null;
     }
 
     public boolean isUser(long id) {

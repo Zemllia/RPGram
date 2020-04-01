@@ -6,14 +6,9 @@ import rpgram.items.*;
 import rpgram.maps.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Player extends Creature {
     public PlayerState state;
-
-    private PathFinding pathFinding = new PathFinding();
-
-    public List<InventoryItem> inventory = new ArrayList<>();
 
     public Player(String name, Position pos, int id, BaseMap map) {
         super(id, name, map, name.charAt(0), '9', pos);
@@ -28,45 +23,7 @@ public class Player extends Creature {
         inventory.add(new Money(1000));
     }
 
-    public void updatePos() {
-        if (getPos().x > map.getAreaWidth()) {
-            teleport(new Position(getPos().x - map.getAreaWidth(), getPos().y));
-        } else {
-            teleport(getPos());
-        }
-    }
-
-    public void teleport(Position newPosition) {
-        lastPos = position;
-        position = new Position(newPosition.x, newPosition.y);
-        map.moveObject(this);
-    }
-
-    void sortInventory() {
-        for (int i = 0; i < inventory.size(); i++) {
-            for (int j = i + 1; j < inventory.size(); j++) {
-                if (inventory.get(i).getName().equals(inventory.get(j).getName())) {
-                    inventory.get(i).increaseCount(inventory.get(j).getCount());
-                    inventory.remove(j);
-                }
-            }
-        }
-    }
-
-    public String movePlayer(Position targetPos) {
-        ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
-        if (getEnergy() >= path.size()) {
-            teleport(targetPos);
-
-            changeEnergy(path.size() * -1);
-            increaseXP();
-            return map.viewMapArea(position, getFieldOfView());
-        } else {
-            return "Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
-        }
-    }
-
-    public String enterToVillage() {
+    public String enterVillage() {
         if (map instanceof VillageMap) {
             return "Здесь некуда заходить";
         }
@@ -90,7 +47,7 @@ public class Player extends Creature {
             "Население: " + curVillage.getVillagersCount();
     }
 
-    public String exitFromVillage() {
+    public String exitVillage() {
         if (!(map instanceof VillageMap)) {
             return "Мне неоткуда выходить";
         }
@@ -143,11 +100,23 @@ public class Player extends Creature {
         return answer;
     }
 
-    public String inventory() {
+    void sortInventory() {
+        for (int i = 0; i < inventory.size(); i++) {
+            for (int j = i + 1; j < inventory.size(); j++) {
+                if (inventory.get(i).getName().equals(inventory.get(j).getName())) {
+                    inventory.get(i).increaseCount(inventory.get(j).getCount());
+                    inventory.remove(j);
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getStats() {
+        StringBuilder answer = new StringBuilder(super.getStats());
         sortInventory();
         sortInventory();
         sortInventory();
-        StringBuilder answer = new StringBuilder(getStats());
         answer.append("Вот что в моем мешке:\n");
         int counter = 1;
         for (InventoryItem item : inventory) {
@@ -157,31 +126,16 @@ public class Player extends Creature {
         return answer.toString();
     }
 
-    public ArrayList<Integer> saySomethingToAll(ArrayList<Player> players) {
+    public ArrayList<Integer> saySomethingToAll(ArrayList<Creature> players) {
         ArrayList<Integer> arrayToReturn = new ArrayList<>();
         if (state == PlayerState.TALKING) {
-            for (Player p : players) {
-                if (Math.abs(position.x - p.position.x) <= getFieldOfView()
-                    || Math.abs(position.y - p.position.y) <= getFieldOfView()) {
+            for (Creature p : players) {
+                if (Math.abs(position.x - p.getPos().x) <= getFieldOfView()
+                    || Math.abs(position.y - p.getPos().y) <= getFieldOfView()) {
                     arrayToReturn.add(p.getId());
                 }
             }
         }
         return arrayToReturn;
-    }
-
-    public String sleep() {
-        String answer;
-        if (getEnergy() <= 50) {
-            changeEnergy(99);
-            answer = "Z-z-z-z...";
-        } else {
-            answer = "Я пока не устал!";
-        }
-        return answer;
-    }
-
-    public List<InventoryItem> getInventory() {
-        return inventory;
     }
 }

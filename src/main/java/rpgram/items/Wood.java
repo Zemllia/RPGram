@@ -2,9 +2,6 @@ package rpgram.items;
 
 public class Wood extends InventoryItem {
     public Wood(int count) {
-        this.icon = "";
-        this.count = count;
-        this.itemID = 0;
-        this.name = "Wood";
+        super(0, "Дерево", ItemType.MATERIAL, count);
     }
 }

@@ -2,29 +2,22 @@ package rpgram.creatures;
 
 import rpgram.DialogEngine;
 import rpgram.Quest;
-import rpgram.core.GameObject;
 import rpgram.core.Position;
-import rpgram.items.Food;
-import rpgram.items.InventoryItem;
+import rpgram.core.utils.Random;
+import rpgram.items.*;
 import rpgram.maps.BaseMap;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NPC extends Creature {
-    private String race;
-
-    // TODO Дописать про идеологию
-    private String ideology;
-
     private DialogEngine de;
     private Quest[] quests;
 
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    int hunger = 1000;
-    int thirst = 1000;
-    int fatigue = 1000;
+    private int satiety = 1000;
+    private int water = 1000;
 
     NPCState state = NPCState.CALM;
 
@@ -32,76 +25,119 @@ public class NPC extends Creature {
         super(id, name, map, '@', '9', position);
         this.quests = quests;
         de = new DialogEngine(quests, name);
+        live();
     }
 
-    public void makeAction() {
+    public void live() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    // ignored
+                }
+                doAction();
+            }
+        }).start();
+    }
+
+    public void doAction() {
+        changeSatiety(-1);
+        changeWater(-2);
+        changeEnergy(-1);
+
         switch (state) {
-        case CALM:
-            hunger -= 1;
-            thirst -= 2;
-            fatigue -= 1;
-
-            state = NPCState.NEED_MONEY;
-
-            if (hunger <= 200) {
+        case CALM: {
+            move(new Position(getPos().x + getRandomStep(), getPos().y + getRandomStep()));
+            if (satiety <= 200) {
                 state = NPCState.HUNGRY;
             }
-            if (thirst <= 300) {
+            if (water <= 300) {
                 state = NPCState.THIRSTY;
             }
             break;
-
-        case HUNGRY:
-            hunger -= 1;
-            thirst -= 2;
-            fatigue -= 1;
-
-            Food item = (Food) getIfExistsInInventoryByItemType("eatable");
-            if (item != null) {
-                hunger += item.getNutritionalValue();
-                removeItemFromInventory(item);
-                state = NPCState.CALM;
-            } else {
+        }
+        case HUNGRY: {
+            Food item = tryGetFromInventory(Food.class);
+            if (item == null || item.getType() != ItemType.MEAL) {
                 state = NPCState.BUY_FOOD;
+            } else {
+                satiety += item.getNutritionalValue();
+                inventory.remove(item);
+                state = NPCState.CALM;
             }
-
             break;
-
-        case THIRSTY:
-            hunger -= 1;
-            thirst -= 2;
-            fatigue -= 1;
-
-            item = (Food) getIfExistsInInventoryByItemType("drinkable");
-            if (item != null) {
-                thirst += item.getNutritionalValue();
-                removeItemFromInventory(item);
+        }
+        case THIRSTY: {
+            Food item = tryGetFromInventory(Food.class);
+            if (item == null || item.getType() != ItemType.DRINK) {
+                state = NPCState.BUY_WATER;
+            } else {
+                water += item.getNutritionalValue();
+                inventory.remove(item);
+                state = NPCState.CALM;
+            }
+            break;
+        }
+        case TIRED: {
+            sleep();
+            state = NPCState.CALM;
+            break;
+        }
+        case WORKING: {
+            if (hasEnoughMoney()) {
                 state = NPCState.CALM;
             } else {
-                state = NPCState.BUY_WATER;
+                inventory.add(new Money(5));
             }
             break;
-
-        case BUY_FOOD:
-            hunger -= 1;
-            thirst -= 2;
-            fatigue -= 1;
-
-
+        }
+        case BUY_FOOD: {
+            if (hasEnoughMoney()) {
+                Money item = tryGetFromInventory(Money.class);
+                inventory.add(new RoastedMeat(10));
+                inventory.remove(item);
+            } else {
+                state = NPCState.WORKING;
+            }
             break;
+        }
+        case BUY_WATER: {
+            if (hasEnoughMoney()) {
+                Money item = tryGetFromInventory(Money.class);
+                inventory.add(new RoastedMeat(10));
+                inventory.remove(item);
+            } else {
+                state = NPCState.WORKING;
+            }
+        }
         }
     }
 
-    private InventoryItem getIfExistsInInventoryByItemType(String type) {
+    public int getRandomStep() {
+        return Random.rnd.nextBoolean() ? (Random.rnd.nextBoolean() ? 1 : -1) : 0;
+    }
+
+    public boolean hasEnoughMoney() {
+        Money item = tryGetFromInventory(Money.class);
+        return item != null && item.getCount() > 100;
+    }
+
+    public void changeSatiety(int delta) {
+        satiety += delta;
+    }
+
+    public void changeWater(int delta) {
+        water += delta;
+    }
+
+    private <T extends InventoryItem> T tryGetFromInventory(Class<T> cls) {
         for (InventoryItem item : inventory) {
-            if (item.getType().equals(type)) {
-                return item;
+            if (cls.isInstance(item)) {
+                // noinspection unchecked
+                return (T) item;
             }
         }
         return null;
-    }
-
-    private void removeItemFromInventory(InventoryItem item) {
-        inventory.remove(item);
     }
 }

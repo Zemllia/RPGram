@@ -2,9 +2,16 @@ package rpgram.creatures;
 
 import rpgram.core.GameObject;
 import rpgram.core.Position;
+import rpgram.items.InventoryItem;
 import rpgram.maps.BaseMap;
+import rpgram.maps.PathFinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Creature extends GameObject {
+    private PathFinding pathFinding = new PathFinding();
+
     private int maxHP;
     private int HP;
 
@@ -17,6 +24,8 @@ public class Creature extends GameObject {
     private int skillPoint = 0;
 
     private int fieldOfView;
+
+    public List<InventoryItem> inventory = new ArrayList<>();
 
     public Creature(int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position) {
         // RULE: default creature parameters
@@ -116,5 +125,39 @@ public class Creature extends GameObject {
 
     public int getSkillPoint() {
         return skillPoint;
+    }
+
+    public String sleep() {
+        String answer;
+        if (getEnergy() <= 50) {
+            changeEnergy(99);
+            answer = "Z-z-z-z...";
+        } else {
+            answer = "Я пока не устал!";
+        }
+        return answer;
+    }
+
+    public List<InventoryItem> getInventory() {
+        return inventory;
+    }
+
+    public void teleport(Position newPosition) {
+        lastPos = position;
+        position = new Position(newPosition.x, newPosition.y);
+        map.moveObject(this);
+    }
+
+    public String move(Position targetPos) {
+        ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
+        if (getEnergy() >= path.size()) {
+            teleport(targetPos);
+
+            changeEnergy(path.size() * -1);
+            increaseXP();
+            return map.viewMapArea(position, getFieldOfView());
+        } else {
+            return "Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
+        }
     }
 }

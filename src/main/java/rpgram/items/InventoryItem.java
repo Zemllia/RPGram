@@ -1,22 +1,32 @@
 package rpgram.items;
 
-public class InventoryItem {
-    String icon = "NaN";
-    int itemID = 0;
-    protected String name = "NaN";
-    int count = 0;
-    String description = "Разработчик забыл добавить описание предмету...";
-    String type = "building_material";
+import rpgram.core.NamedObject;
+import rpgram.core.utils.Random;
 
-    public String getName() {
-        return name;
+public class InventoryItem extends NamedObject {
+    int count;
+    String icon = "?";
+    String description = "Разработчик забыл добавить описание предмету...";
+    ItemType type;
+
+    public InventoryItem(int id, ItemType type, int count) {
+        super(-Random.randInt(1000, 1000000), "");
+        this.name = this.getClass().getSimpleName();
+        this.count = count;
+        this.type = type;
+    }
+
+    public InventoryItem(int id, String name, ItemType type, int count) {
+        super(-Random.randInt(1000, 1000000), name);
+        this.count = count;
+        this.type = type;
     }
 
     public int getCount() {
         return count;
     }
 
-    public String getType() {
+    public ItemType getType() {
         return type;
     }
 
