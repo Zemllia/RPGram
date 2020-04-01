@@ -1,4 +1,4 @@
-package core;
+package rpgram.core;
 
 public class GameObject {
     protected Position position;

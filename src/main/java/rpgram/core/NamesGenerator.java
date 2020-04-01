@@ -1,4 +1,4 @@
-package core;
+package rpgram.core;
 
 public class NamesGenerator {
     public static final String[] villageNames = {

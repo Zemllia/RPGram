@@ -1,4 +1,4 @@
-package items;
+package rpgram.items;
 
 public class Dirt extends InventoryItem {
     public Dirt(int count) {

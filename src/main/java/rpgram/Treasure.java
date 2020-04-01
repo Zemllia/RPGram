@@ -1,5 +1,7 @@
-import core.Position;
-import items.InventoryItem;
+package rpgram;
+
+import rpgram.core.Position;
+import rpgram.items.InventoryItem;
 
 import java.util.ArrayList;
 

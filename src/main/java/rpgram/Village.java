@@ -1,5 +1,8 @@
-import core.Position;
-import core.utils.Random;
+package rpgram;
+
+import rpgram.core.Position;
+import rpgram.core.utils.Random;
+import rpgram.maps.MapLayers;
 
 public class Village {
     int villageID;
@@ -8,7 +11,7 @@ public class Village {
     int ownerID;
     //TODO Сделать возможность добавлять совладельцев (Строить в деревне могут только владельцы);
     int[] coOwnersID;
-    //TODO Сделать возможность прописаться в поселении и спавн рандомных NPC
+    //TODO Сделать возможность прописаться в поселении и спавн рандомных rpgram.NPC
     int villagersCount;
     boolean isBuildedByPlayer;
 

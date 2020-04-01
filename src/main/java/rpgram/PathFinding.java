@@ -1,10 +1,12 @@
-import core.Position;
+package rpgram;
+
+import rpgram.core.Position;
 
 import java.util.ArrayList;
 
 class PathFinding {
 
-    ArrayList<Position> findPath(Position targetPos, Position selfPos, Map map) {
+    ArrayList<Position> findPath(Position targetPos, Position selfPos, GlobalMap map) {
         Node[][] nodeMap = generateNodeGrid(map);
 
         Node startNode = nodeMap[selfPos.x][selfPos.y];
@@ -64,10 +66,10 @@ class PathFinding {
         return finalPath;
     }
 
-    private Node[][] generateNodeGrid(Map map) {
-        Node[][] arrayToReturn = new Node[map.areaWidth][map.areaHeight];
-        for (int i = 0; i < map.areaWidth; i++) {
-            for (int j = 0; j < map.areaHeight; j++) {
+    private Node[][] generateNodeGrid(GlobalMap map) {
+        Node[][] arrayToReturn = new Node[map.getAreaWidth()][map.getAreaHeight()];
+        for (int i = 0; i < map.getAreaWidth(); i++) {
+            for (int j = 0; j < map.getAreaHeight(); j++) {
                 boolean walkable = true;
                 if (map.gameMap[0][i][j] == 9) {
                     walkable = false;
@@ -110,15 +112,15 @@ class PathFinding {
             this.isWalkable = isWalkable;
         }
 
-        ArrayList<Node> getNeighbours(Node[][] nodeMap, Map map) {
+        ArrayList<Node> getNeighbours(Node[][] nodeMap, GlobalMap map) {
             ArrayList<Node> NodeList = new ArrayList<Node>();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) {
                         continue;
                     }
-                    if ((coordinates.x + i >= 0 && coordinates.x + i < map.areaWidth - 1)
-                        && (coordinates.y + j >= 0 && coordinates.y + j < map.areaHeight - 1)) {
+                    if ((coordinates.x + i >= 0 && coordinates.x + i < map.getAreaWidth() - 1)
+                        && (coordinates.y + j >= 0 && coordinates.y + j < map.getAreaHeight() - 1)) {
                         if (nodeMap[coordinates.x + i][coordinates.y + j].isWalkable) {
                             NodeList.add(nodeMap[coordinates.x + i][coordinates.y + j]);
                         }

@@ -1,4 +1,4 @@
-package items;
+package rpgram.items;
 
 public class ShopItem {
     private InventoryItem item;

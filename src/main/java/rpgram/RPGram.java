@@ -1,6 +1,5 @@
-import core.Position;
-import core.utils.Random;
-import items.InventoryItem;
+package rpgram;
+
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,6 +8,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import rpgram.core.Position;
+import rpgram.core.utils.Random;
+import rpgram.items.InventoryItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ public class RPGram extends TelegramLongPollingBot {
 
     private ArrayList<Player> players = new ArrayList<>();
 
-    private Map map = new Map(500, 500, 5, 3);
+    private GlobalMap map = new GlobalMap(500, 500, 5, 3);
 
     void init() {
         map.generateMap();
@@ -259,8 +261,8 @@ public class RPGram extends TelegramLongPollingBot {
     private void changePos(int id) {
         for (Player item : players) {
             if (item.id == id) {
-                if (item.getPos().x > map.areaWidth) {
-                    item.teleportPlayer(new Position(item.getPos().x - map.areaWidth, item.getPos().y));
+                if (item.getPos().x > map.getAreaWidth()) {
+                    item.teleportPlayer(new Position(item.getPos().x - map.getAreaWidth(), item.getPos().y));
                 }
                 if (item.worldState.equals("worldMap")) {
                     map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, -1);

@@ -1,7 +1,9 @@
-import core.GameObject;
-import core.Position;
-import items.Food;
-import items.InventoryItem;
+package rpgram;
+
+import rpgram.core.GameObject;
+import rpgram.core.Position;
+import rpgram.items.Food;
+import rpgram.items.InventoryItem;
 
 import java.util.ArrayList;
 import java.util.List;

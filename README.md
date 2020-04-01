@@ -1,12 +1,12 @@
-# rpgram.RPGram
+# RPGram
 
 ## Dependencies
 - [TelegramBots](https://mvnrepository.com/artifact/org.telegram/telegrambots)
 
 ## Building from sources
 ```
-$ git clone https://github.com/Zemllia/rpgram.RPGram.git
-$ cd rpgram.RPGram
+$ git clone https://github.com/Zemllia/RPGram.git
+$ cd RPGram
 $ mvn compile
 ```
 

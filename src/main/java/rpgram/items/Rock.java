@@ -1,4 +1,4 @@
-package items;
+package rpgram.items;
 
 public class Rock extends InventoryItem {
     public Rock(int count) {

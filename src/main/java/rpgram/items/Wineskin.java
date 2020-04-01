@@ -1,4 +1,4 @@
-package items;
+package rpgram.items;
 
 public class Wineskin extends InventoryItem {
     public Wineskin(int count) {

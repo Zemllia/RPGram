@@ -3,18 +3,20 @@ package rpgram;
 import rpgram.core.NamesGenerator;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
-import rpgram.maps.*;
+import rpgram.maps.BaseMap;
+import rpgram.maps.MapLayers;
+import rpgram.maps.MapLegend;
 
 import java.util.ArrayList;
 
-public class Map extends BaseMap {
+public class GlobalMap extends BaseMap {
     private int villagesCount;
     private int swampCount;
 
     ArrayList<Village> villages = new ArrayList<>();
     ArrayList<Treasure> treasures = new ArrayList<>();
 
-    public Map(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
+    public GlobalMap(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
         super(areaWidth, areaHeight);
         this.villagesCount = villagesCount;
         this.swampCount = swampCount;

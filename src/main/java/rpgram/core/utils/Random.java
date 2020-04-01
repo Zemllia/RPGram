@@ -1,4 +1,4 @@
-package core.utils;
+package rpgram.core.utils;
 
 public class Random {
     public static int randInt(int min, int max) {

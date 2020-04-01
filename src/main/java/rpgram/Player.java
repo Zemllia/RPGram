@@ -1,7 +1,9 @@
-import core.GameObject;
-import core.Position;
-import core.utils.Random;
-import items.*;
+package rpgram;
+
+import rpgram.core.GameObject;
+import rpgram.core.Position;
+import rpgram.core.utils.Random;
+import rpgram.items.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +31,9 @@ public class Player extends GameObject {
 
     char mapIcon;
 
-    Map map;
+    GlobalMap map;
 
-    Player(String name, Position pos, int id, Map map) {
+    Player(String name, Position pos, int id, GlobalMap map) {
         super("name", pos, 200, '@');
         oldPos = pos;
         this.name = name;
@@ -51,7 +53,7 @@ public class Player extends GameObject {
     }
 
 
-    String executeCommand(String command, Map map) {
+    String executeCommand(String command, GlobalMap map) {
         String[] commandArray = command.split(" ");
 
         String[] randUnknownCommandPhrases = { ": Оу, ума не приложу как это сделать, но я могу вот что: \n",
@@ -98,7 +100,7 @@ public class Player extends GameObject {
         return position;
     }
 
-    public String movePlayer(Position targetPos, Map map) {
+    public String movePlayer(Position targetPos, GlobalMap map) {
         String answer;
         ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
         if (getEnergy() >= path.size()) {

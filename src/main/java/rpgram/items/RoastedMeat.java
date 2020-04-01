@@ -1,4 +1,4 @@
-package items;
+package rpgram.items;
 
 public class RoastedMeat extends Food {
     public RoastedMeat(int count) {
