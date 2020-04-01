@@ -4,6 +4,7 @@ import rpgram.core.GameObject;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
+import rpgram.maps.MapLayers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,15 +130,15 @@ public class Player extends GameObject {
         System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
         Village curVillage = map.checkVillage(this.position);
         if (worldStateArray[0].equals("worldMap") && curVillage != null) {
-            worldState = "village " + curVillage.getVillageID();
+            worldState = "village " + curVillage.getId();
             position = new Position(25, 25);
             oldPos = position;
             answer = ": Хм, в поселении можно отдохнуть \n" +
                 "Информация о поселении:\n" +
-                "Название: " + curVillage.getVillageName() + "\n" +
+                "Название: " + curVillage.getName() + "\n" +
                 "Владелец: " + curVillage.getOwnerName() + "\n" +
                 "Население: " + curVillage.getVillagersCount();
-            map.instantiateNewPlayer(position, mapIcon, curVillage.getVillageID());
+            map.instantiateNewPlayer(position, mapIcon, curVillage.getId());
 
         } else {
             answer = ": Здесь некуда заходить";
@@ -151,7 +152,7 @@ public class Player extends GameObject {
         if (worldStateSplitted[0].equals("village")) {
             Village curVillage = map.villages.get(Integer.parseInt(worldStateSplitted[1]));
             worldState = "worldMap";
-            position = new Position(curVillage.villagePos.x, curVillage.villagePos.y);
+            position = new Position(curVillage.position.x, curVillage.position.y);
             oldPos = position;
             answer = "Пора продолжать приключения";
             map.instantiateNewPlayer(position, mapIcon, -1);
@@ -164,28 +165,28 @@ public class Player extends GameObject {
     public String getResource(String whatToGet) {
         String answer = null;
         if (whatToGet.toLowerCase().equals("дерево")) {
-            if (map.gameMap[3][position.x][position.y] == '^') {
+            if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == '^') {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
-                map.gameMap[3][position.x][position.y] = 0;
+                map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] = 0;
                 answer = "Добыл немного дерева (x" + addedWood + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
         } else if (whatToGet.toLowerCase().equals("камень")) {
-            if (map.gameMap[3][position.x][position.y] == '*') {
+            if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == '*') {
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
-                map.gameMap[3][position.x][position.y] = 0;
+                map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] = 0;
                 answer = "Добыл немного камня (x" + addedRock + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
         } else if (whatToGet.toLowerCase().equals("землю")) {
-            if (map.gameMap[3][position.x][position.y] == 0) {
+            if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == 0) {
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
-                map.gameMap[3][position.x][position.y] = 'o';
+                map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] = 'o';
                 answer = "Добыл немного Земли (x" + addedDirt + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";

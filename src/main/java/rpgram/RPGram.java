@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.InventoryItem;
+import rpgram.maps.MapLayers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class RPGram extends TelegramLongPollingBot {
                 int userId = update.getMessage().getFrom().getId();
                 if (!checkIfPlayerExists(userId)) {
                     Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
-                    while (map.gameMap[4][pos.x][pos.y] == '@') {
+                    while (map.layer(MapLayers.PLAYERS)[pos.x][pos.y] == '@') {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     }
                     Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, map);

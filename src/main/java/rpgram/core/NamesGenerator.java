@@ -1,7 +1,17 @@
 package rpgram.core;
 
+import rpgram.core.utils.Random;
+
 public class NamesGenerator {
-    public static final String[] villageNames = {
+    public static String getRandomVillageName() {
+        return villageNames[Random.randInt(0, NamesGenerator.villageNames.length - 1)];
+    }
+
+    public static String getRandomNpcName() {
+        return npcNames[Random.randInt(0, NamesGenerator.npcNames.length - 1)];
+    }
+
+    private static final String[] villageNames = {
         "Robinson",
         "Kahoka",
         "Boothwyn",
@@ -54,7 +64,7 @@ public class NamesGenerator {
         "Newsoms"
     };
 
-    public static final String[] npcNames = {
+    private static final String[] npcNames = {
         "Robert",
         "Adfrith",
         "Earorht",

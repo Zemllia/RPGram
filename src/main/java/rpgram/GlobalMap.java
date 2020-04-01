@@ -20,7 +20,6 @@ public class GlobalMap extends BaseMap {
         super(areaWidth, areaHeight);
         this.villagesCount = villagesCount;
         this.swampCount = swampCount;
-        gameMap = new char[MapLayers.values().length][areaWidth][areaHeight];
     }
 
     @Override
@@ -28,7 +27,7 @@ public class GlobalMap extends BaseMap {
         if (mapId == -1) {
             return gameMap;
         } else {
-            return villages.get(mapId).getMap();
+            return villages.get(mapId).getGameMapFromId(-1);
         }
     }
 
@@ -39,9 +38,9 @@ public class GlobalMap extends BaseMap {
             for (int j = 0; j < areaHeight; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 30) {
-                    gameMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = MapLegend.TREE.getValue();
+                    layer(MapLayers.ENVIRONMENT)[i][j] = MapLegend.TREE.getValue();
                 } else if (randChance > 30 && randChance < 35) {
-                    gameMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = MapLegend.ROCK.getValue();
+                    layer(MapLayers.ENVIRONMENT)[i][j] = MapLegend.ROCK.getValue();
                 }
             }
         }
@@ -70,12 +69,12 @@ public class GlobalMap extends BaseMap {
             int randomOffset = Random.randInt(-2, 2);
             if (i <= (startPointX + endPointX) / 2) {
                 for (int j = startPointY; j <= startPointY + verticalScale; j++) {
-                    gameMap[MapLayers.ENVIRONMENT.ordinal()][i][(j + randomOffset) % areaWidth] = MapLegend.SWAMP.getValue();
+                    layer(MapLayers.ENVIRONMENT)[i][(j + randomOffset) % areaWidth] = MapLegend.SWAMP.getValue();
                     verticalScale += Random.randInt(0, 2);
                 }
             } else {
                 for (int j = startPointY; j <= startPointY + verticalScale; j++) {
-                    gameMap[MapLayers.GROUND.ordinal()][i][(j + randomOffset) % areaWidth] = MapLegend.SWAMP.getValue();
+                    layer(MapLayers.GROUND)[i][(j + randomOffset) % areaWidth] = MapLegend.SWAMP.getValue();
                     verticalScale -= Random.randInt(0, 2);
                     if (verticalScale <= 1) {
                         verticalScale = 1;
@@ -89,39 +88,39 @@ public class GlobalMap extends BaseMap {
         Position vPosition = new Position(Random.randInt(0, areaHeight), Random.randInt(0, areaHeight));
         Village v = new Village(
             id,
-            NamesGenerator.villageNames[Random.randInt(0, NamesGenerator.villageNames.length - 1)],
-            NamesGenerator.npcNames[Random.randInt(0, NamesGenerator.npcNames.length - 1)],
+            NamesGenerator.getRandomVillageName(),
+            NamesGenerator.getRandomNpcName(),
             Random.randInt(0, 9999),
             false,
             vPosition
         );
-        gameMap[MapLayers.ENVIRONMENT.ordinal()][v.villagePos.x][v.villagePos.y] = 'v';
+        layer(MapLayers.ENVIRONMENT)[v.position.x][v.position.y] = 'v';
         villages.add(v);
     }
 
     private void generateRoadsBetweenVillages() {
         PathFinding pathFinding = new PathFinding();
-        for (Village item : villages) {
+        for (Village village : villages) {
             for (int i = 0; i <= Random.randInt(0, 2); i++) {
                 Village villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
-                while (villageForRoad.villageID == item.villageID) {
+                while (villageForRoad.id == village.id) {
                     villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
                 }
-                ArrayList<Position> roadPath = pathFinding.findPath(item.villagePos, villageForRoad.villagePos, this);
+                ArrayList<Position> roadPath = pathFinding.findPath(village.position, villageForRoad.position, this);
 
                 for (Position roadElement : roadPath) {
-                    gameMap[MapLayers.GROUND.ordinal()][roadElement.x][roadElement.y] = '◼';
+                    layer(MapLayers.GROUND)[roadElement.x][roadElement.y] = '◼';
                 }
             }
         }
     }
 
     Village checkVillage(Position villagePos) {
-        for (Village item : villages) {
-            System.out.println("DEBUG: vlg item pos is x=" + item.villagePos.x + " y=" + item.villagePos.y);
-            if (item.villagePos.x == villagePos.x && item.villagePos.y == villagePos.y) {
+        for (Village village : villages) {
+            System.out.println("DEBUG: vlg village pos is x=" + village.position.x + " y=" + village.position.y);
+            if (village.position.x == villagePos.x && village.position.y == villagePos.y) {
                 System.out.println("DEBUG: trying to return");
-                return item;
+                return village;
             }
         }
         return null;

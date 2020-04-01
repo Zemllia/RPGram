@@ -2,100 +2,70 @@ package rpgram;
 
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
+import rpgram.maps.BaseMap;
 import rpgram.maps.MapLayers;
 
-public class Village {
-    int villageID;
-    String villageName;
-    String ownerName;
+public class Village extends BaseMap {
+    int id;
+    String name;
+
     int ownerID;
+    String ownerName;
     //TODO Сделать возможность добавлять совладельцев (Строить в деревне могут только владельцы);
     int[] coOwnersID;
-    //TODO Сделать возможность прописаться в поселении и спавн рандомных rpgram.NPC
+    //TODO Сделать возможность прописаться в поселении и спавн рандомных NPC
     int villagersCount;
-    boolean isBuildedByPlayer;
+    boolean isBuiltByPlayer;
 
-    Position villagePos;
+    Position position;
 
-    char[][][] villageMap = new char[MapLayers.values().length][50][50];
-    char[][] weightsOfObjects = { { ' ', '1' }, { 'F', '2' }, { 'T', '3' }, { 'R', '0' }, { '%', '5' } };
-
-
-    public Village(int villageID, String villageName, String ownerName, int ownerID, boolean isBuildedByPlayer, Position villagePos) {
-        this.villageID = villageID;
-        this.villageName = villageName;
+    public Village(int id, String name, String ownerName, int ownerID, boolean isBuiltByPlayer, Position position) {
+        super(50, 50);
+        this.id = id;
+        this.name = name;
         this.ownerName = ownerName;
         this.ownerID = ownerID;
-        this.isBuildedByPlayer = isBuildedByPlayer;
-        this.villagePos = villagePos;
+        this.isBuiltByPlayer = isBuiltByPlayer;
+        this.position = position;
         generateVillage();
-        System.out.println("Деревня сгенерировалась x=" + villagePos.x + " y=" + villagePos.y);
+        System.out.println("Деревня сгенерировалась x=" + position.x + " y=" + position.y);
     }
 
     void generateVillage() {
         clearMap();
         generateEnvironment();
-        if (!isBuildedByPlayer) {
+        if (!isBuiltByPlayer) {
             generateBrokenHouses();
         }
-    }
-
-    char recalculateCellWeight(Position pos) {
-        int curWeight = 0;
-        for (int i = 0; i < MapLayers.values().length; i++) {
-            char checkChar = villageMap[i][pos.x][pos.y];
-            for (int j = 0; i < weightsOfObjects.length; i++) {
-                if (checkChar == weightsOfObjects[j][0]) {
-                    if (curWeight < Character.getNumericValue(weightsOfObjects[i][1])) {
-                        curWeight = Character.getNumericValue(weightsOfObjects[i][1]);
-                    }
-                }
-            }
-        }
-        return (char) (curWeight + '0');
     }
 
     private void generateBrokenHouses() {
         int numberOfHouses = Random.randInt(3, 8);
         for (int i = 0; i < numberOfHouses; i++) {
-            villageMap[MapLayers.ENVIRONMENT.ordinal()][Random.randInt(0, 49)][Random.randInt(0, 49)] = 'D';
+            layer(MapLayers.ENVIRONMENT)[Random.randInt(0, areaWidth)][Random.randInt(0, areaHeight)] = 'D';
         }
     }
 
     private void generateEnvironment() {
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
+        for (int i = 0; i < areaWidth; i++) {
+            for (int j = 0; j < areaHeight; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
-                    villageMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = '^';
+                    layer(MapLayers.ENVIRONMENT)[i][j] = '^';
                 }
                 if (randChance > 50 && randChance < 70) {
-                    villageMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = 'o';
+                    layer(MapLayers.ENVIRONMENT)[i][j] = 'o';
                 }
             }
         }
     }
 
-    private void clearMap() {
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
-                villageMap[MapLayers.GROUND.ordinal()][i][j] = ' ';
-                villageMap[MapLayers.CAVES.ordinal()][i][j] = ' ';
-                villageMap[MapLayers.WEIGHTS.ordinal()][i][j] = '1';
-            }
-        }
+    public int getId() {
+        return id;
     }
 
-    public char[][][] getMap() {
-        return villageMap;
-    }
-
-    public int getVillageID() {
-        return villageID;
-    }
-
-    public String getVillageName() {
-        return villageName;
+    public String getName() {
+        return name;
     }
 
     public String getOwnerName() {
@@ -104,9 +74,5 @@ public class Village {
 
     public int getVillagersCount() {
         return villagersCount;
-    }
-
-    public void setVillagePos(Position pos) {
-        villagePos = pos;
     }
 }

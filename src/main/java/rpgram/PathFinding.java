@@ -1,6 +1,7 @@
 package rpgram;
 
 import rpgram.core.Position;
+import rpgram.maps.MapLayers;
 
 import java.util.ArrayList;
 
@@ -71,12 +72,12 @@ class PathFinding {
         for (int i = 0; i < map.getAreaWidth(); i++) {
             for (int j = 0; j < map.getAreaHeight(); j++) {
                 boolean walkable = true;
-                if (map.gameMap[0][i][j] == 9) {
+                if (map.layer(MapLayers.WEIGHTS)[i][j] == 9) {
                     walkable = false;
                 }
                 Node newNode = new Node(
                     new Position(i, j),
-                    map.gameMap[0][i][j],
+                    map.layer(MapLayers.WEIGHTS)[i][j],
                     walkable
                 );
                 arrayToReturn[i][j] = newNode;

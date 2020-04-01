@@ -6,7 +6,7 @@ public class BaseMap {
     protected int areaWidth;
     protected int areaHeight;
 
-    public char[][][] gameMap;
+    protected char[][][] gameMap;
     protected char[][] weightsOfObjects = { { ' ', '1' }, { 'F', '2' }, { 'Y', '3' }, { 'R', '0' }, { '%', '5' } };
 
     public BaseMap(int areaWidth, int areaHeight) {
@@ -21,6 +21,10 @@ public class BaseMap {
 
     public int getAreaHeight() {
         return areaHeight;
+    }
+
+    public char[][] layer(MapLayers layer) {
+        return gameMap[layer.ordinal()];
     }
 
     public char[][][] getGameMapFromId(int mapId) {
@@ -99,8 +103,8 @@ public class BaseMap {
     protected void clearMap() {
         for (int i = 0; i < areaWidth; i++) {
             for (int j = 0; j < areaHeight; j++) {
-                gameMap[MapLayers.GROUND.ordinal()][i][j] = ' ';
-                gameMap[MapLayers.CAVES.ordinal()][i][j] = ' ';
+                layer(MapLayers.GROUND)[i][j] = ' ';
+                layer(MapLayers.CAVES)[i][j] = ' ';
             }
         }
     }
