@@ -37,5 +37,4 @@ public class GameObject {
         position.x += delta.x;
         position.y += delta.y;
     }
-
 }

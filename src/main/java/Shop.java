@@ -3,6 +3,7 @@ import core.Position;
 import items.ShopItem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Shop extends GameObject {
 
@@ -18,9 +19,7 @@ public class Shop extends GameObject {
         this.shopId = shopId;
         this.mapIcon = mapIcon;
         this.shopMoney = shopMoney;
-        for (ShopItem item : shopItems) {
-            shopInventory.add(item);
-        }
+        shopInventory.addAll(Arrays.asList(shopItems));
     }
 
     public ShopItem getItem(int itemId) {

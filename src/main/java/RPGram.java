@@ -13,9 +13,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RPGramm extends TelegramLongPollingBot {
+public class RPGram extends TelegramLongPollingBot {
 
-    RPGramm(DefaultBotOptions options) {
+    RPGram(DefaultBotOptions options) {
         super(options);
     }
 

@@ -23,13 +23,17 @@ public class DialogEngine {
         JSONArray arr = null;
         try {
             obj = (JSONObject) new JSONParser().parse(new FileReader("resources/dialogs/" + characterName + "_dialogs.json"));
-            if (messageType == "hello") {
+            switch (messageType) {
+            case "hello":
                 arr = (JSONArray) obj.get("hello_phrases");
-            } else if (messageType == "random") {
+                break;
+            case "random":
                 arr = (JSONArray) obj.get("random_phrases");
-            } else if (messageType == "by") {
+                break;
+            case "by":
                 arr = (JSONArray) obj.get("by_phrases");
-            } else if (messageType == "quest") {
+                break;
+            case "quest":
                 if (quests != null) {
                     return quests[0];
                 } else {
@@ -37,9 +41,8 @@ public class DialogEngine {
                 }
             }
             return arr.get(Random.randInt(0, arr.size() - 1));
-        } catch (FileNotFoundException ex) {
-
         } catch (IOException | ParseException ex) {
+            // ignored
         }
         return null;
     }

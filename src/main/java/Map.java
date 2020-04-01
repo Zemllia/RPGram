@@ -95,10 +95,7 @@ public class Map {
 
         char[][] renderArray = new char[diameter][diameter];
 
-        String answer = "";
-
-        // String[] treesArray = {"\uD83C\uDF32"};
-        // String[] flowersArray = {"\uD83C\uDF39", "\uD83C\uDF37", "\uD83C\uDF31"};
+        StringBuilder answer = new StringBuilder();
 
         System.out.println(pos.x + "  " + pos.y + "   " + radius);
 
@@ -128,21 +125,21 @@ public class Map {
                 }
             }
         }
-        answer = answer + "\nСудя по карте моя позиция - x=" + pos.x + " y=" + pos.y;
-        answer = answer + "<code>\n";
-        answer = answer + "\n";
+        answer.append("\nСудя по карте моя позиция - x=").append(pos.x).append(" y=").append(pos.y);
+        answer.append("<code>\n");
+        answer.append("\n");
         for (int i = 0; i < radius * 2; i++) {
             for (int j = 0; j < radius * 2; j++) {
                 if (renderArray[i][j] <= 127) {
-                    answer += renderArray[i][j] + " ";
+                    answer.append(renderArray[i][j]).append(" ");
                 } else {
-                    answer += "</code>" + renderArray[i][j] + "<code>";
+                    answer.append("</code>").append(renderArray[i][j]).append("<code>");
                 }
             }
-            answer += "\n";
+            answer.append("\n");
         }
-        answer = answer + "\n</code>";
-        return answer;
+        answer.append("\n</code>");
+        return answer.toString();
     }
 
     void instantiateNewPlayer(Position pos, char playerChar, int mapId) {

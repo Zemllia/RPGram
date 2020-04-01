@@ -12,7 +12,7 @@ class PathFinding {
 
         ArrayList<Node> openSet = new ArrayList<Node>();
         ArrayList<Node> closedSet = new ArrayList<Node>();
-        startNode.hCost = GetDistance(startNode, targetNode);
+        startNode.hCost = getDistance(startNode, targetNode);
 
         openSet.add(startNode);
 
@@ -39,10 +39,10 @@ class PathFinding {
                 if (/*!neighbour.Walkable || */ closedSet.contains(neighbour)) {
                     continue;
                 }
-                int newMovementCostToNeighbour = curNode.gCost + GetDistance(curNode, neighbour);
+                int newMovementCostToNeighbour = curNode.gCost + getDistance(curNode, neighbour);
                 if (newMovementCostToNeighbour < neighbour.gCost || !openSet.contains(neighbour)) {
                     neighbour.gCost = newMovementCostToNeighbour;
-                    neighbour.hCost = GetDistance(neighbour, targetNode);
+                    neighbour.hCost = getDistance(neighbour, targetNode);
                     neighbour.parent = curNode;
                     if (!openSet.contains(neighbour)) openSet.add(neighbour);
                 }
@@ -83,7 +83,7 @@ class PathFinding {
         return arrayToReturn;
     }
 
-    private int GetDistance(Node nodeA, Node nodeB) {
+    private int getDistance(Node nodeA, Node nodeB) {
         int distX = Math.abs(nodeA.coordinates.x - nodeB.coordinates.y);
         int distY = Math.abs(nodeA.coordinates.y - nodeB.coordinates.x);
 

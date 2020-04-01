@@ -1,4 +1,3 @@
-import core.Position;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
@@ -22,7 +21,7 @@ public class Main {
         //botOptions.setProxyPort(PROXY_PORT);
         //botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
 
-        RPGramm bot = new RPGramm(botOptions);
+        RPGram bot = new RPGram(botOptions);
         try {
             System.out.println("Connecting to Telegram...");
             botsApi.registerBot(bot);

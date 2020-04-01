@@ -55,8 +55,6 @@ public class Player extends GameObject {
 
 
     String executeCommand(String command, Map map) {
-
-        String answer = "";
         String[] commandArray = command.split(" ");
 
         String[] randUnknownCommandPhrases = { ": Оу, ума не приложу как это сделать, но я могу вот что: \n",
@@ -70,16 +68,17 @@ public class Player extends GameObject {
             "Зайти - зайти в деревню"
         };
 
+        StringBuilder answer;
         if (commandArray[0].toLowerCase().equals("тп")) {
             teleportPlayer(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
-            answer = ": Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!";
+            answer = new StringBuilder(": Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!");
         } else {
-            answer = randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)];
+            answer = new StringBuilder(randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)]);
             for (String item : commands) {
-                answer += item;
+                answer.append(item);
             }
         }
-        return answer;
+        return answer.toString();
     }
 
 
@@ -197,24 +196,24 @@ public class Player extends GameObject {
     }
 
     public String inventory() {
-        String answer;
         sortInventory();
         sortInventory();
         sortInventory();
-        answer = "Здоровье: " + HP + "\n";
-        answer += "Максимум здоровья: " + maxHP + "\n";
-        answer += "Радиус зрения: " + fieldOfView + "\n";
-        answer += "XP: " + XP + "\n";
-        answer += "Уровень: " + level + "\n";
-        answer += "Количество очков уровня: " + skillPoint + "\n";
-        answer += "Необходимо для следующего уровня: " + requiredXP + "\n\n";
-        answer += "Вот что в моем мешке:\n";
+        StringBuilder answer;
+        answer = new StringBuilder("Здоровье: " + HP + "\n");
+        answer.append("Максимум здоровья: ").append(maxHP).append("\n");
+        answer.append("Радиус зрения: ").append(fieldOfView).append("\n");
+        answer.append("XP: ").append(XP).append("\n");
+        answer.append("Уровень: ").append(level).append("\n");
+        answer.append("Количество очков уровня: ").append(skillPoint).append("\n");
+        answer.append("Необходимо для следующего уровня: ").append(requiredXP).append("\n\n");
+        answer.append("Вот что в моем мешке:\n");
         int counter = 1;
         for (InventoryItem item : inventory) {
-            answer += counter + ") " + item.getName() + " x" + item.getCount() + "\n";
+            answer.append(counter).append(") ").append(item.getName()).append(" x").append(item.getCount()).append("\n");
             counter++;
         }
-        return answer;
+        return answer.toString();
     }
 
     public ArrayList<Integer> saySomethingToAll(ArrayList<Player> players) {
