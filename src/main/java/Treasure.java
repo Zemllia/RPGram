@@ -8,7 +8,7 @@ public class Treasure {
     private Position position;
     private String nameOfPlayer;
 
-    public Treasure(InventoryItem inventoryItem, Position position, String nameOfPlayer){
+    public Treasure(InventoryItem inventoryItem, Position position, String nameOfPlayer) {
         this.inventoryItem.add(inventoryItem);
         this.nameOfPlayer = nameOfPlayer;
         this.position = position;
@@ -26,7 +26,7 @@ public class Treasure {
         return nameOfPlayer;
     }
 
-    public void addNewItem(InventoryItem newItem){
+    public void addNewItem(InventoryItem newItem) {
         inventoryItem.add(newItem);
     }
 }

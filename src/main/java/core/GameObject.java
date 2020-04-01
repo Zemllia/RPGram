@@ -6,8 +6,10 @@ public class GameObject {
     private char mapIcon;
     private String name;
 
-    public GameObject(String name, Position position,
-                      int energy, char mapIcon) {
+    public GameObject(
+        String name, Position position,
+        int energy, char mapIcon
+    ) {
 
         this.name = name;
         this.position = position;
@@ -18,6 +20,7 @@ public class GameObject {
     public char getMapIcon() {
         return this.mapIcon;
     }
+
     public String getName() {
         return this.name;
     }

@@ -1,7 +1,7 @@
 package items;
 
-public class Wineskin extends InventoryItem{
-    public Wineskin (int count) {
+public class Wineskin extends InventoryItem {
+    public Wineskin(int count) {
         this.count = count;
         this.name = "Бурдюк воды";
         this.icon = " ";

@@ -16,12 +16,12 @@ class PathFinding {
 
         openSet.add(startNode);
 
-        while(openSet.size() > 0){
+        while (openSet.size() > 0) {
             Node curNode = openSet.get(0);
-            for (int i = 1; i < openSet.size(); i++){
+            for (int i = 1; i < openSet.size(); i++) {
                 int iNodeFCost = openSet.get(i).gCost + openSet.get(i).hCost;
                 int curNodeFCost = curNode.hCost + curNode.gCost;
-                if(iNodeFCost < curNodeFCost || iNodeFCost == curNodeFCost && openSet.get(i).hCost < curNode.hCost){
+                if (iNodeFCost < curNodeFCost || iNodeFCost == curNodeFCost && openSet.get(i).hCost < curNode.hCost) {
                     curNode = openSet.get(i);
                 }
             }
@@ -29,22 +29,22 @@ class PathFinding {
             openSet.remove(curNode);
             closedSet.add(curNode);
 
-            if(curNode == targetNode){
+            if (curNode == targetNode) {
                 return generateFinalPath(curNode);
             }
 
             ArrayList<Node> neighbours = curNode.getNeighbours(nodeMap, map);
 
-            for(Node neighbour: neighbours){
-                if(/*!neighbour.Walkable || */ closedSet.contains(neighbour)){
+            for (Node neighbour : neighbours) {
+                if (/*!neighbour.Walkable || */ closedSet.contains(neighbour)) {
                     continue;
                 }
                 int newMovementCostToNeighbour = curNode.gCost + GetDistance(curNode, neighbour);
-                if(newMovementCostToNeighbour < neighbour.gCost || !openSet.contains(neighbour)){
-                    neighbour.gCost =  newMovementCostToNeighbour;
+                if (newMovementCostToNeighbour < neighbour.gCost || !openSet.contains(neighbour)) {
+                    neighbour.gCost = newMovementCostToNeighbour;
                     neighbour.hCost = GetDistance(neighbour, targetNode);
                     neighbour.parent = curNode;
-                    if(!openSet.contains(neighbour)) openSet.add(neighbour);
+                    if (!openSet.contains(neighbour)) openSet.add(neighbour);
                 }
 
             }
@@ -54,28 +54,28 @@ class PathFinding {
         return null;
     }
 
-    private ArrayList<Position> generateFinalPath(Node resultNode){
+    private ArrayList<Position> generateFinalPath(Node resultNode) {
         ArrayList<Position> finalPath = new ArrayList<Position>();
         Node curNode = resultNode;
-        while(curNode != null){
+        while (curNode != null) {
             finalPath.add(curNode.coordinates);
             curNode = curNode.parent;
         }
         return finalPath;
     }
 
-    private Node[][] generateNodeGrid(Map map){
+    private Node[][] generateNodeGrid(Map map) {
         Node[][] arrayToReturn = new Node[map.maxXBound][map.maxYBound];
-        for (int i = 0; i < map.maxXBound; i++){
-            for (int j = 0; j < map.maxYBound; j++){
+        for (int i = 0; i < map.maxXBound; i++) {
+            for (int j = 0; j < map.maxYBound; j++) {
                 boolean walkable = true;
-                if(map.gameMap[0][i][j] == 9){
+                if (map.gameMap[0][i][j] == 9) {
                     walkable = false;
                 }
                 Node newNode = new Node(
-                        new Position(i,j),
-                        map.gameMap[0][i][j],
-                        walkable
+                    new Position(i, j),
+                    map.gameMap[0][i][j],
+                    walkable
                 );
                 arrayToReturn[i][j] = newNode;
             }
@@ -83,14 +83,14 @@ class PathFinding {
         return arrayToReturn;
     }
 
-    private int GetDistance(Node nodeA, Node nodeB){
+    private int GetDistance(Node nodeA, Node nodeB) {
         int distX = Math.abs(nodeA.coordinates.x - nodeB.coordinates.y);
         int distY = Math.abs(nodeA.coordinates.y - nodeB.coordinates.x);
 
-        if(distX > distY){
-            return 14*distY + 10 * (distX - distY);
+        if (distX > distY) {
+            return 14 * distY + 10 * (distX - distY);
         }
-        return  14*distX + 10 * (distY - distX);
+        return 14 * distX + 10 * (distY - distX);
     }
 
     static class Node {
@@ -104,21 +104,21 @@ class PathFinding {
 
         boolean isWalkable;
 
-        Node(Position coordinates, int weight, boolean isWalkable){
+        Node(Position coordinates, int weight, boolean isWalkable) {
             this.coordinates = coordinates;
             this.weight = weight;
             this.isWalkable = isWalkable;
         }
 
-        ArrayList<Node> getNeighbours(Node[][] nodeMap, Map map){
+        ArrayList<Node> getNeighbours(Node[][] nodeMap, Map map) {
             ArrayList<Node> NodeList = new ArrayList<Node>();
-            for(int i = -1; i <= 1; i++){
-                for(int j = -1; j <= 1; j++){
-                    if(i == 0 && j ==0){
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) {
                         continue;
                     }
-                    if((coordinates.x + i >= 0 && coordinates.x + i < map.maxXBound - 1)
-                            && (coordinates.y + j >= 0 && coordinates.y + j < map.maxYBound - 1)) {
+                    if ((coordinates.x + i >= 0 && coordinates.x + i < map.maxXBound - 1)
+                        && (coordinates.y + j >= 0 && coordinates.y + j < map.maxYBound - 1)) {
                         if (nodeMap[coordinates.x + i][coordinates.y + j].isWalkable) {
                             NodeList.add(nodeMap[coordinates.x + i][coordinates.y + j]);
                         }

@@ -1,7 +1,7 @@
 package items;
 
 public class Dirt extends InventoryItem {
-    public Dirt(int count){
+    public Dirt(int count) {
         this.icon = "";
         this.count = count;
         this.itemID = 1;

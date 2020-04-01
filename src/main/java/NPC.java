@@ -2,8 +2,6 @@ import core.GameObject;
 import core.Position;
 import items.Food;
 import items.InventoryItem;
-import items.Money;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ public class NPC extends GameObject {
     State state = State.CALM;
 
     public NPC(int id, String name, Quest[] quests, Position position, int mapID) {
-        super(name, new Position(0,0), 200, '@');
+        super(name, new Position(0, 0), 200, '@');
         this.id = id;
         this.mapID = mapID;
         this.quests = quests;
@@ -50,77 +48,74 @@ public class NPC extends GameObject {
         de = new DialogEngine(quests, name);
     }
 
-    public void makeAction(){
+    public void makeAction() {
         switch (state) {
-            case CALM:
-                hunger -= 1;
-                thirst -= 2;
-                fatigue -= 1;
+        case CALM:
+            hunger -= 1;
+            thirst -= 2;
+            fatigue -= 1;
 
-                state = State.NEED_MONEY;
+            state = State.NEED_MONEY;
 
-                if(hunger <= 200) {
-                    state = State.HUNGRY;
-                }
-                if(thirst <= 300){
-                    state = State.THIRSTY;
-                }
-                break;
+            if (hunger <= 200) {
+                state = State.HUNGRY;
+            }
+            if (thirst <= 300) {
+                state = State.THIRSTY;
+            }
+            break;
 
-            case HUNGRY:
-                hunger -= 1;
-                thirst -= 2;
-                fatigue -= 1;
+        case HUNGRY:
+            hunger -= 1;
+            thirst -= 2;
+            fatigue -= 1;
 
-                Food item = (Food) getIfExistsInInventoryByItemType("eatable");
-                if(item != null){
-                    hunger += item.getNutritionalValue();
-                    removeItemFromInventory(item);
-                    state = State.CALM;
-                }
-                else {
-                    state = State.BUY_FOOD;
-                }
+            Food item = (Food) getIfExistsInInventoryByItemType("eatable");
+            if (item != null) {
+                hunger += item.getNutritionalValue();
+                removeItemFromInventory(item);
+                state = State.CALM;
+            } else {
+                state = State.BUY_FOOD;
+            }
 
-                break;
+            break;
 
-            case THIRSTY:
-                hunger -= 1;
-                thirst -= 2;
-                fatigue -= 1;
+        case THIRSTY:
+            hunger -= 1;
+            thirst -= 2;
+            fatigue -= 1;
 
-                item = (Food) getIfExistsInInventoryByItemType("drinkable");
-                if(item != null){
-                    thirst += item.getNutritionalValue();
-                    removeItemFromInventory(item);
-                    state = State.CALM;
-                }
-                else {
-                    state = State.BUY_WATER;
-                }
-                break;
+            item = (Food) getIfExistsInInventoryByItemType("drinkable");
+            if (item != null) {
+                thirst += item.getNutritionalValue();
+                removeItemFromInventory(item);
+                state = State.CALM;
+            } else {
+                state = State.BUY_WATER;
+            }
+            break;
 
-            case BUY_FOOD:
-                hunger -= 1;
-                thirst -= 2;
-                fatigue -= 1;
+        case BUY_FOOD:
+            hunger -= 1;
+            thirst -= 2;
+            fatigue -= 1;
 
 
-
-                break;
+            break;
         }
     }
 
-    private InventoryItem getIfExistsInInventoryByItemType(String type){
-        for(InventoryItem item : inventory){
-            if(item.getType().equals(type)){
+    private InventoryItem getIfExistsInInventoryByItemType(String type) {
+        for (InventoryItem item : inventory) {
+            if (item.getType().equals(type)) {
                 return item;
             }
         }
         return null;
     }
 
-    private void removeItemFromInventory(InventoryItem item){
+    private void removeItemFromInventory(InventoryItem item) {
         inventory.remove(item);
     }
 }

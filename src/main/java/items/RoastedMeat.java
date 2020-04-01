@@ -1,6 +1,6 @@
 package items;
 
-public class RoastedMeat extends Food{
+public class RoastedMeat extends Food {
     public RoastedMeat(int count) {
         this.count = count;
         this.name = "Жаренное мясо";
