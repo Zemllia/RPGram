@@ -29,12 +29,7 @@ public class Player extends GameObject {
 
     char mapIcon;
 
-    long autoUpdateMessageId = -1;
-
     Map map;
-
-    private String[] welcomeMessages = { " прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
-        " был добавлен в мир" };
 
     Player(String name, Position pos, int id, Map map) {
         super("name", pos, 200, '@');
@@ -44,6 +39,8 @@ public class Player extends GameObject {
         mapIcon = name.charAt(0);
         changeEnergy(100);
         this.map = map;
+        String[] welcomeMessages = { " прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
+            " был добавлен в мир" };
         System.out.println(name + welcomeMessages[(int) (Math.random() * ((welcomeMessages.length)))]);
         inventory.add(new Money(1000));
     }
@@ -217,14 +214,13 @@ public class Player extends GameObject {
     }
 
     public ArrayList<Integer> saySomethingToAll(ArrayList<Player> players) {
-        if (state != "talking") {
-            return new ArrayList<Integer>();
-        }
         ArrayList<Integer> arrayToReturn = new ArrayList<>();
-        for (Player item : players) {
-            Position itemPos = item.position;
-            if (Math.abs(position.x - itemPos.x) <= fieldOfView || Math.abs(position.y - itemPos.y) <= fieldOfView) {
-                arrayToReturn.add(item.id);
+        if (state.equals("talking")) {
+            for (Player p : players) {
+                if (Math.abs(position.x - p.position.x) <= fieldOfView
+                    || Math.abs(position.y - p.position.y) <= fieldOfView) {
+                    arrayToReturn.add(p.id);
+                }
             }
         }
         return arrayToReturn;

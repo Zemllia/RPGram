@@ -21,7 +21,7 @@
               <artifactId>exec-maven-plugin</artifactId>
               <version>1.4.0</version>
               <configuration>
-                <mainClass>Main</mainClass>
+                <mainClass>rpgram.Main</mainClass>
               </configuration>
             </plugin>
         </plugins>

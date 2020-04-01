@@ -65,9 +65,9 @@ class PathFinding {
     }
 
     private Node[][] generateNodeGrid(Map map) {
-        Node[][] arrayToReturn = new Node[map.maxXBound][map.maxYBound];
-        for (int i = 0; i < map.maxXBound; i++) {
-            for (int j = 0; j < map.maxYBound; j++) {
+        Node[][] arrayToReturn = new Node[map.areaWidth][map.areaHeight];
+        for (int i = 0; i < map.areaWidth; i++) {
+            for (int j = 0; j < map.areaHeight; j++) {
                 boolean walkable = true;
                 if (map.gameMap[0][i][j] == 9) {
                     walkable = false;
@@ -117,8 +117,8 @@ class PathFinding {
                     if (i == 0 && j == 0) {
                         continue;
                     }
-                    if ((coordinates.x + i >= 0 && coordinates.x + i < map.maxXBound - 1)
-                        && (coordinates.y + j >= 0 && coordinates.y + j < map.maxYBound - 1)) {
+                    if ((coordinates.x + i >= 0 && coordinates.x + i < map.areaWidth - 1)
+                        && (coordinates.y + j >= 0 && coordinates.y + j < map.areaHeight - 1)) {
                         if (nodeMap[coordinates.x + i][coordinates.y + j].isWalkable) {
                             NodeList.add(nodeMap[coordinates.x + i][coordinates.y + j]);
                         }

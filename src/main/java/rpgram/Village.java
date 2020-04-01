@@ -14,16 +14,7 @@ public class Village {
 
     Position villagePos;
 
-    enum Layer {
-        WEIGHTS,
-        CAVES,
-        GROUND,
-        ENVIRONMENT,
-        PLAYERS,
-        HEAVENS
-    }
-
-    char[][][] villageMap = new char[Map.Layer.values().length][50][50];
+    char[][][] villageMap = new char[MapLayers.values().length][50][50];
     char[][] weightsOfObjects = { { ' ', '1' }, { 'F', '2' }, { 'T', '3' }, { 'R', '0' }, { '%', '5' } };
 
 
@@ -48,7 +39,7 @@ public class Village {
 
     char recalculateCellWeight(Position pos) {
         int curWeight = 0;
-        for (int i = 0; i < Map.Layer.values().length; i++) {
+        for (int i = 0; i < MapLayers.values().length; i++) {
             char checkChar = villageMap[i][pos.x][pos.y];
             for (int j = 0; i < weightsOfObjects.length; i++) {
                 if (checkChar == weightsOfObjects[j][0]) {
@@ -64,7 +55,7 @@ public class Village {
     private void generateBrokenHouses() {
         int numberOfHouses = Random.randInt(3, 8);
         for (int i = 0; i < numberOfHouses; i++) {
-            villageMap[Layer.ENVIRONMENT.ordinal()][Random.randInt(0, 49)][Random.randInt(0, 49)] = 'D';
+            villageMap[MapLayers.ENVIRONMENT.ordinal()][Random.randInt(0, 49)][Random.randInt(0, 49)] = 'D';
         }
     }
 
@@ -73,10 +64,10 @@ public class Village {
             for (int j = 0; j < 50; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
-                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = '^';
+                    villageMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = '^';
                 }
                 if (randChance > 50 && randChance < 70) {
-                    villageMap[Layer.ENVIRONMENT.ordinal()][i][j] = 'o';
+                    villageMap[MapLayers.ENVIRONMENT.ordinal()][i][j] = 'o';
                 }
             }
         }
@@ -85,9 +76,9 @@ public class Village {
     private void clearMap() {
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                villageMap[Layer.GROUND.ordinal()][i][j] = ' ';
-                villageMap[Layer.CAVES.ordinal()][i][j] = ' ';
-                villageMap[Layer.WEIGHTS.ordinal()][i][j] = '1';
+                villageMap[MapLayers.GROUND.ordinal()][i][j] = ' ';
+                villageMap[MapLayers.CAVES.ordinal()][i][j] = ' ';
+                villageMap[MapLayers.WEIGHTS.ordinal()][i][j] = '1';
             }
         }
     }

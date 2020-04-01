@@ -21,7 +21,7 @@ public class RPGram extends TelegramLongPollingBot {
 
     private ArrayList<Player> players = new ArrayList<>();
 
-    private Map map = new Map(500, 500, 5, 5, 3);
+    private Map map = new Map(500, 500, 5, 3);
 
     void init() {
         map.generateMap();
@@ -34,7 +34,7 @@ public class RPGram extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (isUser(update.getMessage().getChatId())) {
                 int userId = update.getMessage().getFrom().getId();
-                if (!checkIfExists(userId)) {
+                if (!checkIfPlayerExists(userId)) {
                     Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     while (map.gameMap[4][pos.x][pos.y] == '@') {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
@@ -210,13 +210,6 @@ public class RPGram extends TelegramLongPollingBot {
                 sendEditedMessage(update, (int) message_id, answer, kmActions);
                 break;
             }
-
-                /*case "getGift": {
-                    changePos(curPlayer.id);
-                    String answ = curPlayer.sleep();
-                    sendEditedMessage(update, (int) message_id, answ, kmArrows);
-                    break;
-                }*/
             }
             String[] str = call_data.split(" ");
             if (str[0].equals("put")) {
@@ -245,7 +238,7 @@ public class RPGram extends TelegramLongPollingBot {
         return "903900129:AAHZELemt_V2xRvzTayu3J3q7kf9hGfnLZo";
     }
 
-    private boolean checkIfExists(int id) {
+    private boolean checkIfPlayerExists(int id) {
         for (Player item : players) {
             if (item.id == id) {
                 return true;
@@ -255,9 +248,9 @@ public class RPGram extends TelegramLongPollingBot {
     }
 
     private String executePlayerCommand(int id, String command) {
-        for (Player item : players) {
-            if (item.id == id) {
-                return item.name + item.executeCommand(command, map);
+        for (Player player : players) {
+            if (player.id == id) {
+                return player.name + player.executeCommand(command, map);
             }
         }
         return null;
@@ -266,8 +259,8 @@ public class RPGram extends TelegramLongPollingBot {
     private void changePos(int id) {
         for (Player item : players) {
             if (item.id == id) {
-                if (item.getPos().x > map.maxXBound) {
-                    item.teleportPlayer(new Position(item.getPos().x - map.maxXBound, item.getPos().y));
+                if (item.getPos().x > map.areaWidth) {
+                    item.teleportPlayer(new Position(item.getPos().x - map.areaWidth, item.getPos().y));
                 }
                 if (item.worldState.equals("worldMap")) {
                     map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, -1);
