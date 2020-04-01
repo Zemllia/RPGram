@@ -20,10 +20,8 @@ public class Main {
 
         //botOptions.setProxyHost(PROXY_HOST);
         //botOptions.setProxyPort(PROXY_PORT);
-
-        NPC npc = new NPC(0, "George", null, new Position(0, 0), 0);
-
         //botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
+
         RPGramm bot = new RPGramm(botOptions);
         try {
             System.out.println("Connecting to Telegram...");

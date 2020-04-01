@@ -78,7 +78,7 @@ public class Map {
         generateSomeEnvironment();
         generateSwamp();
         generateSomeVillages();
-        generateRoadsBetweenVillages();
+        //generateRoadsBetweenVillages();
     }
 
     String viewMapArea(Position pos, int radius, int mapId) {

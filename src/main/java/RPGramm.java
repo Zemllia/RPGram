@@ -25,6 +25,8 @@ public class RPGramm extends TelegramLongPollingBot {
 
     void init() {
         map.generateMap();
+        NPC npc = new NPC(0, "George", null, new Position(10, 10), -1);
+        map.instantiateNewPlayer(npc.position, npc.getMapIcon(), -1);
     }
 
     @Override
@@ -235,12 +237,12 @@ public class RPGramm extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "RPgram_bot";
+        return "rpgram_dev_f1uctus_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "658606256:AAG3O_p83oGSI8feIGLFadJFWzZY4rbch4c";
+        return "903900129:AAHZELemt_V2xRvzTayu3J3q7kf9hGfnLZo";
     }
 
     private boolean checkIfExists(int id) {
