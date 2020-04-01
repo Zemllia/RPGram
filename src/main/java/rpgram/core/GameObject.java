@@ -1,28 +1,48 @@
 package rpgram.core;
 
-public class GameObject {
-    protected Position position;
-    private int energy;
+import rpgram.maps.BaseMap;
+
+public class GameObject extends NamedObject {
+    protected BaseMap map;
     private char mapIcon;
-    private String name;
+    private char mapWeight;
+
+    protected Position position;
+    protected Position lastPos;
+
+    private int energy;
 
     public GameObject(
-        String name, Position position,
-        int energy, char mapIcon
+        int id, String name, Position position,
+        int energy, BaseMap map, char mapIcon,
+        char mapWeight
     ) {
-
-        this.name = name;
-        this.position = position;
+        super(id, name);
+        this.position = lastPos = position;
         this.energy = energy;
+        this.map = map;
         this.mapIcon = mapIcon;
+        this.mapWeight = mapWeight;
+    }
+
+    public BaseMap getMap() {
+        return map;
     }
 
     public char getMapIcon() {
         return this.mapIcon;
     }
 
-    public String getName() {
-        return this.name;
+    public char getMapWeight() {
+        return mapWeight;
+    }
+
+    public Position getPos() {
+        return position;
+    }
+
+    public Position getLastPos() {
+        return lastPos;
     }
 
     public int getEnergy() {
@@ -31,10 +51,5 @@ public class GameObject {
 
     public void changeEnergy(int delta) {
         energy += delta;
-    }
-
-    public void move(Position delta) {
-        position.x += delta.x;
-        position.y += delta.y;
     }
 }

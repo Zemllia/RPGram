@@ -1,13 +1,11 @@
-package rpgram;
+package rpgram.maps;
 
 import rpgram.core.Position;
-import rpgram.maps.MapLayers;
 
 import java.util.ArrayList;
 
-class PathFinding {
-
-    ArrayList<Position> findPath(Position targetPos, Position selfPos, GlobalMap map) {
+public class PathFinding {
+    public ArrayList<Position> findPath(Position targetPos, Position selfPos, BaseMap map) {
         Node[][] nodeMap = generateNodeGrid(map);
 
         Node startNode = nodeMap[selfPos.x][selfPos.y];
@@ -67,7 +65,7 @@ class PathFinding {
         return finalPath;
     }
 
-    private Node[][] generateNodeGrid(GlobalMap map) {
+    private Node[][] generateNodeGrid(BaseMap map) {
         Node[][] arrayToReturn = new Node[map.getAreaWidth()][map.getAreaHeight()];
         for (int i = 0; i < map.getAreaWidth(); i++) {
             for (int j = 0; j < map.getAreaHeight(); j++) {
@@ -113,7 +111,7 @@ class PathFinding {
             this.isWalkable = isWalkable;
         }
 
-        ArrayList<Node> getNeighbours(Node[][] nodeMap, GlobalMap map) {
+        ArrayList<Node> getNeighbours(Node[][] nodeMap, BaseMap map) {
             ArrayList<Node> NodeList = new ArrayList<Node>();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {

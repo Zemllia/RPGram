@@ -1,86 +1,68 @@
-package rpgram;
+package rpgram.creatures;
 
 import rpgram.core.GameObject;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
-import rpgram.maps.MapLayers;
+import rpgram.maps.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends GameObject {
-    int id;
-    String name;
-
-    Position oldPos;
-
     private int maxHP = 100;
     private int HP = 100;
-    int fieldOfView = 5;
+    public int fieldOfView = 10;
     private int XP = 0;
     private int requiredXP = 10;
     private int level = 1;
     private int skillPoint = 0;
 
-    String state;
-    String worldState;
+    public PlayerState state;
 
     private PathFinding pathFinding = new PathFinding();
 
     public List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    char mapIcon;
-
-    GlobalMap map;
-
-    Player(String name, Position pos, int id, GlobalMap map) {
-        super("name", pos, 200, '@');
-        oldPos = pos;
-        this.name = name;
-        this.id = id;
-        mapIcon = name.charAt(0);
+    public Player(String name, Position pos, int id, BaseMap map) {
+        super(id, name, pos, 200, map, name.charAt(0), '9');
         changeEnergy(100);
-        this.map = map;
-        String[] welcomeMessages = { " прибыл из космоса", " вылез из под земли", " наконец-то вышел из дома",
-            " был добавлен в мир" };
-        System.out.println(name + welcomeMessages[(int) (Math.random() * ((welcomeMessages.length)))]);
+        String[] welcomeMessages = {
+            "Прибыл из космоса",
+            "Вылез из под земли",
+            "Наконец-то вышел из дома",
+            "Был добавлен в мир"
+        };
+        System.out.println(name + ": " + welcomeMessages[(int) (Math.random() * ((welcomeMessages.length)))]);
         inventory.add(new Money(1000));
     }
 
-    void teleportPlayer(Position newPosition) {
-        position.x = newPosition.x;
-        position.y = newPosition.y;
+    public void updatePos() {
+        if (getPos().x > map.getAreaWidth()) {
+            teleportPlayer(new Position(getPos().x - map.getAreaWidth(), getPos().y));
+        } else {
+            teleportPlayer(getPos());
+        }
     }
 
+    void teleportPlayer(Position newPosition) {
+        lastPos = position;
+        position = new Position(newPosition.x, newPosition.y);
+        map.moveObject(this);
+    }
 
-    String executeCommand(String command, GlobalMap map) {
-        String[] commandArray = command.split(" ");
+    public String executeCommand(String command) {
+        String[] commandArray = command.toLowerCase().trim().split(" ");
 
-        String[] randUnknownCommandPhrases = { ": Оу, ума не приложу как это сделать, но я могу вот что: \n",
-            ": Вобще без понятия как это сделать :( Но мы можем попробовать: \n",
-            ": Я думаю, я должен научиться делать это, но пока я могу только: \n" };
-
-        String[] commands = { "идти x y - Идти на глобальные координаты x y\n",
-            "осмотреть (местность | себя) - увидеть карту в поле вашего зрения/узнать статы своего персонажа\n",
-            "спать - восстановить энергию, если ее мало\n",
-            "Добыть (дерево/камень) - добыть ресурс, если вы на нем стоите\n",
-            "Зайти - зайти в деревню"
-        };
-
-        StringBuilder answer;
-        if (commandArray[0].toLowerCase().equals("тп")) {
+        StringBuilder answer = new StringBuilder();
+        if (commandArray[0].equals("тп")) {
             teleportPlayer(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
-            answer = new StringBuilder(": Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!");
-        } else {
-            answer = new StringBuilder(randUnknownCommandPhrases[Random.randInt(0, randUnknownCommandPhrases.length - 1)]);
-            for (String item : commands) {
-                answer.append(item);
-            }
+            answer.append("Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!");
+        } else if (commandArray[0].equals("/start")) {
+            answer.append("Привет от RPGram!");
         }
         return answer.toString();
     }
-
 
     void sortInventory() {
         for (int i = 0; i < inventory.size(); i++) {
@@ -93,78 +75,63 @@ public class Player extends GameObject {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Position getPos() {
-        return position;
-    }
-
-    public String movePlayer(Position targetPos, GlobalMap map) {
-        String answer;
+    public String movePlayer(Position targetPos) {
         ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
         if (getEnergy() >= path.size()) {
-            oldPos = position;
-            position = targetPos;
+            teleportPlayer(targetPos);
+
             changeEnergy(path.size() * -1);
             increaseXP();
-            if (worldState.equals("worldMap")) {
-                map.changePlayerPos(oldPos, position, mapIcon, -1);
-            } else {
-                String[] worldStateSplited = worldState.split(" ");
-                if (worldStateSplited[0].equals("village")) {
-                    map.changePlayerPos(oldPos, position, mapIcon, Integer.parseInt(worldStateSplited[1]));
-                }
-            }
-            answer = map.viewMapArea(position, fieldOfView, getUserWorld());
+            return map.viewMapArea(position, fieldOfView);
         } else {
-            answer = ": Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
+            return "Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
         }
-        return answer;
     }
 
     public String enterToVillage() {
-        String answer;
-        String[] worldStateArray = worldState.split(" ");
-        System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
-        Village curVillage = map.checkVillage(this.position);
-        if (worldStateArray[0].equals("worldMap") && curVillage != null) {
-            worldState = "village " + curVillage.getId();
-            position = new Position(25, 25);
-            oldPos = position;
-            answer = ": Хм, в поселении можно отдохнуть \n" +
-                "Информация о поселении:\n" +
-                "Название: " + curVillage.getName() + "\n" +
-                "Владелец: " + curVillage.getOwnerName() + "\n" +
-                "Население: " + curVillage.getVillagersCount();
-            map.instantiateNewPlayer(position, mapIcon, curVillage.getId());
-
-        } else {
-            answer = ": Здесь некуда заходить";
+        if (map instanceof VillageMap) {
+            return "Здесь некуда заходить";
         }
-        return answer;
+
+        System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
+
+        VillageMap curVillage = ((GlobalMap) map).checkVillage(this.position);
+        if (curVillage == null) {
+            return "Тут деревни нет!";
+        }
+
+        map = curVillage;
+        lastPos = position;
+        position = new Position(curVillage.getAreaWidth() / 2, curVillage.getAreaHeight() / 2);
+
+        map.moveObject(this);
+        return "Хм, в поселении можно отдохнуть \n" +
+            "Информация о поселении:\n" +
+            "Название: " + curVillage.getName() + "\n" +
+            "Владелец: " + curVillage.getOwnerName() + "\n" +
+            "Население: " + curVillage.getVillagersCount();
     }
 
     public String exitFromVillage() {
-        String answer;
-        String[] worldStateSplitted = worldState.split(" ");
-        if (worldStateSplitted[0].equals("village")) {
-            Village curVillage = map.villages.get(Integer.parseInt(worldStateSplitted[1]));
-            worldState = "worldMap";
-            position = new Position(curVillage.position.x, curVillage.position.y);
-            oldPos = position;
-            answer = "Пора продолжать приключения";
-            map.instantiateNewPlayer(position, mapIcon, -1);
-        } else {
-            answer = "Мне неоткуда выходить";
+        if (!(map instanceof VillageMap)) {
+            return "Мне неоткуда выходить";
         }
-        return answer;
+
+        VillageMap curVillage = (VillageMap) map;
+
+        map = curVillage.getParentMap();
+        lastPos = position;
+        position = new Position(curVillage.getPosition().x, curVillage.getPosition().y);
+
+        map.moveObject(this);
+        return "Пора продолжать приключения";
     }
 
     public String getResource(String whatToGet) {
         String answer = null;
-        if (whatToGet.toLowerCase().equals("дерево")) {
+        // TODO: Remove duplicates
+        switch (whatToGet.toLowerCase()) {
+        case "дерево":
             if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == '^') {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
@@ -173,7 +140,8 @@ public class Player extends GameObject {
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
-        } else if (whatToGet.toLowerCase().equals("камень")) {
+            break;
+        case "камень":
             if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == '*') {
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
@@ -182,7 +150,8 @@ public class Player extends GameObject {
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
-        } else if (whatToGet.toLowerCase().equals("землю")) {
+            break;
+        case "землю":
             if (map.layer(MapLayers.ENVIRONMENT)[position.x][position.y] == 0) {
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
@@ -191,6 +160,7 @@ public class Player extends GameObject {
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
+            break;
         }
         return answer;
     }
@@ -218,11 +188,11 @@ public class Player extends GameObject {
 
     public ArrayList<Integer> saySomethingToAll(ArrayList<Player> players) {
         ArrayList<Integer> arrayToReturn = new ArrayList<>();
-        if (state.equals("talking")) {
+        if (state == PlayerState.TALKING) {
             for (Player p : players) {
                 if (Math.abs(position.x - p.position.x) <= fieldOfView
                     || Math.abs(position.y - p.position.y) <= fieldOfView) {
-                    arrayToReturn.add(p.id);
+                    arrayToReturn.add(p.getId());
                 }
             }
         }
@@ -238,18 +208,6 @@ public class Player extends GameObject {
             answer = "Я пока не устал!";
         }
         return answer;
-    }
-
-    int getUserWorld() {
-        if (worldState.equals("worldMap")) {
-            return -1;
-        } else {
-            String[] worldStateSplited = worldState.split(" ");
-            if (worldStateSplited[0].equals("village")) {
-                return Integer.parseInt(worldStateSplited[1]);
-            }
-        }
-        return -1;
     }
 
     public List<InventoryItem> getInventory() {
@@ -279,7 +237,6 @@ public class Player extends GameObject {
         } else {
             return ("У вас недостатачно очков опыта");
         }
-
     }
 
     public String increaseFOV(int fieldOfViewToIncrease) {
@@ -291,6 +248,4 @@ public class Player extends GameObject {
             return ("У вас недостатачно очков опыта");
         }
     }
-
-
 }

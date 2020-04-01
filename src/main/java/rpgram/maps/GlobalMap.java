@@ -1,11 +1,9 @@
-package rpgram;
+package rpgram.maps;
 
+import rpgram.Treasure;
 import rpgram.core.NamesGenerator;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
-import rpgram.maps.BaseMap;
-import rpgram.maps.MapLayers;
-import rpgram.maps.MapLegend;
 
 import java.util.ArrayList;
 
@@ -13,22 +11,15 @@ public class GlobalMap extends BaseMap {
     private int villagesCount;
     private int swampCount;
 
-    ArrayList<Village> villages = new ArrayList<>();
-    ArrayList<Treasure> treasures = new ArrayList<>();
+    public ArrayList<VillageMap> villages = new ArrayList<>();
+    public ArrayList<Treasure> treasures = new ArrayList<>();
 
     public GlobalMap(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
-        super(areaWidth, areaHeight);
+        super(-1, "Карта мира", areaWidth, areaHeight);
         this.villagesCount = villagesCount;
         this.swampCount = swampCount;
-    }
-
-    @Override
-    public char[][][] getGameMapFromId(int mapId) {
-        if (mapId == -1) {
-            return gameMap;
-        } else {
-            return villages.get(mapId).getGameMapFromId(-1);
-        }
+        generateMap();
+        System.out.println("Мир сгенерирован.");
     }
 
     void generateMap() {
@@ -51,7 +42,7 @@ public class GlobalMap extends BaseMap {
         for (int i = 0; i < villagesCount; i++) {
             generateVillage(i);
         }
-        generateRoadsBetweenVillages();
+        //generateRoadsBetweenVillages();
     }
 
     private void generateSwamp() {
@@ -85,28 +76,30 @@ public class GlobalMap extends BaseMap {
     }
 
     private void generateVillage(int id) {
-        Position vPosition = new Position(Random.randInt(0, areaHeight), Random.randInt(0, areaHeight));
-        Village v = new Village(
+        Position vPos = new Position(Random.randInt(0, areaHeight), Random.randInt(0, areaHeight));
+        VillageMap v = new VillageMap(
+            this,
             id,
             NamesGenerator.getRandomVillageName(),
             NamesGenerator.getRandomNpcName(),
             Random.randInt(0, 9999),
             false,
-            vPosition
+            vPos
         );
-        layer(MapLayers.ENVIRONMENT)[v.position.x][v.position.y] = 'v';
+
+        layer(MapLayers.ENVIRONMENT)[vPos.x][vPos.y] = 'v';
         villages.add(v);
     }
 
     private void generateRoadsBetweenVillages() {
         PathFinding pathFinding = new PathFinding();
-        for (Village village : villages) {
+        for (VillageMap village : villages) {
             for (int i = 0; i <= Random.randInt(0, 2); i++) {
-                Village villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
-                while (villageForRoad.id == village.id) {
+                VillageMap villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
+                while (villageForRoad.getId() == village.getId()) {
                     villageForRoad = villages.get(Random.randInt(0, villagesCount - 1));
                 }
-                ArrayList<Position> roadPath = pathFinding.findPath(village.position, villageForRoad.position, this);
+                ArrayList<Position> roadPath = pathFinding.findPath(village.getPosition(), villageForRoad.getPosition(), this);
 
                 for (Position roadElement : roadPath) {
                     layer(MapLayers.GROUND)[roadElement.x][roadElement.y] = '◼';
@@ -115,11 +108,10 @@ public class GlobalMap extends BaseMap {
         }
     }
 
-    Village checkVillage(Position villagePos) {
-        for (Village village : villages) {
-            System.out.println("DEBUG: vlg village pos is x=" + village.position.x + " y=" + village.position.y);
-            if (village.position.x == villagePos.x && village.position.y == villagePos.y) {
-                System.out.println("DEBUG: trying to return");
+    public VillageMap checkVillage(Position villagePos) {
+        for (VillageMap village : villages) {
+            if (village.getPosition().x == villagePos.x && village.getPosition().y == villagePos.y) {
+                System.out.println("DEBUG: village found");
                 return village;
             }
         }

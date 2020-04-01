@@ -10,26 +10,27 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
+import rpgram.creatures.Player;
+import rpgram.creatures.PlayerState;
 import rpgram.items.InventoryItem;
+import rpgram.maps.GlobalMap;
 import rpgram.maps.MapLayers;
+import rpgram.maps.MapLegend;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RPGram extends TelegramLongPollingBot {
+    private ArrayList<Player> players = new ArrayList<>();
+
+    private GlobalMap globalMap;
 
     RPGram(DefaultBotOptions options) {
         super(options);
-    }
+        globalMap = new GlobalMap(500, 500, 5, 3);
 
-    private ArrayList<Player> players = new ArrayList<>();
-
-    private GlobalMap map = new GlobalMap(500, 500, 5, 3);
-
-    void init() {
-        map.generateMap();
-        NPC npc = new NPC(0, "George", null, new Position(10, 10), -1);
-        map.instantiateNewPlayer(npc.position, npc.getMapIcon(), -1);
+        //NPC npc = new NPC(0, "George", null, new Position(10, 10), -1);
+        //map.instantiateNewPlayer(npc.getPos(), npc.getMapIcon(), -1);
     }
 
     @Override
@@ -37,32 +38,26 @@ public class RPGram extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (isUser(update.getMessage().getChatId())) {
                 int userId = update.getMessage().getFrom().getId();
+                Player p;
                 if (!checkIfPlayerExists(userId)) {
                     Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
-                    while (map.layer(MapLayers.PLAYERS)[pos.x][pos.y] == '@') {
+                    // TODO: check this condition
+                    while (Character.isAlphabetic(globalMap.layer(MapLayers.PLAYERS)[pos.x][pos.y])) {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     }
-                    Player newPlayer = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, map);
-                    newPlayer.state = "";
-                    newPlayer.worldState = "worldMap";
-                    players.add(newPlayer);
-                    if (newPlayer.worldState.equals("worldMap")) {
-                        map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, -1);
-                    } else {
-                        String[] worldStateSplited = newPlayer.worldState.split(" ");
-                        if (worldStateSplited[0].equals("village")) {
-                            map.instantiateNewPlayer(newPlayer.getPos(), newPlayer.mapIcon, Integer.parseInt(worldStateSplited[1]));
-                        }
-                    }
+                    p = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, globalMap);
+                    players.add(p);
+                    globalMap.addObject(p);
 
-                    System.out.println("Created new player: Name=" + newPlayer.name + " id=" + newPlayer.id +
-                        " position=x" + newPlayer.getPos().x + ", y" + newPlayer.getPos().y);
+                    System.out.println("Created new player: Name=" + p.getName() + " id=" + p.getId() +
+                        " position=x" + p.getPos().x + ", y=" + p.getPos().y);
                 } else {
-                    changePos(userId);
-                    ArrayList<Integer> messageSenders = getPlayer(userId).saySomethingToAll(players);
+                    p = getPlayer(userId);
+                    p.updatePos();
+                    ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
                     if (messageSenders.size() != 0) {
                         for (int id : messageSenders) {
-                            sendMessage(id, getPlayer(userId).name + ": " + update.getMessage().getText());
+                            sendMessage(id, p.getName() + ": " + update.getMessage().getText());
                         }
                         return;
                     }
@@ -72,13 +67,12 @@ public class RPGram extends TelegramLongPollingBot {
 
                 SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText(executePlayerCommand(
-                        update.getMessage().getFrom().getId(),
+                    .setText(p.getName() + ": " + p.executeCommand(
                         update.getMessage().getText()
                     )).enableHtml(true);
 
 
-                message.setReplyMarkup(getKeyBoardOfArrows(getPlayer(userId)));
+                message.setReplyMarkup(getKeyBoardOfArrows(p));
 
                 try {
                     execute(message);
@@ -93,138 +87,128 @@ public class RPGram extends TelegramLongPollingBot {
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
             Player curPlayer = getPlayer(chat_id);
 
-            InlineKeyboardMarkup kmArrows;
-            InlineKeyboardMarkup kmActions = null;
-            kmArrows = getKeyBoardOfArrows(curPlayer);
-            kmActions = getKeyBoardOfActionsMenu();
+            InlineKeyboardMarkup keyboard = null;
+            String answer = "";
             switch (call_data) {
 
             case "go_up": {
-                String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y), map);
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y));
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_right": {
-                String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1), map);
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1));
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_left": {
-                String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1), map);
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1));
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_down": {
-                String answ = curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y), map);
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                answer = curPlayer.movePlayer(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y));
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "inventory": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.inventory();
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                curPlayer.updatePos();
+                answer = curPlayer.inventory();
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "map":
             case "back": {
-                changePos(curPlayer.id);
-                String answ = map.viewMapArea(curPlayer.getPos(), curPlayer.fieldOfView, getUserWorld(curPlayer));
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.fieldOfView);
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getWood": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.getResource("дерево");
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                curPlayer.updatePos();
+                answer = curPlayer.getResource("дерево");
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getRock": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.getResource("камень");
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                curPlayer.updatePos();
+                answer = curPlayer.getResource("камень");
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "enter": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.enterToVillage();
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
-
+                curPlayer.updatePos();
+                answer = curPlayer.enterToVillage();
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getDirt": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.getResource("землю");
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                curPlayer.updatePos();
+                answer = curPlayer.getResource("землю");
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "actions": {
-                changePos(curPlayer.id);
-                String answ = "Так, посмотрим, что я могу здесь сделать...";
-                sendEditedMessage(update, (int) message_id, answ, kmActions);
+                curPlayer.updatePos();
+                answer = "Так, посмотрим, что я могу здесь сделать...";
+                keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             case "talk": {
-                changePos(curPlayer.id);
-                String answ = "Что бы мне сказать?";
-                curPlayer.state = "talking";
-                sendEditedMessage(update, (int) message_id, answ, getKeyBoardOfStopTalking());
+                curPlayer.updatePos();
+                answer = "Что бы мне сказать?";
+                curPlayer.state = PlayerState.TALKING;
+                keyboard = getKeyBoardOfStopTalking();
                 break;
             }
             case "stop_talk": {
-                changePos(curPlayer.id);
-                String answ = "Так, посмотрим, что я могу здесь сделать...";
-                curPlayer.state = "";
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                curPlayer.updatePos();
+                answer = "Так, посмотрим, что я могу здесь сделать...";
+                curPlayer.state = PlayerState.NORMAL;
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "exit": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.exitFromVillage();
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                curPlayer.updatePos();
+                answer = curPlayer.exitFromVillage();
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "sleep": {
-                changePos(curPlayer.id);
-                String answ = curPlayer.sleep();
-                sendEditedMessage(update, (int) message_id, answ, kmArrows);
+                curPlayer.updatePos();
+                answer = curPlayer.sleep();
+                keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "putItem": {
-                changePos(curPlayer.id);
-                String answ = "Что мне закопать?";
-                sendEditedMessage(update, (int) message_id, answ, getKeyBoardOfListOfItems(curPlayer));
+                curPlayer.updatePos();
+                answer = "Что мне закопать?";
+                keyboard = getKeyBoardOfListOfItems(curPlayer);
                 break;
             }
             case "increase_FOV": {
-                String answer = curPlayer.increaseFOV(1);
-                sendEditedMessage(update, (int) message_id, answer, kmActions);
+                answer = curPlayer.increaseFOV(1);
+                keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             case "increase_XP": {
-                String answer = curPlayer.increaseHP(5);
-                sendEditedMessage(update, (int) message_id, answer, kmActions);
+                answer = curPlayer.increaseHP(5);
+                keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             }
+
+            sendEditedMessage(update, (int) message_id, answer, keyboard);
             String[] str = call_data.split(" ");
-            if (str[0].equals("put")) {
+            if (str[0].equals("put") && curPlayer.getMap() instanceof GlobalMap) {
                 int id = Integer.parseInt(str[1]);
                 Treasure treasure = null;
-                for (Treasure item : map.treasures) {
+                for (Treasure item : ((GlobalMap) curPlayer.getMap()).treasures) {
                     if (item.getTreasurePosition().equals(curPlayer.getPos())) {
                         item.addNewItem(curPlayer.getInventory().get(id));
                     }
                 }
                 if (treasure == null) {
-                    treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.name);
+                    treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.getName());
                 }
                 curPlayer.inventory.remove(id);
             }
@@ -241,69 +225,30 @@ public class RPGram extends TelegramLongPollingBot {
         return "903900129:AAHZELemt_V2xRvzTayu3J3q7kf9hGfnLZo";
     }
 
-    private boolean checkIfPlayerExists(int id) {
+    public boolean checkIfPlayerExists(int id) {
         for (Player item : players) {
-            if (item.id == id) {
+            if (item.getId() == id) {
                 return true;
             }
         }
         return false;
     }
 
-    private String executePlayerCommand(int id, String command) {
+
+    public Player getPlayer(long id) {
         for (Player player : players) {
-            if (player.id == id) {
-                return player.name + player.executeCommand(command, map);
-            }
-        }
-        return null;
-    }
-
-    private void changePos(int id) {
-        for (Player item : players) {
-            if (item.id == id) {
-                if (item.getPos().x > map.getAreaWidth()) {
-                    item.teleportPlayer(new Position(item.getPos().x - map.getAreaWidth(), item.getPos().y));
-                }
-                if (item.worldState.equals("worldMap")) {
-                    map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, -1);
-                } else {
-                    String[] worldStateSplited = item.worldState.split(" ");
-                    if (worldStateSplited[0].equals("village")) {
-                        map.changePlayerPos(item.oldPos, item.getPos(), item.mapIcon, Integer.parseInt(worldStateSplited[1]));
-                    }
-                }
-            }
-        }
-    }
-
-
-    private Player getPlayer(long id) {
-        for (Player item : players) {
-            if (item.id == id) {
-                return item;
+            if (player.getId() == id) {
+                return player;
             }
         }
         return players.get(0);
     }
 
-    private boolean isUser(long id) {
+    public boolean isUser(long id) {
         return id > 0;
     }
 
-    private int getUserWorld(Player player) {
-        if (player.worldState.equals("worldMap")) {
-            return -1;
-        } else {
-            String[] worldStateSplited = player.worldState.split(" ");
-            if (worldStateSplited[0].equals("village")) {
-                return Integer.parseInt(worldStateSplited[1]);
-            }
-        }
-        return -1;
-    }
-
-    private void sendMessage(int idToSend, String messageToSend) {
+    public void sendMessage(int idToSend, String messageToSend) {
         SendMessage message = new SendMessage()
             .setChatId((long) idToSend)
             .setText(messageToSend).enableHtml(true);
@@ -343,19 +288,19 @@ public class RPGram extends TelegramLongPollingBot {
         rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Действия").setCallbackData("actions"));
-        char curChar = map.getSymbolOnPosAndLayer(player.getPos(), 3);
-        if (curChar == '^') {
+        char curChar = player.getMap().getChar(MapLayers.ENVIRONMENT, player.getPos());
+        if (curChar == MapLegend.TREE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
-        } else if (curChar == 'o') {
+        } else if (curChar == MapLegend.GROUNDHOLE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Зарыть предмет").setCallbackData("putItem"));
-        } else if (curChar == 'V') {
+        } else if (curChar == MapLegend.VILLAGE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
-        } else if (curChar == '*') {
+        } else if (curChar == MapLegend.ROCK.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть камень").setCallbackData("getRock"));
-        } else if (curChar == 'x') {
+        } else if (curChar == MapLegend.TREASURE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выкопать сокровише").setCallbackData("getGift"));
         } else {
-            if (!player.worldState.equals("worldMap")) {
+            if (player.getMap() instanceof GlobalMap) {
                 rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
             } else {
                 rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выйти из деревни").setCallbackData("exit"));

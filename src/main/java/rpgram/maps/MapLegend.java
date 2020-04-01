@@ -5,8 +5,10 @@ public enum MapLegend {
     WALL('#', "Wall"),
     TREE('^', "Tree"),
     SWAMP('%', "Swamp"),
-    ROCK('*', "A rock or a big stone"),
-    GROUNDHOLE('o', "Ground hole");
+    ROCK('*', "A rock, or a big stone"),
+    GROUNDHOLE('o', "Ground hole"),
+    VILLAGE('v', "Village"),
+    TREASURE('x', "Treasure");
 
     private char value;
     private String description;

@@ -1,15 +1,11 @@
-package rpgram;
+package rpgram.maps;
 
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
-import rpgram.maps.BaseMap;
-import rpgram.maps.MapLayers;
 
-public class Village extends BaseMap {
-    int id;
-    String name;
-
+public class VillageMap extends BaseMap {
     int ownerID;
+    private final BaseMap parentMap;
     String ownerName;
     //TODO Сделать возможность добавлять совладельцев (Строить в деревне могут только владельцы);
     int[] coOwnersID;
@@ -17,21 +13,24 @@ public class Village extends BaseMap {
     int villagersCount;
     boolean isBuiltByPlayer;
 
-    Position position;
+    private Position position;
 
-    public Village(int id, String name, String ownerName, int ownerID, boolean isBuiltByPlayer, Position position) {
-        super(50, 50);
-        this.id = id;
-        this.name = name;
+    public VillageMap(BaseMap parentMap, int id, String name, String ownerName, int ownerID, boolean isBuiltByPlayer, Position position) {
+        super(id, name, 50, 50);
+        this.parentMap = parentMap;
         this.ownerName = ownerName;
         this.ownerID = ownerID;
         this.isBuiltByPlayer = isBuiltByPlayer;
         this.position = position;
-        generateVillage();
+        generateMap();
         System.out.println("Деревня сгенерировалась x=" + position.x + " y=" + position.y);
     }
 
-    void generateVillage() {
+    public Position getPosition() {
+        return position;
+    }
+
+    void generateMap() {
         clearMap();
         generateEnvironment();
         if (!isBuiltByPlayer) {
@@ -60,19 +59,15 @@ public class Village extends BaseMap {
         }
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public String getOwnerName() {
         return ownerName;
     }
 
     public int getVillagersCount() {
         return villagersCount;
+    }
+
+    public BaseMap getParentMap() {
+        return parentMap;
     }
 }
