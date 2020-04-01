@@ -19,9 +19,9 @@ public class Main {
 
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        //botOptions.setProxyHost(PROXY_HOST);
-        //botOptions.setProxyPort(PROXY_PORT);
-        //botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
+        botOptions.setProxyHost(PROXY_HOST);
+        botOptions.setProxyPort(PROXY_PORT);
+        botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
 
         RPGram bot = new RPGram(botOptions);
         try {

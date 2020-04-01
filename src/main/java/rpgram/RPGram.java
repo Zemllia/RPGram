@@ -217,12 +217,12 @@ public class RPGram extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "rpgram_dev_f1uctus_bot";
+        return "RPGram_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "903900129:AAHZELemt_V2xRvzTayu3J3q7kf9hGfnLZo";
+        return "658606256:AAG3O_p83oGSI8feIGLFadJFWzZY4rbch4c";
     }
 
     public boolean checkIfPlayerExists(int id) {
