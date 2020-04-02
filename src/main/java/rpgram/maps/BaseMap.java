@@ -79,7 +79,6 @@ public class BaseMap extends NamedObject {
         }
 
         StringBuilder answer = new StringBuilder();
-        answer.append("\nСудя по карте моя позиция - x=").append(pos.x).append(" y=").append(pos.y);
         answer.append("<code>\n");
         answer.append("\n");
         for (int i = 0; i < radius * 2; i++) {
