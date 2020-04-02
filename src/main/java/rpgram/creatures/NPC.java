@@ -16,8 +16,8 @@ public class NPC extends Creature {
 
     private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 
-    private int satiety = 1000;
-    private int water = 1000;
+    private int satiety = 400;
+    private int water = 400;
 
     NPCState state = NPCState.CALM;
 
@@ -45,15 +45,23 @@ public class NPC extends Creature {
         changeSatiety(-1);
         changeWater(-2);
         changeEnergy(-1);
+        System.out.println(
+            getName() + ": x=" + getPos().x
+                + " y=" + getPos().y
+                + " satiety=" + satiety
+                + " water=" + water
+                + " energy=" + getEnergy()
+        );
 
         switch (state) {
         case CALM: {
             move(new Position(getPos().x + getRandomStep(), getPos().y + getRandomStep()));
             if (satiety <= 200) {
                 state = NPCState.HUNGRY;
-            }
-            if (water <= 300) {
+            } else if (water <= 300) {
                 state = NPCState.THIRSTY;
+            } else if (getEnergy() <= 0) {
+                state = NPCState.TIRED;
             }
             break;
         }
