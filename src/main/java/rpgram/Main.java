@@ -36,7 +36,7 @@ public class Main {
                                 Integer.parseInt(proxyPort) : PROXY_PORT);
         botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
 
-        RPGram bot = new RPGram(botOptions);
+        RPGram bot = new RPGram(botOptions, config);
         try {
             System.out.println("Connecting to Telegram...");
             botsApi.registerBot(bot);
