@@ -11,7 +11,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
+                    <encoding>UTF-8</encoding>
                     <source>8</source>
                     <target>8</target>
                 </configuration>
@@ -21,7 +23,7 @@
               <artifactId>exec-maven-plugin</artifactId>
               <version>1.4.0</version>
               <configuration>
-                <mainClass>Main</mainClass>
+                <mainClass>rpgram.Main</mainClass>
               </configuration>
             </plugin>
         </plugins>
