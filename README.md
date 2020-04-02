@@ -10,7 +10,16 @@ $ cd RPGram
 $ mvn compile
 ```
 
+## Configuration
+A configuration file example:
+```
+bot.token=123456789:your-secret-token
+bot.name=my_rpgram_bot
+proxy.host=127.0.0.1
+proxy.port=9050
+```
+
 ## Running the bot
 ```
-$ mvn exec:java
+$ mvn exec:java -Dexec.args='config.properties'
 ```

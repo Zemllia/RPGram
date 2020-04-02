@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Position;
+import rpgram.core.Config;
 import rpgram.core.utils.Random;
 import rpgram.creatures.Creature;
 import rpgram.creatures.NPC;
@@ -24,11 +25,12 @@ import java.util.List;
 
 public class RPGram extends TelegramLongPollingBot {
     private ArrayList<Creature> players = new ArrayList<>();
-
+    private Config config;
     private GlobalMap globalMap;
 
-    RPGram(DefaultBotOptions options) {
+    RPGram(DefaultBotOptions options, Config config) {
         super(options);
+        this.config = config;
         globalMap = new GlobalMap(500, 500, 5, 3);
         NPC npc = new NPC(0, "George", null, new Position(10, 10), globalMap);
         players.add(npc);
@@ -217,12 +219,12 @@ public class RPGram extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "RPGram_bot";
+        return this.config.get("bot.name");
     }
 
     @Override
     public String getBotToken() {
-        return "658606256:AAG3O_p83oGSI8feIGLFadJFWzZY4rbch4c";
+        return this.config.get("bot.token");
     }
 
     public boolean checkIfPlayerExists(int id) {
