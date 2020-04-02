@@ -13,7 +13,10 @@ public class Main {
     private static String PROXY_HOST = "127.0.0.1" /* proxy host */;
     private static Integer PROXY_PORT = 9050 /* proxy port */;
 
-    public static void main(String[] args) throws Config.ConfigException {
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            throw new Exception("No configuration file is specified.");
+        }
         Config config = new Config(args[0]);
         System.out.println("Loading config...");
         config.load();
