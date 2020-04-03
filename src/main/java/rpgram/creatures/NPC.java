@@ -14,7 +14,7 @@ public class NPC extends Creature {
     private DialogEngine de;
     private Quest[] quests;
 
-    private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
+    private List<InventoryItem> inventory = new ArrayList<>();
 
     private int satiety = 400;
     private int water = 400;

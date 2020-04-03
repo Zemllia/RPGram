@@ -10,8 +10,8 @@ public enum MapLegend {
     VILLAGE('v', "Village"),
     TREASURE('x', "Treasure");
 
-    private char value;
-    private String description;
+    private final char value;
+    private final String description;
 
     MapLegend(char value, String description) {
         this.value = value;

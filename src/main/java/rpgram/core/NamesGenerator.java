@@ -2,6 +2,7 @@ package rpgram.core;
 
 import rpgram.core.utils.Random;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class NamesGenerator {
     public static String getRandomVillageName() {
         return villageNames[Random.randInt(0, NamesGenerator.villageNames.length - 1)];

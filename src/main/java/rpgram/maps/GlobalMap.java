@@ -8,11 +8,11 @@ import rpgram.core.utils.Random;
 import java.util.ArrayList;
 
 public class GlobalMap extends BaseMap {
-    private int villagesCount;
-    private int swampCount;
+    private final int villagesCount;
+    private final int swampCount;
 
-    public ArrayList<VillageMap> villages = new ArrayList<>();
-    public ArrayList<Treasure> treasures = new ArrayList<>();
+    public final ArrayList<VillageMap> villages = new ArrayList<>();
+    public final ArrayList<Treasure> treasures = new ArrayList<>();
 
     public GlobalMap(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
         super(-1, "Карта мира", areaWidth, areaHeight);

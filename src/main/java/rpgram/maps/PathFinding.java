@@ -11,8 +11,8 @@ public class PathFinding {
         Node startNode = nodeMap[selfPos.x][selfPos.y];
         Node targetNode = nodeMap[targetPos.x][targetPos.y];
 
-        ArrayList<Node> openSet = new ArrayList<Node>();
-        ArrayList<Node> closedSet = new ArrayList<Node>();
+        ArrayList<Node> openSet = new ArrayList<>();
+        ArrayList<Node> closedSet = new ArrayList<>();
         startNode.hCost = getDistance(startNode, targetNode);
 
         openSet.add(startNode);
@@ -56,7 +56,7 @@ public class PathFinding {
     }
 
     private ArrayList<Position> generateFinalPath(Node resultNode) {
-        ArrayList<Position> finalPath = new ArrayList<Position>();
+        ArrayList<Position> finalPath = new ArrayList<>();
         Node curNode = resultNode;
         while (curNode != null) {
             finalPath.add(curNode.coordinates);
@@ -112,7 +112,7 @@ public class PathFinding {
         }
 
         ArrayList<Node> getNeighbours(Node[][] nodeMap, BaseMap map) {
-            ArrayList<Node> NodeList = new ArrayList<Node>();
+            ArrayList<Node> NodeList = new ArrayList<>();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) {

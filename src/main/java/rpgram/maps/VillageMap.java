@@ -4,16 +4,16 @@ import rpgram.core.Position;
 import rpgram.core.utils.Random;
 
 public class VillageMap extends BaseMap {
-    int ownerID;
+    final int ownerID;
     private final BaseMap parentMap;
-    String ownerName;
+    final String ownerName;
     //TODO Сделать возможность добавлять совладельцев (Строить в деревне могут только владельцы);
     int[] coOwnersID;
     //TODO Сделать возможность прописаться в поселении и спавн рандомных NPC
     int villagersCount;
-    boolean isBuiltByPlayer;
+    final boolean isBuiltByPlayer;
 
-    private Position position;
+    private final Position position;
 
     public VillageMap(BaseMap parentMap, int id, String name, String ownerName, int ownerID, boolean isBuiltByPlayer, Position position) {
         super(id, name, 50, 50);

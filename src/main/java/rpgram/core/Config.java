@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Config {
-    private String fileName;
-    private Properties properties;
+    private final String fileName;
+    private final Properties properties;
 
     public class ConfigException extends Exception {
         public ConfigException(String message) {
@@ -36,7 +36,7 @@ public class Config {
             properties.load(stream);
             stream.close();
         } catch (FileNotFoundException e) {
-            throw new ConfigException("Config file is not found: "
+            throw new ConfigException("Config file not found: "
                                       + this.fileName);
         } catch (IOException e) {
             throw new ConfigException("Could not read config file: "

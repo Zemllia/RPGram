@@ -4,8 +4,8 @@ import rpgram.maps.BaseMap;
 
 public class GameObject extends NamedObject {
     protected BaseMap map;
-    private char mapIcon;
-    private char mapWeight;
+    private final char mapIcon;
+    private final char mapWeight;
 
     protected Position position;
     protected Position lastPos;

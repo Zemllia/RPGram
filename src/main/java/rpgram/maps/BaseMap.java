@@ -5,12 +5,12 @@ import rpgram.core.NamedObject;
 import rpgram.core.Position;
 
 public class BaseMap extends NamedObject {
-    protected int areaWidth;
-    protected int areaHeight;
+    protected final int areaWidth;
+    protected final int areaHeight;
 
-    protected char[][][] mapContainer;
+    protected final char[][][] mapContainer;
 
-    protected char[][] weightsOfObjects = {
+    protected final char[][] weightsOfObjects = {
         { ' ', '1' },
         { 'F', '2' },
         { 'Y', '3' },
@@ -83,12 +83,7 @@ public class BaseMap extends NamedObject {
         answer.append("\n");
         for (int i = 0; i < radius * 2; i++) {
             for (int j = 0; j < radius * 2; j++) {
-                // show player as white letter (but breaks alignment)
-                // if (renderArray[i][j] <= 127) {
                 answer.append(renderArray[i][j]).append("  ");
-                // } else {
-                //     answer.append("</code>").append(renderArray[i][j]).append("<code>");
-                // }
             }
             answer.append("\n");
         }

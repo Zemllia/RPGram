@@ -8,8 +8,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import rpgram.core.Position;
 import rpgram.core.Config;
+import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.creatures.Creature;
 import rpgram.creatures.NPC;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RPGram extends TelegramLongPollingBot {
-    private ArrayList<Creature> players = new ArrayList<>();
-    private Config config;
-    private GlobalMap globalMap;
+    private final ArrayList<Creature> players = new ArrayList<>();
+    private final Config config;
+    private final GlobalMap globalMap;
 
     RPGram(DefaultBotOptions options, Config config) {
         super(options);
@@ -267,11 +267,11 @@ public class RPGram extends TelegramLongPollingBot {
         }
     }
 
-    private void sendEditedMessage(Update update, int message_id, String answ, InlineKeyboardMarkup km) {
+    private void sendEditedMessage(Update update, int message_id, String answer, InlineKeyboardMarkup km) {
         EditMessageText new_message = new EditMessageText()
             .setChatId(update.getCallbackQuery().getMessage().getChatId())
             .setMessageId(message_id)
-            .setText(answ)
+            .setText(answer)
             .enableHtml(true)
             .setReplyMarkup(km);
         try {
