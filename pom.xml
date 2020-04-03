@@ -24,15 +24,7 @@
                 <version>1.6.0</version>
                 <configuration>
                     <mainClass>rpgram.Main</mainClass>
-                    <executable>maven</executable>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
