@@ -6,7 +6,7 @@ public enum MapLegend {
     TREE('^', "Tree"),
     SWAMP('%', "Swamp"),
     ROCK('*', "A rock, or a big stone"),
-    GROUNDHOLE('o', "Ground hole"),
+    HOLE('o', "Ground hole"),
     VILLAGE('v', "Village"),
     TREASURE('x', "Treasure");
 

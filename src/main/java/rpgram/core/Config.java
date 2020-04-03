@@ -37,10 +37,10 @@ public class Config {
             stream.close();
         } catch (FileNotFoundException e) {
             throw new ConfigException("Config file not found: "
-                                      + this.fileName);
+                + this.fileName);
         } catch (IOException e) {
             throw new ConfigException("Could not read config file: "
-                                      + this.fileName);
+                + this.fileName);
         }
     }
 

@@ -41,7 +41,7 @@ public class VillageMap extends BaseMap {
     private void generateBrokenHouses() {
         int numberOfHouses = Random.randInt(3, 8);
         for (int i = 0; i < numberOfHouses; i++) {
-            layer(MapLayers.ENVIRONMENT)[Random.randInt(0, areaWidth)][Random.randInt(0, areaHeight)] = 'D';
+            layer(MapLayer.ENVIRONMENT)[Random.randInt(0, areaWidth)][Random.randInt(0, areaHeight)] = 'D';
         }
     }
 
@@ -50,10 +50,10 @@ public class VillageMap extends BaseMap {
             for (int j = 0; j < areaHeight; j++) {
                 int randChance = Random.randInt(0, 100);
                 if (randChance < 50) {
-                    layer(MapLayers.ENVIRONMENT)[i][j] = '^';
+                    layer(MapLayer.ENVIRONMENT)[i][j] = '^';
                 }
                 if (randChance > 50 && randChance < 70) {
-                    layer(MapLayers.ENVIRONMENT)[i][j] = 'o';
+                    layer(MapLayer.ENVIRONMENT)[i][j] = 'o';
                 }
             }
         }

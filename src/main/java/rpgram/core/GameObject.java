@@ -19,7 +19,7 @@ public class GameObject extends NamedObject {
         this.mapWeight = mapWeight;
         this.position = lastPos = position;
 
-        System.out.println("Added " + name + " (#" + id + ") at x=" + position.x + " y=" + position.y);
+        System.out.println("Created " + name + " (#" + id + ") at x=" + position.x + " y=" + position.y);
     }
 
     public BaseMap getMap() {

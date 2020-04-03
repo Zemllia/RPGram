@@ -67,30 +67,30 @@ public class Player extends Creature {
         // TODO: Remove duplicates
         switch (whatToGet.toLowerCase()) {
         case "дерево":
-            if (map.getChar(MapLayers.ENVIRONMENT, position) == MapLegend.TREE.getValue()) {
+            if (map.getChar(MapLayer.ENVIRONMENT, position) == MapLegend.TREE.getValue()) {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
-                map.setChar(MapLayers.ENVIRONMENT, position, (char) 0);
+                map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
                 answer = "Добыл немного дерева (x" + addedWood + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
             break;
         case "камень":
-            if (map.getChar(MapLayers.ENVIRONMENT, position) == MapLegend.ROCK.getValue()) {
+            if (map.getChar(MapLayer.ENVIRONMENT, position) == MapLegend.ROCK.getValue()) {
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
-                map.setChar(MapLayers.ENVIRONMENT, position, (char) 0);
+                map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
                 answer = "Добыл немного камня (x" + addedRock + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
             }
             break;
         case "землю":
-            if (map.getChar(MapLayers.ENVIRONMENT, position) == 0) {
+            if (map.getChar(MapLayer.ENVIRONMENT, position) == 0) {
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
-                map.setChar(MapLayers.ENVIRONMENT, position, MapLegend.GROUNDHOLE.getValue());
+                map.setChar(MapLayer.ENVIRONMENT, position, MapLegend.HOLE.getValue());
                 answer = "Добыл немного земли (x" + addedDirt + ")";
             } else {
                 answer = "Я не могу добыть то, чего нет";
@@ -126,12 +126,18 @@ public class Player extends Creature {
         return answer.toString();
     }
 
+    public String getStatsLine() {
+        return "[" + getPos().x + ", " + getPos().y + "] "
+            + "LVL: " + getLevel() + "/" + getXp() + " "
+            + "HP: " + getHp() + " E: " + getEnergy();
+    }
+
     public ArrayList<Integer> saySomethingToAll(ArrayList<Creature> players) {
         ArrayList<Integer> arrayToReturn = new ArrayList<>();
         if (state == PlayerState.TALKING) {
             for (Creature p : players) {
-                if (Math.abs(position.x - p.getPos().x) <= getFieldOfView()
-                    || Math.abs(position.y - p.getPos().y) <= getFieldOfView()) {
+                if (Math.abs(position.x - p.getPos().x) <= getFov()
+                    || Math.abs(position.y - p.getPos().y) <= getFov()) {
                     arrayToReturn.add(p.getId());
                 }
             }

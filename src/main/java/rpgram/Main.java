@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
+import rpgram.core.I18N;
 
 public class Main {
 
@@ -16,6 +17,7 @@ public class Main {
         if (args.length != 1) {
             throw new Exception("No configuration file specified.");
         }
+        I18N.init();
         Config config = new Config(args[0]);
         System.out.println("Loading config...");
         config.load();

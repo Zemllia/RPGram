@@ -1,6 +1,6 @@
 package rpgram.maps;
 
-public enum MapLayers {
+public enum MapLayer {
     WEIGHTS,
     CAVES,
     GROUND,

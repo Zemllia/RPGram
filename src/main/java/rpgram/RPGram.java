@@ -17,7 +17,7 @@ import rpgram.creatures.Player;
 import rpgram.creatures.PlayerState;
 import rpgram.items.InventoryItem;
 import rpgram.maps.GlobalMap;
-import rpgram.maps.MapLayers;
+import rpgram.maps.MapLayer;
 import rpgram.maps.MapLegend;
 
 import java.util.ArrayList;
@@ -36,12 +36,6 @@ public class RPGram extends TelegramLongPollingBot {
         players.add(npc);
     }
 
-    private String getPlayerStatsLine(Player player) {
-        return "[" + player.getPos().x + ", " + player.getPos().y + "] "
-            + "LVL: " + player.getLevel() + "/" + player.getXP() + " "
-            + "HP: " + player.getHP() + " E: " + player.getEnergy();
-    }
-
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -51,7 +45,7 @@ public class RPGram extends TelegramLongPollingBot {
                 if (!checkIfPlayerExists(userId)) {
                     Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     // TODO: check this condition
-                    while (Character.isAlphabetic(globalMap.getChar(MapLayers.PLAYERS, pos))) {
+                    while (Character.isAlphabetic(globalMap.getChar(MapLayer.PLAYERS, pos))) {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     }
                     p = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, globalMap);
@@ -108,25 +102,25 @@ public class RPGram extends TelegramLongPollingBot {
             switch (call_data) {
 
             case "go_up": {
-                answer = getPlayerStatsLine(curPlayer) + "\n"
+                answer = curPlayer.getStatsLine() + "\n"
                     + curPlayer.move(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_right": {
-                answer = getPlayerStatsLine(curPlayer) + "\n"
+                answer = curPlayer.getStatsLine() + "\n"
                     + curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_left": {
-                answer = getPlayerStatsLine(curPlayer) + "\n"
+                answer = curPlayer.getStatsLine() + "\n"
                     + curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_down": {
-                answer = getPlayerStatsLine(curPlayer) + "\n"
+                answer = curPlayer.getStatsLine() + "\n"
                     + curPlayer.move(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y));
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
@@ -138,9 +132,9 @@ public class RPGram extends TelegramLongPollingBot {
             }
             case "map":
             case "back": {
-                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.getFieldOfView());
+                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.getFov());
                 keyboard = getKeyBoardOfArrows(curPlayer);
-                answer = getPlayerStatsLine(curPlayer) + "\n" + answer;
+                answer = curPlayer.getStatsLine() + "\n" + answer;
                 break;
             }
             case "getWood": {
@@ -196,12 +190,12 @@ public class RPGram extends TelegramLongPollingBot {
                 break;
             }
             case "increase_FOV": {
-                answer = curPlayer.increaseFOV(1);
+                answer = curPlayer.adjustFov(1);
                 keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             case "increase_XP": {
-                answer = curPlayer.increaseHP(5);
+                answer = curPlayer.adjustHp(5);
                 keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
@@ -241,7 +235,6 @@ public class RPGram extends TelegramLongPollingBot {
     public boolean checkIfPlayerExists(int id) {
         return getPlayer(id) != null;
     }
-
 
     public Player getPlayer(long id) {
         for (Creature creature : players) {
@@ -296,10 +289,10 @@ public class RPGram extends TelegramLongPollingBot {
         rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
         rowInlineFooter.add(new InlineKeyboardButton().setText("Действия").setCallbackData("actions"));
-        char curChar = player.getMap().getChar(MapLayers.ENVIRONMENT, player.getPos());
+        char curChar = player.getMap().getChar(MapLayer.ENVIRONMENT, player.getPos());
         if (curChar == MapLegend.TREE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
-        } else if (curChar == MapLegend.GROUNDHOLE.getValue()) {
+        } else if (curChar == MapLegend.HOLE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Зарыть предмет").setCallbackData("putItem"));
         } else if (curChar == MapLegend.VILLAGE.getValue()) {
             rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
