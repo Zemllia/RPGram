@@ -14,7 +14,7 @@ public class I18N {
         bundles.put("ru", ResourceBundle.getBundle("gameMessages", new Locale("ru_RU")));
         bundles.put("en", ResourceBundle.getBundle("gameMessages", new Locale("en_US")));
 
-        rb = bundles.get("ru");
+        rb = bundles.get(Locale.getDefault().getLanguage());
         if (rb == null) {
             rb = bundles.get("ru");
         }
