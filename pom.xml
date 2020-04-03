@@ -25,11 +25,6 @@
                 <configuration>
                     <mainClass>rpgram.Main</mainClass>
                     <executable>maven</executable>
-                    <!-- optional -->
-                    <workingDirectory>/tmp</workingDirectory>
-                    <arguments>
-                        <argument>D:\Desktop\rpgram.cfg</argument>
-                    </arguments>
                 </configuration>
                 <executions>
                     <execution>
