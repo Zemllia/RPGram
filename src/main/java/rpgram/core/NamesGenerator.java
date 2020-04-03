@@ -12,6 +12,8 @@ public class NamesGenerator {
         return npcNames[Random.randInt(0, NamesGenerator.npcNames.length - 1)];
     }
 
+    // TODO: names transliteration (en -> ru; ru -> en)
+
     private static final String[] villageNames = {
         "Robinson",
         "Kahoka",

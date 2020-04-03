@@ -1,5 +1,6 @@
 package rpgram.creatures;
 
+import rpgram.core.I18N;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
@@ -13,26 +14,20 @@ public class Player extends Creature {
     public Player(String name, Position pos, int id, BaseMap map) {
         super(id, name, map, name.charAt(0), '9', pos);
         changeEnergy(100);
-        String[] welcomeMessages = {
-            "Прибыл из космоса",
-            "Вылез из под земли",
-            "Наконец-то вышел из дома",
-            "Был добавлен в мир"
-        };
-        System.out.println(name + ": " + welcomeMessages[(int) (Math.random() * ((welcomeMessages.length)))]);
-        inventory.add(new Money(1000));
+        System.out.println(name + ": " + I18N.getRandom("player.welcome.{0}"));
+        inventory.add(new Coin(1000));
     }
 
     public String enterVillage() {
         if (map instanceof VillageMap) {
-            return "Здесь некуда заходить";
+            return I18N.get("map.cantEnter");
         }
 
         System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
 
         VillageMap curVillage = ((GlobalMap) map).checkVillage(this.position);
         if (curVillage == null) {
-            return "Тут деревни нет!";
+            return I18N.get("map.noVillage");
         }
 
         map = curVillage;
@@ -40,16 +35,19 @@ public class Player extends Creature {
         position = new Position(curVillage.getAreaWidth() / 2, curVillage.getAreaHeight() / 2);
 
         map.moveObject(this);
-        return "Хм, в поселении можно отдохнуть \n" +
-            "Информация о поселении:\n" +
-            "Название: " + curVillage.getName() + "\n" +
-            "Владелец: " + curVillage.getOwnerName() + "\n" +
-            "Население: " + curVillage.getVillagersCount();
+        return String.join(
+            "\n",
+            I18N.get("place.canRest"),
+            I18N.get("place.info"),
+            I18N.get("place.name") + ": " + curVillage.getName(),
+            I18N.get("place.owner") + ": " + curVillage.getOwnerName(),
+            I18N.get("place.population") + ": " + curVillage.getVillagersCount()
+        );
     }
 
     public String exitVillage() {
         if (!(map instanceof VillageMap)) {
-            return "Мне неоткуда выходить";
+            return I18N.get("map.cantExit");
         }
 
         VillageMap curVillage = (VillageMap) map;
@@ -59,43 +57,39 @@ public class Player extends Creature {
         position = new Position(curVillage.getPosition().x, curVillage.getPosition().y);
 
         map.moveObject(this);
-        return "Пора продолжать приключения";
+        return I18N.get("map.adventureTime");
     }
 
-    public String getResource(String whatToGet) {
+    public <T extends InventoryItem> String getResource(Class<T> type) {
         String answer = null;
-        // TODO: Remove duplicates
-        switch (whatToGet.toLowerCase()) {
-        case "дерево":
+        // TODO: Remove duplicates (generify code)
+        if (type.equals(Wood.class)) {
             if (map.getChar(MapLayer.ENVIRONMENT, position) == MapLegend.TREE.getValue()) {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
                 map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
-                answer = "Добыл немного дерева (x" + addedWood + ")";
+                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.wood") + " (x" + addedWood + ")";
             } else {
-                answer = "Я не могу добыть то, чего нет";
+                answer = I18N.get("player.cantGetNothing");
             }
-            break;
-        case "камень":
+        } else if (type.equals(Rock.class)) {
             if (map.getChar(MapLayer.ENVIRONMENT, position) == MapLegend.ROCK.getValue()) {
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
                 map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
-                answer = "Добыл немного камня (x" + addedRock + ")";
+                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.rock") + " (x" + addedRock + ")";
             } else {
-                answer = "Я не могу добыть то, чего нет";
+                answer = I18N.get("player.cantGetNothing");
             }
-            break;
-        case "землю":
+        } else if (type.equals(Dirt.class)) {
             if (map.getChar(MapLayer.ENVIRONMENT, position) == 0) {
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
                 map.setChar(MapLayer.ENVIRONMENT, position, MapLegend.HOLE.getValue());
-                answer = "Добыл немного земли (x" + addedDirt + ")";
+                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.dirt") + " (x" + addedDirt + ")";
             } else {
-                answer = "Я не могу добыть то, чего нет";
+                answer = I18N.get("player.cantGetNothing");
             }
-            break;
         }
         return answer;
     }
@@ -117,7 +111,7 @@ public class Player extends Creature {
         sortInventory();
         sortInventory();
         sortInventory();
-        answer.append("Вот что в моем мешке:\n");
+        answer.append(I18N.get("player.whatsInMyBag")).append(":\n");
         int counter = 1;
         for (InventoryItem item : inventory) {
             answer.append(counter).append(") ").append(item.getName()).append(" x").append(item.getCount()).append("\n");

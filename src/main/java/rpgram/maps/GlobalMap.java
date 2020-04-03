@@ -1,6 +1,7 @@
 package rpgram.maps;
 
 import rpgram.Treasure;
+import rpgram.core.I18N;
 import rpgram.core.NamesGenerator;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
@@ -15,11 +16,11 @@ public class GlobalMap extends BaseMap {
     public final ArrayList<Treasure> treasures = new ArrayList<>();
 
     public GlobalMap(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
-        super(-1, "Карта мира", areaWidth, areaHeight);
+        super(-1, I18N.get("map.global.name"), areaWidth, areaHeight);
         this.villagesCount = villagesCount;
         this.swampCount = swampCount;
         generateMap();
-        System.out.println("Мир сгенерирован.");
+        System.out.println("World generation completed.");
     }
 
     void generateMap() {
@@ -111,10 +112,10 @@ public class GlobalMap extends BaseMap {
     public VillageMap checkVillage(Position villagePos) {
         for (VillageMap village : villages) {
             if (village.getPosition().x == villagePos.x && village.getPosition().y == villagePos.y) {
-                System.out.println("DEBUG: village found");
                 return village;
             }
         }
+        System.out.println("DEBUG: village not found");
         return null;
     }
 }

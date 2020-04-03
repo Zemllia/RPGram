@@ -9,13 +9,17 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
+import rpgram.core.I18N;
 import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.creatures.Creature;
 import rpgram.creatures.NPC;
 import rpgram.creatures.Player;
 import rpgram.creatures.PlayerState;
+import rpgram.items.Dirt;
 import rpgram.items.InventoryItem;
+import rpgram.items.Rock;
+import rpgram.items.Wood;
 import rpgram.maps.GlobalMap;
 import rpgram.maps.MapLayer;
 import rpgram.maps.MapLegend;
@@ -73,9 +77,9 @@ public class RPGram extends TelegramLongPollingBot {
                 StringBuilder answer = new StringBuilder();
                 if (commandArray[0].equals("тп")) {
                     p.teleport(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
-                    answer.append("Вы заюзали дебаг функцию, админы уже заметили это, за вами выехал магический спецназ!");
+                    answer.append(I18N.get("rpgram.tpUsed"));
                 } else if (commandArray[0].equals("/start")) {
-                    answer.append("Привет от RPGram!");
+                    answer.append(I18N.get("rpgram.welcome"));
                 }
 
                 SendMessage message = new SendMessage()
@@ -138,12 +142,12 @@ public class RPGram extends TelegramLongPollingBot {
                 break;
             }
             case "getWood": {
-                answer = curPlayer.getResource("дерево");
+                answer = curPlayer.getResource(Wood.class);
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "getRock": {
-                answer = curPlayer.getResource("камень");
+                answer = curPlayer.getResource(Rock.class);
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
@@ -153,23 +157,23 @@ public class RPGram extends TelegramLongPollingBot {
                 break;
             }
             case "getDirt": {
-                answer = curPlayer.getResource("землю");
+                answer = curPlayer.getResource(Dirt.class);
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "actions": {
-                answer = "Так, посмотрим, что я могу здесь сделать...";
+                answer = I18N.get("rpgram.whatCanIDo");
                 keyboard = getKeyBoardOfActionsMenu();
                 break;
             }
             case "talk": {
-                answer = "Что бы мне сказать?";
+                answer = I18N.get("rpgram.whatCanISay");
                 curPlayer.state = PlayerState.TALKING;
                 keyboard = getKeyBoardOfStopTalking();
                 break;
             }
             case "stop_talk": {
-                answer = "Так, посмотрим, что я могу здесь сделать...";
+                answer = I18N.get("rpgram.whatCanIDo");
                 curPlayer.state = PlayerState.NORMAL;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
@@ -185,7 +189,7 @@ public class RPGram extends TelegramLongPollingBot {
                 break;
             }
             case "putItem": {
-                answer = "Что мне закопать?";
+                answer = I18N.get("rpgram.whatCanIDigIn");
                 keyboard = getKeyBoardOfListOfItems(curPlayer);
                 break;
             }
@@ -286,25 +290,25 @@ public class RPGram extends TelegramLongPollingBot {
         rowInlineMiddle.add(new InlineKeyboardButton().setText("<").setCallbackData("go_left"));
         rowInlineMiddle.add(new InlineKeyboardButton().setText(">").setCallbackData("go_right"));
         rowInlineDown.add(new InlineKeyboardButton().setText("v").setCallbackData("go_down"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText("Инвентарь").setCallbackData("inventory"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText("Карта").setCallbackData("map"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText("Действия").setCallbackData("actions"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.inventory")).setCallbackData("inventory"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("map")).setCallbackData("map"));
+        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.actions")).setCallbackData("actions"));
         char curChar = player.getMap().getChar(MapLayer.ENVIRONMENT, player.getPos());
         if (curChar == MapLegend.TREE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть дерево").setCallbackData("getWood"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.wood")).setCallbackData("getWood"));
         } else if (curChar == MapLegend.HOLE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Зарыть предмет").setCallbackData("putItem"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.digIn")).setCallbackData("putItem"));
         } else if (curChar == MapLegend.VILLAGE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Войти в деревню").setCallbackData("enter"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.enter.village")).setCallbackData("enter"));
         } else if (curChar == MapLegend.ROCK.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть камень").setCallbackData("getRock"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.rock")).setCallbackData("getRock"));
         } else if (curChar == MapLegend.TREASURE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выкопать сокровише").setCallbackData("getGift"));
+            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.digUp") + I18N.get("object.accusative.treasure")).setCallbackData("getGift"));
         } else {
             if (player.getMap() instanceof GlobalMap) {
-                rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Добыть землю").setCallbackData("getDirt"));
+                rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.dirt")).setCallbackData("getDirt"));
             } else {
-                rowInlineUnderFooter.add(new InlineKeyboardButton().setText("Выйти из деревни").setCallbackData("exit"));
+                rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.exit.village")).setCallbackData("exit"));
             }
         }
         // Set the keyboard to the markup
@@ -325,11 +329,11 @@ public class RPGram extends TelegramLongPollingBot {
         List<InlineKeyboardButton> rowInlineSleep = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineLevelUp = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineBack = new ArrayList<>();
-        rowInlineTalk.add(new InlineKeyboardButton().setText("Поговорить с окружающими").setCallbackData("talk"));
-        rowInlineSleep.add(new InlineKeyboardButton().setText("Спать").setCallbackData("sleep"));
-        rowInlineLevelUp.add(new InlineKeyboardButton().setText("Увеличить радиус зрения").setCallbackData("increase_FOV"));
-        rowInlineLevelUp.add(new InlineKeyboardButton().setText("Увеличить здоровье").setCallbackData("increase_XP"));
-        rowInlineBack.add(new InlineKeyboardButton().setText("Назад").setCallbackData("back"));
+        rowInlineTalk.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.talk")).setCallbackData("talk"));
+        rowInlineSleep.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.sleep")).setCallbackData("sleep"));
+        rowInlineLevelUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.adjust.fov")).setCallbackData("increase_FOV"));
+        rowInlineLevelUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.adjust.hp")).setCallbackData("increase_XP"));
+        rowInlineBack.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.back")).setCallbackData("back"));
         rowsInline.add(rowInlineTalk);
         rowsInline.add(rowInlineSleep);
         rowsInline.add(rowInlineLevelUp);
@@ -342,7 +346,7 @@ public class RPGram extends TelegramLongPollingBot {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
-        rowInlineUp.add(new InlineKeyboardButton().setText("Закончить разговор").setCallbackData("stop_talk"));
+        rowInlineUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.talk.stop")).setCallbackData("stop_talk"));
         rowsInline.add(rowInlineUp);
         markupInline.setKeyboard(rowsInline);
         return markupInline;
@@ -358,7 +362,7 @@ public class RPGram extends TelegramLongPollingBot {
             rowsInline.add(rowInline);
             counter++;
         }
-        rowInline.add(new InlineKeyboardButton().setText("Отмена").setCallbackData("remove_status_to_zero"));
+        rowInline.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.cancel")).setCallbackData("remove_status_to_zero"));
         rowsInline.add(rowInline);
         markupInline.setKeyboard(rowsInline);
         return markupInline;

@@ -23,7 +23,7 @@ public class VillageMap extends BaseMap {
         this.isBuiltByPlayer = isBuiltByPlayer;
         this.position = position;
         generateMap();
-        System.out.println("Деревня сгенерировалась x=" + position.x + " y=" + position.y);
+        System.out.println("Village generated at x=" + position.x + " y=" + position.y);
     }
 
     public Position getPosition() {
