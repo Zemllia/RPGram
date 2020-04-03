@@ -30,7 +30,7 @@ public class Main {
         TelegramBotsApi botsApi = new TelegramBotsApi();
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        if (Boolean.parseBoolean(isProxyOn)) {
+        if (isProxyOn == null || Boolean.parseBoolean(isProxyOn)) {
             botOptions.setProxyHost((proxyHost != null) ? proxyHost : PROXY_HOST);
             botOptions.setProxyPort((proxyPort != null) ? Integer.parseInt(proxyPort) : PROXY_PORT);
             botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
