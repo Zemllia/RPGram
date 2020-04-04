@@ -227,7 +227,7 @@ public class Creature extends GameObject {
 
     public void teleport(Position newPosition) {
         lastPos = position;
-        position = new Position(newPosition.x, newPosition.y);
+        position = newPosition;
         map.moveObject(this);
     }
 

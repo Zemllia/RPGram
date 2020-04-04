@@ -8,4 +8,8 @@ public class Position {
         this.x = x;
         this.y = y;
     }
+
+    public Position add(int deltaX, int deltaY) {
+        return new Position(x + deltaX, y + deltaY);
+    }
 }
