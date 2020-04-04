@@ -5,12 +5,12 @@ import rpgram.core.NamedObject;
 import rpgram.core.Position;
 
 public class BaseMap extends NamedObject {
-    protected int areaWidth;
-    protected int areaHeight;
+    protected final int areaWidth;
+    protected final int areaHeight;
 
-    protected char[][][] mapContainer;
+    protected final char[][][] mapContainer;
 
-    protected char[][] weightsOfObjects = {
+    protected final char[][] weightsOfObjects = {
         { ' ', '1' },
         { 'F', '2' },
         { 'Y', '3' },
@@ -22,7 +22,7 @@ public class BaseMap extends NamedObject {
         super(id, name);
         this.areaWidth = areaWidth;
         this.areaHeight = areaHeight;
-        mapContainer = new char[MapLayers.values().length][areaWidth][areaHeight];
+        mapContainer = new char[MapLayer.values().length][areaWidth][areaHeight];
     }
 
     public int getAreaWidth() {
@@ -33,15 +33,15 @@ public class BaseMap extends NamedObject {
         return areaHeight;
     }
 
-    public char[][] layer(MapLayers l) {
+    public char[][] layer(MapLayer l) {
         return mapContainer[l.ordinal()];
     }
 
-    public char getChar(MapLayers l, Position pos) {
+    public char getChar(MapLayer l, Position pos) {
         return layer(l)[pos.x][pos.y];
     }
 
-    public void setChar(MapLayers l, Position pos, char value) {
+    public void setChar(MapLayer l, Position pos, char value) {
         layer(l)[pos.x][pos.y] = value;
     }
 
@@ -51,7 +51,7 @@ public class BaseMap extends NamedObject {
         int diameter = radius * 2;
         char[][] renderArray = new char[diameter][diameter];
 
-        for (int t = 0; t < MapLayers.values().length; t++) {
+        for (int t = 0; t < MapLayer.values().length; t++) {
             int diffX = 0;
             int diffY = 0;
             if (pos.x - radius < 0) {
@@ -83,12 +83,7 @@ public class BaseMap extends NamedObject {
         answer.append("\n");
         for (int i = 0; i < radius * 2; i++) {
             for (int j = 0; j < radius * 2; j++) {
-                // show player as white letter (but breaks alignment)
-                // if (renderArray[i][j] <= 127) {
                 answer.append(renderArray[i][j]).append("  ");
-                // } else {
-                //     answer.append("</code>").append(renderArray[i][j]).append("<code>");
-                // }
             }
             answer.append("\n");
         }
@@ -97,34 +92,34 @@ public class BaseMap extends NamedObject {
     }
 
     public void addObject(GameObject obj) {
-        setChar(MapLayers.PLAYERS, obj.getPos(), obj.getMapIcon());
-        setChar(MapLayers.WEIGHTS, obj.getPos(), obj.getMapWeight());
+        setChar(MapLayer.PLAYERS, obj.getPos(), obj.getMapIcon());
+        setChar(MapLayer.WEIGHTS, obj.getPos(), obj.getMapWeight());
     }
 
     public void moveObject(GameObject obj) {
         if (isValidPoint(obj.getPos())) {
             if (isValidPoint(obj.getLastPos())) {
-                setChar(MapLayers.PLAYERS, obj.getLastPos(), (char) 0);
-                setChar(MapLayers.WEIGHTS, obj.getLastPos(), recalculateCellWeight(obj.getLastPos()));
+                setChar(MapLayer.PLAYERS, obj.getLastPos(), (char) 0);
+                setChar(MapLayer.WEIGHTS, obj.getLastPos(), recalculateCellWeight(obj.getLastPos()));
             }
 
-            setChar(MapLayers.PLAYERS, obj.getPos(), obj.getMapIcon());
-            setChar(MapLayers.WEIGHTS, obj.getPos(), obj.getMapWeight());
+            setChar(MapLayer.PLAYERS, obj.getPos(), obj.getMapIcon());
+            setChar(MapLayer.WEIGHTS, obj.getPos(), obj.getMapWeight());
         }
     }
 
     protected void clearMap() {
         for (int i = 0; i < areaWidth; i++) {
             for (int j = 0; j < areaHeight; j++) {
-                layer(MapLayers.GROUND)[i][j] = ' ';
-                layer(MapLayers.CAVES)[i][j] = ' ';
+                layer(MapLayer.GROUND)[i][j] = ' ';
+                layer(MapLayer.CAVES)[i][j] = ' ';
             }
         }
     }
 
     protected char recalculateCellWeight(Position pos) {
         int curWeight = 0;
-        for (int i = 0; i < MapLayers.values().length; i++) {
+        for (int i = 0; i < MapLayer.values().length; i++) {
             char checkChar = mapContainer[i][pos.x][pos.y];
             for (int j = 0; i < weightsOfObjects.length; i++) {
                 if (checkChar == weightsOfObjects[j][0]) {

@@ -4,8 +4,8 @@ import rpgram.maps.BaseMap;
 
 public class GameObject extends NamedObject {
     protected BaseMap map;
-    private char mapIcon;
-    private char mapWeight;
+    private final char mapIcon;
+    private final char mapWeight;
 
     protected Position position;
     protected Position lastPos;
@@ -19,7 +19,7 @@ public class GameObject extends NamedObject {
         this.mapWeight = mapWeight;
         this.position = lastPos = position;
 
-        System.out.println("Added " + name + " (#" + id + ") at x=" + position.x + " y=" + position.y);
+        System.out.println("Created " + name + " (#" + id + ") at x=" + position.x + " y=" + position.y);
     }
 
     public BaseMap getMap() {

@@ -14,7 +14,7 @@ public class NPC extends Creature {
     private DialogEngine de;
     private Quest[] quests;
 
-    private List<InventoryItem> inventory = new ArrayList<InventoryItem>();
+    private List<InventoryItem> inventory = new ArrayList<>();
 
     private int satiety = 400;
     private int water = 400;
@@ -96,13 +96,13 @@ public class NPC extends Creature {
             if (hasEnoughMoney()) {
                 state = NPCState.CALM;
             } else {
-                inventory.add(new Money(5));
+                inventory.add(new Coin(5));
             }
             break;
         }
         case BUY_FOOD: {
             if (hasEnoughMoney()) {
-                Money item = tryGetFromInventory(Money.class);
+                Coin item = tryGetFromInventory(Coin.class);
                 inventory.add(new RoastedMeat(10));
                 inventory.remove(item);
             } else {
@@ -112,7 +112,7 @@ public class NPC extends Creature {
         }
         case BUY_WATER: {
             if (hasEnoughMoney()) {
-                Money item = tryGetFromInventory(Money.class);
+                Coin item = tryGetFromInventory(Coin.class);
                 inventory.add(new RoastedMeat(10));
                 inventory.remove(item);
             } else {
@@ -127,7 +127,7 @@ public class NPC extends Creature {
     }
 
     public boolean hasEnoughMoney() {
-        Money item = tryGetFromInventory(Money.class);
+        Coin item = tryGetFromInventory(Coin.class);
         return item != null && item.getCount() > 100;
     }
 

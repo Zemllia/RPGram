@@ -6,9 +6,9 @@ import rpgram.items.InventoryItem;
 import java.util.ArrayList;
 
 public class Treasure {
-    private ArrayList<InventoryItem> inventoryItem = new ArrayList<>();
-    private Position position;
-    private String nameOfPlayer;
+    private final ArrayList<InventoryItem> inventoryItem = new ArrayList<>();
+    private final Position position;
+    private final String nameOfPlayer;
 
     public Treasure(InventoryItem inventoryItem, Position position, String nameOfPlayer) {
         this.inventoryItem.add(inventoryItem);

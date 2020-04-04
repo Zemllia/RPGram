@@ -1,141 +1,224 @@
 package rpgram.creatures;
 
 import rpgram.core.GameObject;
+import rpgram.core.I18N;
 import rpgram.core.Position;
 import rpgram.items.InventoryItem;
 import rpgram.maps.BaseMap;
-import rpgram.maps.PathFinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Creature extends GameObject {
-    private PathFinding pathFinding = new PathFinding();
-
-    private int maxHP;
-    private int HP;
+    private int maxHp;
+    private int hp;
 
     private int maxEnergy;
     private int energy;
 
-    private int level;
-    private int XP = 0;
-    private int requiredXP = 10;
-    private int skillPoint = 0;
+    private final int maxFov = 100;
+    private int fov;
 
-    private int fieldOfView;
+    private int level;
+    private int xp = 0;
+    private int xpToNextLevel = 10;
+    private int skillPoints = 0;
 
     public List<InventoryItem> inventory = new ArrayList<>();
 
-    public Creature(int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position) {
+    public Creature(
+        int id,
+        String name,
+        BaseMap map,
+        char mapIcon,
+        char mapWeight,
+        Position position
+    ) {
         // RULE: default creature parameters
-        this(id, name, map, mapIcon, mapWeight, position, 200, 100, 1, 5);
+        this(
+            id,
+            name,
+            map,
+            mapIcon,
+            mapWeight,
+            position,
+            200,
+            100,
+            1,
+            5
+        );
     }
 
-    public Creature(int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position, int maxEnergy, int maxHP, int level, int fieldOfView) {
+    public Creature(
+        int id,
+        String name,
+        BaseMap map,
+        char mapIcon,
+        char mapWeight,
+        Position position,
+        int maxEnergy,
+        int maxHp,
+        int level,
+        int fieldOfView
+    ) {
         super(id, name, map, mapIcon, mapWeight, position);
 
-        this.maxHP = HP = maxHP;
+        this.maxHp = hp = maxHp;
         this.maxEnergy = maxEnergy;
         // RULE: every creature appears with half energy
         this.energy = maxEnergy / 2;
-        this.fieldOfView = fieldOfView;
+        this.fov = fieldOfView;
         this.level = level;
     }
 
     public String getStats() {
-        return "Здоровье: " + getHP() + "\n" + "Максимум здоровья: " + getMaxHP() + "\n" +
-            "Радиус зрения: " + getFieldOfView() + "\n" +
-            "XP: " + getXP() + "\n" +
-            "Уровень: " + getLevel() + "\n" +
-            "Количество очков уровня: " + getSkillPoint() + "\n" +
-            "Необходимо для следующего уровня: " + getRequiredXP() + "\n\n";
+        return String.join(
+            "\n",
+            I18N.get("stats.hp") + ": " + getHp() + "/" + getMaxHp(),
+            I18N.get("stats.energy") + ": " + getEnergy() + "/" + getMaxEnergy(),
+            I18N.get("stats.fov") + ": " + getFov(),
+            I18N.get("stats.xp") + ": " + getXp(),
+            I18N.get("stats.level") + ": " + getLevel(),
+            I18N.get("stats.skillPoints") + ": " + getSkillPoints(),
+            I18N.get("stats.xp.toNextLevel") + ": " + getXpToNextLevel()
+        ) + "\n\n";
     }
 
-    public int getMaxHP() {
-        return maxHP;
+    // region HP
+
+    public int getMaxHp() {
+        return maxHp;
     }
 
-    public int getHP() {
-        return HP;
+    public int getHp() {
+        return hp;
     }
 
-    public String increaseHP(int delta) {
-        if (skillPoint > 0) {
-            maxHP += delta;
-            skillPoint -= 1;
-            return "Количество HP увеличено на " + delta;
+    public String adjustHp(int delta) {
+        assert delta > 0;
+        if (skillPoints > 0) {
+            if (hp + delta > maxHp) {
+                hp = maxHp;
+                return I18N.get("stats.hp.max");
+            }
+            skillPoints -= 1;
+            return changeHp(delta);
         } else {
-            return "У вас недостатачно очков опыта";
+            return I18N.get("stats.xp.notEnough");
         }
     }
 
-    public int getFieldOfView() {
-        return fieldOfView;
+    private String changeHp(int delta) {
+        maxHp += delta;
+        return I18N.getChangeable("stats.hp.{0}", delta);
     }
 
-    public String increaseFOV(int delta) {
-        if (skillPoint > 0) {
-            fieldOfView += delta;
-            skillPoint -= 1;
-            return "Поле зрения увеличено на " + delta;
-        } else {
-            return "У вас недостатачно очков опыта";
-        }
-    }
+    // endregion
+
+    // region Energy
 
     public int getMaxEnergy() {
-        return this.maxEnergy;
+        return maxEnergy;
     }
 
     public int getEnergy() {
-        return this.energy;
+        return energy;
     }
 
-    public void changeEnergy(int delta) {
-        energy += delta;
+    public String sleep() {
+        return sleep(maxEnergy - energy);
     }
 
-    public int getXP() {
-        return XP;
-    }
-
-    public int getRequiredXP() {
-        return requiredXP;
-    }
-
-    protected void increaseXP() {
-        XP += 1;
-        if (XP >= requiredXP) {
-            increaseLevel();
+    public String sleep(int delta) {
+        assert delta > 0 && energy + delta <= maxEnergy;
+        if (energy <= 50) {
+            return changeEnergy(delta);
+        } else {
+            return I18N.get("stats.energy.highEnough");
         }
     }
+
+    protected String changeEnergy(int delta) {
+        energy += delta;
+        return I18N.getChangeable("stats.energy.{0}", delta);
+    }
+
+    // endregion
+
+    // region FOV
+
+    public int getMaxFov() {
+        return maxFov;
+    }
+
+    public int getFov() {
+        return fov;
+    }
+
+    public String adjustFov(int delta) {
+        assert delta > 0;
+        if (skillPoints > 0) {
+            if (fov + delta > maxFov) {
+                fov = maxFov;
+                return I18N.get("stats.fov.max");
+            }
+            skillPoints -= 1;
+            return changeFov(delta);
+        } else {
+            return I18N.get("stats.xp.notEnough");
+        }
+    }
+
+    private String changeFov(int delta) {
+        fov += delta;
+        return I18N.getChangeable("stats.fov.{0}", delta);
+    }
+
+    // endregion
+
+    // region XP
+
+    public int getXp() {
+        return xp;
+    }
+
+    public int getXpToNextLevel() {
+        return xpToNextLevel;
+    }
+
+    public String adjustXp() {
+        return changeXp(1);
+    }
+
+    private String changeXp(int delta) {
+        assert delta > 0;
+        xp += delta;
+        if (xp >= xpToNextLevel) {
+            adjustLevel();
+        }
+        return I18N.get("stats.xp.increased", delta);
+    }
+
+    // endregion
+
+    // region Level
 
     public int getLevel() {
         return level;
     }
 
-    public String increaseLevel() {
+    public String adjustLevel() {
         level += 1;
-        skillPoint += 1;
-        XP = 0;
-        requiredXP = requiredXP + (int) ((float) requiredXP / 100 * 30);
-        return "Уровень повышен";
+        skillPoints += 1;
+        xp = 0;
+        xpToNextLevel = xpToNextLevel + (int) ((float) xpToNextLevel / 100 * 30);
+        return I18N.get("stats.level.next");
     }
 
-    public int getSkillPoint() {
-        return skillPoint;
-    }
+    // endregion
 
-    public String sleep() {
-        String answer;
-        if (getEnergy() <= 50) {
-            changeEnergy(99);
-            answer = "Z-z-z-z...";
-        } else {
-            answer = "Я пока не устал!";
-        }
-        return answer;
+    public int getSkillPoints() {
+        return skillPoints;
     }
 
     public List<InventoryItem> getInventory() {
@@ -149,15 +232,14 @@ public class Creature extends GameObject {
     }
 
     public String move(Position targetPos) {
-        ArrayList<Position> path = pathFinding.findPath(targetPos, position, map);
-        if (getEnergy() >= path.size()) {
+        // TODO insert path finder
+        if (getEnergy() >= 1) {
             teleport(targetPos);
-
-            changeEnergy(path.size() * -1);
-            increaseXP();
-            return map.viewMapArea(position, getFieldOfView());
+            changeEnergy(-1);
+            adjustXp();
+            return map.viewMapArea(position, getFov());
         } else {
-            return "Что-то мне подсказывает, что мне не хватит сил добраться так далеко...";
+            return I18N.get("stats.energy.low");
         }
     }
 }

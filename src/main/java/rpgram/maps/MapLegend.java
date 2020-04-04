@@ -1,21 +1,23 @@
 package rpgram.maps;
 
+import rpgram.core.I18N;
+
 public enum MapLegend {
-    CHEST('=', "Chest"),
-    WALL('#', "Wall"),
-    TREE('^', "Tree"),
-    SWAMP('%', "Swamp"),
-    ROCK('*', "A rock, or a big stone"),
-    GROUNDHOLE('o', "Ground hole"),
-    VILLAGE('v', "Village"),
-    TREASURE('x', "Treasure");
+    CHEST('='),
+    WALL('#'),
+    TREE('^'),
+    SWAMP('%'),
+    ROCK('*'),
+    HOLE('o'),
+    VILLAGE('v'),
+    TREASURE('x');
 
-    private char value;
-    private String description;
+    private final char value;
+    private final String description;
 
-    MapLegend(char value, String description) {
+    MapLegend(char value) {
         this.value = value;
-        this.description = description;
+        this.description = I18N.get("object.nominative." + name().toLowerCase());
     }
 
     /**

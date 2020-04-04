@@ -2,6 +2,7 @@ package rpgram.core;
 
 import rpgram.core.utils.Random;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class NamesGenerator {
     public static String getRandomVillageName() {
         return villageNames[Random.randInt(0, NamesGenerator.villageNames.length - 1)];
@@ -10,6 +11,8 @@ public class NamesGenerator {
     public static String getRandomNpcName() {
         return npcNames[Random.randInt(0, NamesGenerator.npcNames.length - 1)];
     }
+
+    // TODO: names transliteration (en -> ru; ru -> en)
 
     private static final String[] villageNames = {
         "Robinson",

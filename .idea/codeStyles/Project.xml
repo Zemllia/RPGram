@@ -1,0 +1,19 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <codeStyleSettings language="JAVA">
+      <option name="INDENT_CASE_FROM_SWITCH" value="false" />
+      <option name="ALIGN_MULTILINE_ASSIGNMENT" value="true" />
+      <option name="SPACE_WITHIN_BRACES" value="true" />
+      <option name="SPACE_WITHIN_ARRAY_INITIALIZER_BRACES" value="true" />
+      <option name="SPACE_WITHIN_EMPTY_ARRAY_INITIALIZER_BRACES" value="true" />
+      <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+      <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+      <indentOptions>
+        <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>

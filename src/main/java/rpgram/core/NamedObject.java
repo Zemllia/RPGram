@@ -1,7 +1,7 @@
 package rpgram.core;
 
 public class NamedObject {
-    private int id;
+    private final int id;
     protected String name;
 
     public NamedObject(int id, String name) {

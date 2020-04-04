@@ -6,8 +6,8 @@ import rpgram.core.utils.Random;
 public class InventoryItem extends NamedObject {
     int count;
     String icon = "?";
-    String description = "Разработчик забыл добавить описание предмету...";
-    ItemType type;
+    final String description = "Разработчик забыл добавить описание предмету...";
+    final ItemType type;
 
     public InventoryItem(int id, ItemType type, int count) {
         super(-Random.randInt(1000, 1000000), "");
