@@ -136,7 +136,10 @@ public class RPGram extends TelegramLongPollingBot {
             }
             case "map":
             case "back": {
-                String mapArea = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.getFov());
+                String mapArea = curPlayer.getMap().viewMapArea(
+                        curPlayer.getPos(),
+                        curPlayer.getFov()
+                );
                 answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
