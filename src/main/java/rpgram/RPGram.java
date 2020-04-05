@@ -57,7 +57,7 @@ public class RPGram extends TelegramLongPollingBot {
                     globalMap.addObject(p);
 
                     System.out.println("Created a new player: Name=" + p.getName() + " id=" + p.getId() +
-                        " position=x" + p.getPos().x + ", y=" + p.getPos().y);
+                        " x=" + p.getPos().x + " y=" + p.getPos().y);
                 } else {
                     p = getPlayer(userId);
                     ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
@@ -106,26 +106,26 @@ public class RPGram extends TelegramLongPollingBot {
             switch (call_data) {
 
             case "go_up": {
-                answer = curPlayer.getStatsLine() + "\n"
-                    + curPlayer.move(new Position(curPlayer.getPos().x - 1, curPlayer.getPos().y));
+                String mapArea = curPlayer.move(curPlayer.getPos().add(0, -1));
+                answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_right": {
-                answer = curPlayer.getStatsLine() + "\n"
-                    + curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y + 1));
+                String mapArea = curPlayer.move(curPlayer.getPos().add(1, 0));
+                answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_left": {
-                answer = curPlayer.getStatsLine() + "\n"
-                    + curPlayer.move(new Position(curPlayer.getPos().x, curPlayer.getPos().y - 1));
+                String mapArea = curPlayer.move(curPlayer.getPos().add(-1, 0));
+                answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
             case "go_down": {
-                answer = curPlayer.getStatsLine() + "\n"
-                    + curPlayer.move(new Position(curPlayer.getPos().x + 1, curPlayer.getPos().y));
+                String mapArea = curPlayer.move(curPlayer.getPos().add(0, 1));
+                answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
                 break;
             }
@@ -136,9 +136,12 @@ public class RPGram extends TelegramLongPollingBot {
             }
             case "map":
             case "back": {
-                answer = curPlayer.getMap().viewMapArea(curPlayer.getPos(), curPlayer.getFov());
+                String mapArea = curPlayer.getMap().viewMapArea(
+                        curPlayer.getPos(),
+                        curPlayer.getFov()
+                );
+                answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
-                answer = curPlayer.getStatsLine() + "\n" + answer;
                 break;
             }
             case "getWood": {
@@ -224,6 +227,7 @@ public class RPGram extends TelegramLongPollingBot {
             }
             sendEditedMessage(update, (int) message_id, answer, keyboard);
         }
+
     }
 
     @Override
