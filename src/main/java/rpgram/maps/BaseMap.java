@@ -10,14 +10,6 @@ public class BaseMap extends NamedObject {
 
     protected final char[][][] mapContainer;
 
-    protected final char[][] weightsOfObjects = {
-        { ' ', '1' },
-        { 'F', '2' },
-        { 'Y', '3' },
-        { 'R', '0' },
-        { MapLegend.SWAMP.getValue(), '5' }
-    };
-
     public BaseMap(int id, String name, int areaWidth, int areaHeight) {
         super(id, name);
         this.areaWidth = areaWidth;
@@ -94,7 +86,7 @@ public class BaseMap extends NamedObject {
 
     public void addObject(GameObject obj) {
         setChar(MapLayer.PLAYERS, obj.getPos(), obj.getMapIcon());
-        setChar(MapLayer.WEIGHTS, obj.getPos(), obj.getMapWeight());
+        setChar(MapLayer.WEIGHTS, obj.getPos(), (char) obj.getMapWeight().ordinal());
     }
 
     public void moveObject(GameObject obj) {
@@ -105,7 +97,7 @@ public class BaseMap extends NamedObject {
             }
 
             setChar(MapLayer.PLAYERS, obj.getPos(), obj.getMapIcon());
-            setChar(MapLayer.WEIGHTS, obj.getPos(), obj.getMapWeight());
+            setChar(MapLayer.WEIGHTS, obj.getPos(), (char) obj.getMapWeight().ordinal());
         }
     }
 
@@ -119,18 +111,7 @@ public class BaseMap extends NamedObject {
     }
 
     protected char recalculateCellWeight(Position pos) {
-        int curWeight = 0;
-        for (int i = 0; i < MapLayer.values().length; i++) {
-            char checkChar = mapContainer[i][pos.y][pos.x];
-            for (int j = 0; i < weightsOfObjects.length; i++) {
-                if (checkChar == weightsOfObjects[j][0]) {
-                    if (curWeight < Character.getNumericValue(weightsOfObjects[i][1])) {
-                        curWeight = Character.getNumericValue(weightsOfObjects[i][1]);
-                    }
-                }
-            }
-        }
-        return (char) (curWeight + '0');
+        return '0';
     }
 
     public boolean isValidPoint(Position pos) {

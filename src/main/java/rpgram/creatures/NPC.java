@@ -6,6 +6,7 @@ import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
 import rpgram.maps.BaseMap;
+import rpgram.maps.MapWeight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class NPC extends Creature {
     NPCState state = NPCState.CALM;
 
     public NPC(int id, String name, Quest[] quests, Position position, BaseMap map) {
-        super(id, name, map, '@', '9', position);
+        super(id, name, map, '@', MapWeight.HIGHEST, position);
         this.quests = quests;
         de = new DialogEngine(quests, name);
         live();

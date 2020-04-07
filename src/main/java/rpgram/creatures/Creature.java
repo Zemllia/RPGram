@@ -5,6 +5,7 @@ import rpgram.core.I18N;
 import rpgram.core.Position;
 import rpgram.items.InventoryItem;
 import rpgram.maps.BaseMap;
+import rpgram.maps.MapWeight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Creature extends GameObject {
         String name,
         BaseMap map,
         char mapIcon,
-        char mapWeight,
+        MapWeight mapWeight,
         Position position
     ) {
         // RULE: default creature parameters
@@ -54,7 +55,7 @@ public class Creature extends GameObject {
         String name,
         BaseMap map,
         char mapIcon,
-        char mapWeight,
+        MapWeight mapWeight,
         Position position,
         int maxEnergy,
         int maxHp,

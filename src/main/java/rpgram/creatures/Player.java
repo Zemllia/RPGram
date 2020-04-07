@@ -12,7 +12,7 @@ public class Player extends Creature {
     public PlayerState state;
 
     public Player(String name, Position pos, int id, BaseMap map) {
-        super(id, name, map, name.charAt(0), '9', pos);
+        super(id, name, map, name.charAt(0), MapWeight.HIGHEST, pos);
         changeEnergy(100);
         System.out.println(name + ": " + I18N.getRandom("player.welcome.{0}"));
         inventory.add(new Coin(1000));

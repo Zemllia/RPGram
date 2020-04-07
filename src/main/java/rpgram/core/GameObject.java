@@ -1,17 +1,18 @@
 package rpgram.core;
 
 import rpgram.maps.BaseMap;
+import rpgram.maps.MapWeight;
 
 public class GameObject extends NamedObject {
     protected BaseMap map;
     private final char mapIcon;
-    private final char mapWeight;
+    private final MapWeight mapWeight;
 
     protected Position position;
     protected Position lastPos;
 
     public GameObject(
-        int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position
+        int id, String name, BaseMap map, char mapIcon, MapWeight mapWeight, Position position
     ) {
         super(id, name);
         this.map = map;
@@ -30,7 +31,7 @@ public class GameObject extends NamedObject {
         return this.mapIcon;
     }
 
-    public char getMapWeight() {
+    public MapWeight getMapWeight() {
         return mapWeight;
     }
 
