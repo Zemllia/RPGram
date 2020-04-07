@@ -56,8 +56,11 @@ public class RPGram extends TelegramLongPollingBot {
                     players.add(p);
                     globalMap.addObject(p);
 
-                    System.out.println("Created a new player: Name=" + p.getName() + " id=" + p.getId() +
-                        " x=" + p.getPos().x + " y=" + p.getPos().y);
+                    System.out.println(
+                        "Created a new player: Name=" + p.getName()
+                            + " id=" + p.getId()
+                            + " x=" + p.getPos().x
+                            + " y=" + p.getPos().y);
                 } else {
                     p = getPlayer(userId);
                     ArrayList<Integer> messageSenders = p.saySomethingToAll(players);

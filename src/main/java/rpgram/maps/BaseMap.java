@@ -18,8 +18,8 @@ public class BaseMap extends NamedObject {
         { MapLegend.SWAMP.getValue(), '5' }
     };
 
-    public BaseMap(int id, String name, int areaWidth, int areaHeight) {
-        super(id, name);
+    public BaseMap(String name, int areaWidth, int areaHeight) {
+        super(name);
         this.areaWidth = areaWidth;
         this.areaHeight = areaHeight;
         mapContainer = new char[MapLayer.values().length][areaHeight][areaWidth];

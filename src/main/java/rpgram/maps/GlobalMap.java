@@ -16,7 +16,7 @@ public class GlobalMap extends BaseMap {
     public final ArrayList<Treasure> treasures = new ArrayList<>();
 
     public GlobalMap(int areaWidth, int areaHeight, int villagesCount, int swampCount) {
-        super(-1, I18N.get("map.global.name"), areaWidth, areaHeight);
+        super(I18N.get("map.global.name"), areaWidth, areaHeight);
         this.villagesCount = villagesCount;
         this.swampCount = swampCount;
         generateMap();

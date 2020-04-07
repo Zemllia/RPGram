@@ -11,15 +11,15 @@ public class GameObject extends NamedObject {
     protected Position lastPos;
 
     public GameObject(
-        int id, String name, BaseMap map, char mapIcon, char mapWeight, Position position
+        String name, BaseMap map, char mapIcon, char mapWeight, Position position
     ) {
-        super(id, name);
+        super(name);
         this.map = map;
         this.mapIcon = mapIcon;
         this.mapWeight = mapWeight;
         this.position = lastPos = position;
 
-        System.out.println("Created " + name + " (#" + id + ") at x=" + position.x + " y=" + position.y);
+        System.out.println("Created " + name + " (#" + getId() + ") at x=" + position.x + " y=" + position.y);
     }
 
     public BaseMap getMap() {

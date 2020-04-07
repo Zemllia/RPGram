@@ -4,17 +4,17 @@ public class Food extends InventoryItem {
     protected final int nutritionalValue;
 
     public Food(int id, ItemType type, int count) {
-        super(id, type, count);
+        super(type, count);
         this.nutritionalValue = 800;
     }
 
     public Food(int id, ItemType type, int count, int nutritionalValue) {
-        super(id, type, count);
+        super(type, count);
         this.nutritionalValue = nutritionalValue;
     }
 
     public Food(int id, String name, ItemType type, int count, int nutritionalValue) {
-        super(id, name, type, count);
+        super(name, type, count);
         this.nutritionalValue = nutritionalValue;
     }
 

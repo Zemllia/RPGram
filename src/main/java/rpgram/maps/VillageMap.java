@@ -16,7 +16,7 @@ public class VillageMap extends BaseMap {
     private final Position position;
 
     public VillageMap(BaseMap parentMap, int id, String name, String ownerName, int ownerID, boolean isBuiltByPlayer, Position position) {
-        super(id, name, 50, 50);
+        super(name, 50, 50);
         this.parentMap = parentMap;
         this.ownerName = ownerName;
         this.ownerID = ownerID;

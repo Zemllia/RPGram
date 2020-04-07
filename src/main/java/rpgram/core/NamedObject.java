@@ -1,11 +1,13 @@
 package rpgram.core;
 
+import rpgram.core.utils.Random;
+
 public class NamedObject {
     private final int id;
     protected String name;
 
-    public NamedObject(int id, String name) {
-        this.id = id;
+    public NamedObject(String name) {
+        this.id = Random.randId();
         this.name = name;
     }
 

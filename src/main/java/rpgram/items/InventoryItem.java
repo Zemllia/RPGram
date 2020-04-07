@@ -1,7 +1,6 @@
 package rpgram.items;
 
 import rpgram.core.NamedObject;
-import rpgram.core.utils.Random;
 
 public class InventoryItem extends NamedObject {
     int count;
@@ -9,15 +8,15 @@ public class InventoryItem extends NamedObject {
     final String description = "Разработчик забыл добавить описание предмету...";
     final ItemType type;
 
-    public InventoryItem(int id, ItemType type, int count) {
-        super(-Random.randInt(1000, 1000000), "");
+    public InventoryItem(ItemType type, int count) {
+        super("");
         this.name = this.getClass().getSimpleName();
         this.count = count;
         this.type = type;
     }
 
-    public InventoryItem(int id, String name, ItemType type, int count) {
-        super(-Random.randInt(1000, 1000000), name);
+    public InventoryItem(String name, ItemType type, int count) {
+        super(name);
         this.count = count;
         this.type = type;
     }

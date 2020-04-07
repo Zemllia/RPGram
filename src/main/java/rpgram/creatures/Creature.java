@@ -61,7 +61,7 @@ public class Creature extends GameObject {
         int level,
         int fieldOfView
     ) {
-        super(id, name, map, mapIcon, mapWeight, position);
+        super(name, map, mapIcon, mapWeight, position);
 
         this.maxHp = hp = maxHp;
         this.maxEnergy = maxEnergy;
