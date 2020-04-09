@@ -21,8 +21,8 @@ public class NPC extends Creature {
 
     NPCState state = NPCState.CALM;
 
-    public NPC(int id, String name, Quest[] quests, Position position, BaseMap map) {
-        super(id, name, map, '@', '9', position);
+    public NPC(String name, Quest[] quests, Position position, BaseMap map) {
+        super(name, map, '@', '9', position);
         this.quests = quests;
         de = new DialogEngine(quests, name);
         live();
@@ -55,7 +55,7 @@ public class NPC extends Creature {
 
         switch (state) {
         case CALM: {
-            move(new Position(getPos().x + getRandomStep(), getPos().y + getRandomStep()));
+            move(getPos().add(getRandomStep(), getRandomStep()));
             if (satiety <= 200) {
                 state = NPCState.HUNGRY;
             } else if (water <= 300) {

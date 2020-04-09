@@ -11,7 +11,11 @@ public class GameObject extends NamedObject {
     protected Position lastPos;
 
     public GameObject(
-        String name, BaseMap map, char mapIcon, char mapWeight, Position position
+        String name,
+        BaseMap map,
+        char mapIcon,
+        char mapWeight,
+        Position position
     ) {
         super(name);
         this.map = map;
@@ -19,7 +23,7 @@ public class GameObject extends NamedObject {
         this.mapWeight = mapWeight;
         this.position = lastPos = position;
 
-        System.out.println("Created " + name + " (#" + getId() + ") at x=" + position.x + " y=" + position.y);
+        System.out.println("Created " + toString());
     }
 
     public BaseMap getMap() {
@@ -40,5 +44,15 @@ public class GameObject extends NamedObject {
 
     public Position getLastPos() {
         return lastPos;
+    }
+
+    @Override
+    public String toString() {
+        return name + " [#" + getId()
+            + " | " + getMapIcon()
+            + " | w=" + getMapWeight()
+            + " | at " + getPos()
+            + " of map " + getMap().getId()
+            + "]";
     }
 }

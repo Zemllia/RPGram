@@ -27,7 +27,6 @@ public class Creature extends GameObject {
     public List<InventoryItem> inventory = new ArrayList<>();
 
     public Creature(
-        int id,
         String name,
         BaseMap map,
         char mapIcon,
@@ -36,7 +35,6 @@ public class Creature extends GameObject {
     ) {
         // RULE: default creature parameters
         this(
-            id,
             name,
             map,
             mapIcon,
@@ -50,7 +48,6 @@ public class Creature extends GameObject {
     }
 
     public Creature(
-        int id,
         String name,
         BaseMap map,
         char mapIcon,

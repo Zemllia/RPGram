@@ -3,7 +3,7 @@ package rpgram.core;
 import rpgram.core.utils.Random;
 
 public class NamedObject {
-    private final int id;
+    protected int id;
     protected String name;
 
     public NamedObject(String name) {

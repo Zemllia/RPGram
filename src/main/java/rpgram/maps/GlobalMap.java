@@ -80,7 +80,6 @@ public class GlobalMap extends BaseMap {
         Position vPos = new Position(Random.randInt(0, areaHeight), Random.randInt(0, areaHeight));
         VillageMap v = new VillageMap(
             this,
-            id,
             NamesGenerator.getRandomVillageName(),
             NamesGenerator.getRandomNpcName(),
             Random.randInt(0, 9999),

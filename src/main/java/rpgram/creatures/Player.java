@@ -11,8 +11,10 @@ import java.util.ArrayList;
 public class Player extends Creature {
     public PlayerState state;
 
-    public Player(String name, Position pos, int id, BaseMap map) {
-        super(id, name, map, name.charAt(0), '9', pos);
+    public Player(int id, String name, Position pos, BaseMap map) {
+        super(name, map, name.charAt(0), '9', pos);
+        // override random ID by Telegram one
+        this.id = id;
         changeEnergy(100);
         System.out.println(name + ": " + I18N.getRandom("player.welcome.{0}"));
         inventory.add(new Coin(1000));
@@ -23,7 +25,11 @@ public class Player extends Creature {
             return I18N.get("map.cantEnter");
         }
 
-        System.out.println("DEBUG: player position: x=" + this.position.x + " y=" + this.position.y);
+        System.out.println(
+            "DEBUG: player position: x="
+                + this.position.x
+                + " y=" + this.position.y
+        );
 
         VillageMap curVillage = ((GlobalMap) map).checkVillage(this.position);
         if (curVillage == null) {
@@ -32,7 +38,10 @@ public class Player extends Creature {
 
         map = curVillage;
         lastPos = position;
-        position = new Position(curVillage.getAreaWidth() / 2, curVillage.getAreaHeight() / 2);
+        position = new Position(
+            curVillage.getAreaWidth() / 2,
+            curVillage.getAreaHeight() / 2
+        );
 
         map.moveObject(this);
         return String.join(
@@ -68,7 +77,8 @@ public class Player extends Creature {
                 int addedWood = Random.randInt(15, 30);
                 inventory.add(new Wood(addedWood));
                 map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
-                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.wood") + " (x" + addedWood + ")";
+                answer = I18N.get("player.gotSome") + " "
+                    + I18N.get("object.accusative.wood") + " (x" + addedWood + ")";
             } else {
                 answer = I18N.get("player.cantGetNothing");
             }
@@ -77,7 +87,8 @@ public class Player extends Creature {
                 int addedRock = Random.randInt(5, 15);
                 inventory.add(new Rock(addedRock));
                 map.setChar(MapLayer.ENVIRONMENT, position, (char) 0);
-                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.rock") + " (x" + addedRock + ")";
+                answer = I18N.get("player.gotSome") + " "
+                    + I18N.get("object.accusative.rock") + " (x" + addedRock + ")";
             } else {
                 answer = I18N.get("player.cantGetNothing");
             }
@@ -86,7 +97,8 @@ public class Player extends Creature {
                 int addedDirt = Random.randInt(5, 15);
                 inventory.add(new Dirt(addedDirt));
                 map.setChar(MapLayer.ENVIRONMENT, position, MapLegend.HOLE.getValue());
-                answer = I18N.get("player.gotSome") + " " + I18N.get("object.accusative.dirt") + " (x" + addedDirt + ")";
+                answer = I18N.get("player.gotSome") + " "
+                    + I18N.get("object.accusative.dirt") + " (x" + addedDirt + ")";
             } else {
                 answer = I18N.get("player.cantGetNothing");
             }
@@ -114,7 +126,12 @@ public class Player extends Creature {
         answer.append(I18N.get("player.whatsInMyBag")).append(":\n");
         int counter = 1;
         for (InventoryItem item : inventory) {
-            answer.append(counter).append(") ").append(item.getName()).append(" x").append(item.getCount()).append("\n");
+            answer.append(counter)
+                .append(") ")
+                .append(item.getName())
+                .append(" x")
+                .append(item.getCount())
+                .append("\n");
             counter++;
         }
         return answer.toString();

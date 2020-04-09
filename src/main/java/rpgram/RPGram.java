@@ -36,7 +36,7 @@ public class RPGram extends TelegramLongPollingBot {
         super(options);
         this.config = config;
         globalMap = new GlobalMap(500, 500, 5, 3);
-        NPC npc = new NPC(0, "George", null, new Position(10, 10), globalMap);
+        NPC npc = new NPC("George", null, new Position(10, 10), globalMap);
         players.add(npc);
     }
 
@@ -52,7 +52,7 @@ public class RPGram extends TelegramLongPollingBot {
                     while (Character.isAlphabetic(globalMap.getChar(MapLayer.PLAYERS, pos))) {
                         pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
                     }
-                    p = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, globalMap);
+                    p = new Player(userId, update.getMessage().getFrom().getFirstName(), pos, globalMap);
                     players.add(p);
                     globalMap.addObject(p);
 
@@ -140,8 +140,8 @@ public class RPGram extends TelegramLongPollingBot {
             case "map":
             case "back": {
                 String mapArea = curPlayer.getMap().viewMapArea(
-                        curPlayer.getPos(),
-                        curPlayer.getFov()
+                    curPlayer.getPos(),
+                    curPlayer.getFov()
                 );
                 answer = curPlayer.getStatsLine() + "\n" + mapArea;
                 keyboard = getKeyBoardOfArrows(curPlayer);
