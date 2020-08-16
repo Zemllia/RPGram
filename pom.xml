@@ -55,10 +55,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.fabio-t</groupId>
-            <artifactId>rlforj-alt</artifactId>
-            <version>0.3.0</version>
+            <groupId>com.github.F1uctus</groupId>
+            <artifactId>crown</artifactId>
+            <version>57676328e1</version>
         </dependency>
     </dependencies>
-
 </project>
