@@ -1,5 +1,7 @@
 package rpgram;
 
+import com.crown.items.InventoryItem;
+import com.sun.imageio.plugins.common.I18N;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,14 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
 import rpgram.core.utils.Random;
-import rpgram.creatures.Creature;
-import rpgram.creatures.NPC;
-import rpgram.creatures.Player;
-import rpgram.creatures.PlayerState;
-import rpgram.items.InventoryItem;
-import rpgram.maps.GlobalMap;
-import rpgram.maps.MapLayer;
-import rpgram.maps.MapLegend;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 package rpgram;
 
+import com.sun.imageio.plugins.common.I18N;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
@@ -8,7 +9,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
 
 public class Main {
-
     private static final String PROXY_HOST = "127.0.0.1";
     private static final Integer PROXY_PORT = 9050;
 
