@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
-import rpgram.core.I18N;
 
 public class Main {
 

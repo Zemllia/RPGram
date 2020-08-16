@@ -1,6 +1,5 @@
 package rpgram.maps;
 
-import rpgram.core.Position;
 import rpgram.core.utils.Random;
 
 public class VillageMap extends BaseMap {

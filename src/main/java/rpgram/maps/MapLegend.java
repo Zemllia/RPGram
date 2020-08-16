@@ -1,7 +1,5 @@
 package rpgram.maps;
 
-import rpgram.core.I18N;
-
 public enum MapLegend {
     CHEST('='),
     WALL('#'),

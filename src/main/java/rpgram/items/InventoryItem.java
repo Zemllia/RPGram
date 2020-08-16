@@ -1,6 +1,5 @@
 package rpgram.items;
 
-import rpgram.core.NamedObject;
 import rpgram.core.utils.Random;
 
 public class InventoryItem extends NamedObject {

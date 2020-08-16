@@ -9,17 +9,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
-import rpgram.core.I18N;
-import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.creatures.Creature;
 import rpgram.creatures.NPC;
 import rpgram.creatures.Player;
 import rpgram.creatures.PlayerState;
-import rpgram.items.Dirt;
 import rpgram.items.InventoryItem;
-import rpgram.items.Rock;
-import rpgram.items.Wood;
 import rpgram.maps.GlobalMap;
 import rpgram.maps.MapLayer;
 import rpgram.maps.MapLegend;

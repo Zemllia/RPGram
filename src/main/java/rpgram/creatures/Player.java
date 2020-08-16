@@ -1,11 +1,11 @@
 package rpgram.creatures;
 
-import rpgram.core.I18N;
-import rpgram.core.Position;
+import com.sun.imageio.plugins.common.I18N;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
 import rpgram.maps.*;
 
+import javax.swing.text.Position;
 import java.util.ArrayList;
 
 public class Player extends Creature {

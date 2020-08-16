@@ -1,9 +1,5 @@
 package rpgram.maps;
 
-import rpgram.core.GameObject;
-import rpgram.core.NamedObject;
-import rpgram.core.Position;
-
 public class BaseMap extends NamedObject {
     protected final int areaWidth;
     protected final int areaHeight;

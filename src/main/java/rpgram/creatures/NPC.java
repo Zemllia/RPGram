@@ -1,8 +1,5 @@
 package rpgram.creatures;
 
-import rpgram.DialogEngine;
-import rpgram.Quest;
-import rpgram.core.Position;
 import rpgram.core.utils.Random;
 import rpgram.items.*;
 import rpgram.maps.BaseMap;

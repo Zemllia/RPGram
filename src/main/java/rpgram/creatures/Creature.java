@@ -1,8 +1,5 @@
 package rpgram.creatures;
 
-import rpgram.core.GameObject;
-import rpgram.core.I18N;
-import rpgram.core.Position;
 import rpgram.items.InventoryItem;
 import rpgram.maps.BaseMap;
 

@@ -1,9 +1,6 @@
 package rpgram.maps;
 
-import rpgram.Treasure;
-import rpgram.core.I18N;
 import rpgram.core.NamesGenerator;
-import rpgram.core.Position;
 import rpgram.core.utils.Random;
 
 import java.util.ArrayList;
