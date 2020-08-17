@@ -1,32 +1,28 @@
 package rpgram;
 
-import com.crown.items.InventoryItem;
-import com.sun.imageio.plugins.common.I18N;
+import com.crown.i18n.I18n;
+import com.crown.maps.MapIcon;
+import com.crown.maps.Point3D;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import rpgram.core.Config;
-import rpgram.core.utils.Random;
-
-import java.util.ArrayList;
-import java.util.List;
+import rpgram.creatures.Human;
+import rpgram.ui.Button;
+import rpgram.ui.Keyboards;
 
 public class RPGram extends TelegramLongPollingBot {
-    private final ArrayList<Creature> players = new ArrayList<>();
     private final Config config;
-    private final GlobalMap globalMap;
+    private final GameState gameState;
 
-    RPGram(DefaultBotOptions options, Config config) {
+    RPGram(DefaultBotOptions options, Config config, GameState gameState) {
         super(options);
         this.config = config;
-        globalMap = new GlobalMap(500, 500, 5, 3);
-        NPC npc = new NPC(0, "George", null, new Position(10, 10), globalMap);
-        players.add(npc);
+        this.gameState = gameState;
     }
 
     @Override
@@ -34,28 +30,20 @@ public class RPGram extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (isUser(update.getMessage().getChatId())) {
                 int userId = update.getMessage().getFrom().getId();
-                Player p;
-                if (!checkIfPlayerExists(userId)) {
-                    Position pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
-                    // TODO: check this condition
-                    while (Character.isAlphabetic(globalMap.getChar(MapLayer.PLAYERS, pos))) {
-                        pos = new Position(Random.randInt(0, 500), Random.randInt(0, 500));
-                    }
-                    p = new Player(update.getMessage().getFrom().getFirstName(), pos, userId, globalMap);
-                    players.add(p);
-                    globalMap.addObject(p);
-
-                    System.out.println("Created a new player: Name=" + p.getName() + " id=" + p.getId() +
-                        " x=" + p.getPos().x + " y=" + p.getPos().y);
+                Human p;
+                if (!gameState.hasPlayer(userId)) {
+                    var newPlayerName = update.getMessage().getFrom().getFirstName();
+                    p = gameState.addPlayer(userId, newPlayerName);
+                    System.out.println("Created a new player:" + p);
                 } else {
-                    p = getPlayer(userId);
-                    ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
-                    if (messageSenders.size() != 0) {
-                        for (int id : messageSenders) {
-                            sendMessage(id, p.getName() + ": " + update.getMessage().getText());
-                        }
-                        return;
-                    }
+                    p = gameState.getPlayer(userId);
+//                    ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
+//                    if (messageSenders.size() != 0) {
+//                        for (int id : messageSenders) {
+//                            sendMessage(id, p.getName() + ": " + update.getMessage().getText());
+//                        }
+//                        return;
+//                    }
                 }
 
                 System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
@@ -65,17 +53,22 @@ public class RPGram extends TelegramLongPollingBot {
 
                 StringBuilder answer = new StringBuilder();
                 if (commandArray[0].equals("тп")) {
-                    p.teleport(new Position(Integer.parseInt(commandArray[1]), Integer.parseInt(commandArray[2])));
-                    answer.append(I18N.get("rpgram.tpUsed"));
+                    var absPoint = new Point3D(
+                        Integer.parseInt(commandArray[1]),
+                        Integer.parseInt(commandArray[2]),
+                        0
+                    ).minus(p.getPt0());
+                    p.move(absPoint.x, absPoint.y, absPoint.z);
+                    answer.append(I18n.of("rpgram.tpUsed"));
                 } else if (commandArray[0].equals("/start")) {
-                    answer.append(I18N.get("rpgram.welcome"));
+                    answer.append(I18n.of("rpgram.welcome"));
                 }
 
                 SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
                     .setText(p.getName() + ": " + answer).enableHtml(true);
 
-                message.setReplyMarkup(getKeyBoardOfArrows(p));
+                message.setReplyMarkup(Keyboards.arrows(p));
 
                 try {
                     execute(message);
@@ -88,135 +81,50 @@ public class RPGram extends TelegramLongPollingBot {
             String call_data = update.getCallbackQuery().getData();
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
-            Player curPlayer = getPlayer(chat_id);
-
+            Human player = gameState.getPlayer(chat_id);
             InlineKeyboardMarkup keyboard = null;
-            String answer = "";
-            switch (call_data) {
-
-            case "go_up": {
-                String mapArea = curPlayer.move(curPlayer.getPos().add(0, -1));
-                answer = curPlayer.getStatsLine() + "\n" + mapArea;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            String answer = null;
+            // move ^
+            if (Button.up.getCallback().equals(call_data)) {
+                player.moveBy(0, -1);
+                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                keyboard = Keyboards.arrows(player);
             }
-            case "go_right": {
-                String mapArea = curPlayer.move(curPlayer.getPos().add(1, 0));
-                answer = curPlayer.getStatsLine() + "\n" + mapArea;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            // move ->
+            else if (Button.right.getCallback().equals(call_data)) {
+                player.moveBy(1, 0);
+                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                keyboard = Keyboards.arrows(player);
             }
-            case "go_left": {
-                String mapArea = curPlayer.move(curPlayer.getPos().add(-1, 0));
-                answer = curPlayer.getStatsLine() + "\n" + mapArea;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            // move <-
+            else if (Button.left.getCallback().equals(call_data)) {
+                player.moveBy(-1, 0);
+                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                keyboard = Keyboards.arrows(player);
             }
-            case "go_down": {
-                String mapArea = curPlayer.move(curPlayer.getPos().add(0, 1));
-                answer = curPlayer.getStatsLine() + "\n" + mapArea;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            // move v
+            else if (Button.down.getCallback().equals(call_data)) {
+                player.moveBy(0, 1);
+                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                keyboard = Keyboards.arrows(player);
             }
-            case "inventory": {
-                answer = curPlayer.getStats();
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            // show inventory
+            else if (Button.inventory.getCallback().equals(call_data)) {
+                answer = player.getStats().getLocalized(player.lang);
+                keyboard = Keyboards.arrows(player);
             }
-            case "map":
-            case "back": {
-                String mapArea = curPlayer.getMap().viewMapArea(
-                        curPlayer.getPos(),
-                        curPlayer.getFov()
-                );
-                answer = curPlayer.getStatsLine() + "\n" + mapArea;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
+            // show main view (map + stats)
+            else if (Button.map.getCallback().equals(call_data) || Button.back.getCallback().equals(call_data)) {
+                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                keyboard = Keyboards.arrows(player);
             }
-            case "getWood": {
-                answer = curPlayer.getResource(Wood.class);
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "getRock": {
-                answer = curPlayer.getResource(Rock.class);
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "enter": {
-                answer = curPlayer.enterVillage();
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "getDirt": {
-                answer = curPlayer.getResource(Dirt.class);
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "actions": {
-                answer = I18N.get("rpgram.whatCanIDo");
-                keyboard = getKeyBoardOfActionsMenu();
-                break;
-            }
-            case "talk": {
-                answer = I18N.get("rpgram.whatCanISay");
-                curPlayer.state = PlayerState.TALKING;
-                keyboard = getKeyBoardOfStopTalking();
-                break;
-            }
-            case "stop_talk": {
-                answer = I18N.get("rpgram.whatCanIDo");
-                curPlayer.state = PlayerState.NORMAL;
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "exit": {
-                answer = curPlayer.exitVillage();
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "sleep": {
-                answer = curPlayer.sleep();
-                keyboard = getKeyBoardOfArrows(curPlayer);
-                break;
-            }
-            case "putItem": {
-                answer = I18N.get("rpgram.whatCanIDigIn");
-                keyboard = getKeyBoardOfListOfItems(curPlayer);
-                break;
-            }
-            case "increase_FOV": {
-                answer = curPlayer.adjustFov(1);
-                keyboard = getKeyBoardOfActionsMenu();
-                break;
-            }
-            case "increase_XP": {
-                answer = curPlayer.adjustHp(5);
-                keyboard = getKeyBoardOfActionsMenu();
-                break;
-            }
-            default: {
-                String[] str = call_data.split(" ");
-                if (str[0].equals("put") && curPlayer.getMap() instanceof GlobalMap) {
-                    int id = Integer.parseInt(str[1]);
-                    Treasure treasure = null;
-                    for (Treasure item : ((GlobalMap) curPlayer.getMap()).treasures) {
-                        if (item.getTreasurePosition().equals(curPlayer.getPos())) {
-                            item.addNewItem(curPlayer.getInventory().get(id));
-                        }
-                    }
-                    if (treasure == null) {
-                        treasure = new Treasure(curPlayer.getInventory().get(id), curPlayer.getPos(), curPlayer.getName());
-                    }
-                    curPlayer.inventory.remove(id);
-                    answer = "Зарыл " + treasure.getInventoryItem().get(0).getName();
-                    keyboard = getKeyBoardOfArrows(curPlayer);
-                }
-            }
+            // sleep
+            else if (Button.sleep.getCallback().equals(call_data)) {
+                answer = player.sleep().getLocalized(player.lang);
+                keyboard = Keyboards.arrows(player);
             }
             sendEditedMessage(update, (int) message_id, answer, keyboard);
         }
-
     }
 
     @Override
@@ -227,19 +135,6 @@ public class RPGram extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return this.config.get("bot.token");
-    }
-
-    public boolean checkIfPlayerExists(int id) {
-        return getPlayer(id) != null;
-    }
-
-    public Player getPlayer(long id) {
-        for (Creature creature : players) {
-            if (creature instanceof Player && creature.getId() == id) {
-                return (Player) creature;
-            }
-        }
-        return null;
     }
 
     public boolean isUser(long id) {
@@ -271,94 +166,28 @@ public class RPGram extends TelegramLongPollingBot {
         }
     }
 
-    private InlineKeyboardMarkup getKeyBoardOfArrows(Player player) {
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineMiddle = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineDown = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineFooter = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineUnderFooter = new ArrayList<>();
-        rowInlineUp.add(new InlineKeyboardButton().setText("^").setCallbackData("go_up"));
-        rowInlineMiddle.add(new InlineKeyboardButton().setText("<").setCallbackData("go_left"));
-        rowInlineMiddle.add(new InlineKeyboardButton().setText(">").setCallbackData("go_right"));
-        rowInlineDown.add(new InlineKeyboardButton().setText("v").setCallbackData("go_down"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.inventory")).setCallbackData("inventory"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("map")).setCallbackData("map"));
-        rowInlineFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.actions")).setCallbackData("actions"));
-        char curChar = player.getMap().getChar(MapLayer.ENVIRONMENT, player.getPos());
-        if (curChar == MapLegend.TREE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.wood")).setCallbackData("getWood"));
-        } else if (curChar == MapLegend.HOLE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.digIn")).setCallbackData("putItem"));
-        } else if (curChar == MapLegend.VILLAGE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.enter.village")).setCallbackData("enter"));
-        } else if (curChar == MapLegend.ROCK.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.rock")).setCallbackData("getRock"));
-        } else if (curChar == MapLegend.TREASURE.getValue()) {
-            rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.digUp") + I18N.get("object.accusative.treasure")).setCallbackData("getGift"));
-        } else {
-            if (player.getMap() instanceof GlobalMap) {
-                rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.obtain") + " " + I18N.get("object.accusative.dirt")).setCallbackData("getDirt"));
-            } else {
-                rowInlineUnderFooter.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.exit.village")).setCallbackData("exit"));
+    private String statsToMarkup(Human player) {
+        return "[" + player.getPt0().x + ", " + player.getPt0().y + "]"
+            + " LVL: " + player.getLevel() + "/" + player.getXp()
+            + " HP: " + player.getHp()
+            + " E: " + player.getEnergy();
+    }
+
+    private String mapToMarkup(Human player) {
+        var area = player.getMap().get2DArea(
+            player.getPt0(),
+            player.getFov()
+        );
+        StringBuilder answer = new StringBuilder();
+        answer.append("<code>\n");
+        answer.append("\n");
+        for (MapIcon<?>[] mapIcons : area) {
+            for (int x = 0; x < area[0].length; x++) {
+                answer.append(mapIcons[x].get()).append(" ");
             }
+            answer.append("\n");
         }
-        // Set the keyboard to the markup
-        rowsInline.add(rowInlineUp);
-        rowsInline.add(rowInlineMiddle);
-        rowsInline.add(rowInlineDown);
-        rowsInline.add(rowInlineFooter);
-        rowsInline.add(rowInlineUnderFooter);
-        // Add it to the message
-        markupInline.setKeyboard(rowsInline);
-        return markupInline;
+        answer.append("\n</code>");
+        return answer.toString();
     }
-
-    private InlineKeyboardMarkup getKeyBoardOfActionsMenu() {
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineTalk = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineSleep = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineLevelUp = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineBack = new ArrayList<>();
-        rowInlineTalk.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.talk")).setCallbackData("talk"));
-        rowInlineSleep.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.sleep")).setCallbackData("sleep"));
-        rowInlineLevelUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.adjust.fov")).setCallbackData("increase_FOV"));
-        rowInlineLevelUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.adjust.hp")).setCallbackData("increase_XP"));
-        rowInlineBack.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.back")).setCallbackData("back"));
-        rowsInline.add(rowInlineTalk);
-        rowsInline.add(rowInlineSleep);
-        rowsInline.add(rowInlineLevelUp);
-        rowsInline.add(rowInlineBack);
-        markupInline.setKeyboard(rowsInline);
-        return markupInline;
-    }
-
-    private InlineKeyboardMarkup getKeyBoardOfStopTalking() {
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInlineUp = new ArrayList<>();
-        rowInlineUp.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.talk.stop")).setCallbackData("stop_talk"));
-        rowsInline.add(rowInlineUp);
-        markupInline.setKeyboard(rowsInline);
-        return markupInline;
-    }
-
-    private InlineKeyboardMarkup getKeyBoardOfListOfItems(Player player) {
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        int counter = 0;
-        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-        for (InventoryItem item : player.getInventory()) {
-            rowInline.add(new InlineKeyboardButton().setText(item.getName()).setCallbackData("put " + counter));
-            rowsInline.add(rowInline);
-            counter++;
-        }
-        rowInline.add(new InlineKeyboardButton().setText(I18N.get("rpgram.ui.cancel")).setCallbackData("remove_status_to_zero"));
-        rowsInline.add(rowInline);
-        markupInline.setKeyboard(rowsInline);
-        return markupInline;
-    }
-
 }
