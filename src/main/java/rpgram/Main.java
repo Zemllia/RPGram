@@ -16,7 +16,7 @@ import java.util.*;
 
 public class Main {
     public static final HashMap<String, ResourceBundle> bundles = new HashMap<>();
-    public static final int MAP_SIZE = 101;
+    public static final int MAP_SIZE = 11;
 
     private static final String PROXY_HOST = "127.0.0.1";
     private static final Integer PROXY_PORT = 9050;
@@ -49,15 +49,13 @@ public class Main {
             ));
 
         System.out.println("Constructing main timeline...");
-        new Thread(() -> {
-            Timeline.init(
-                new VirtualClock(1000, () -> {
-                }).startAtRnd(),
-                gameState
-            );
-        });
+        Timeline.init(
+            new VirtualClock(1000, () -> {
+            }).startAtRnd(),
+            gameState
+        );
 
-        System.out.println("Starting server...");
+        System.out.println("Starting a server...");
         ApiContextInitializer.init();
 
         System.out.println("Loading Telegram API...");
@@ -65,12 +63,13 @@ public class Main {
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
         if (isProxyOn == null || Boolean.parseBoolean(isProxyOn)) {
-            botOptions.setProxyHost((proxyHost != null) ? proxyHost : PROXY_HOST);
-            botOptions.setProxyPort((proxyPort != null) ? Integer.parseInt(proxyPort) : PROXY_PORT);
+            botOptions.setProxyHost(proxyHost != null ? proxyHost : PROXY_HOST);
+            botOptions.setProxyPort(proxyPort != null ? Integer.parseInt(proxyPort) : PROXY_PORT);
             botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
         }
 
-        RPGram bot = new RPGram(botOptions, config);
+        RPGram bot = new RPGram(botOptions, config, gameState);
+
         try {
             System.out.println("Connecting to Telegram...");
             botsApi.registerBot(bot);
@@ -79,5 +78,10 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("Server successfully started!");
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down a server...");
+            // TODO: serialize main timeline
+        }));
     }
 }
