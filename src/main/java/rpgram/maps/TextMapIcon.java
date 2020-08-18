@@ -31,4 +31,9 @@ public class TextMapIcon extends MapIcon<String> {
     public void stepAnimation() {
 
     }
+
+    @Override
+    public String toString() {
+        return text;
+    }
 }
