@@ -167,10 +167,10 @@ public class RPGram extends TelegramLongPollingBot {
     }
 
     private String statsToMarkup(Human player) {
-        return "[" + player.getPt0().x + ", " + player.getPt0().y + "]"
-            + " LVL: " + player.getLevel() + "/" + player.getXp()
-            + " HP: " + player.getHp()
-            + " E: " + player.getEnergy();
+        return "🧭 " + (player.getPt0().x + 1) + ", " + (player.getPt0().y + 1)
+            + " ⭐ " + player.getLevel() + "/" + player.getXp()
+            + " ♥ " + player.getHp()
+            + " ⚡ " + player.getEnergy();
     }
 
     private String mapToMarkup(Human player) {
