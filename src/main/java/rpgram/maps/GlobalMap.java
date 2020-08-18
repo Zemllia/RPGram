@@ -12,18 +12,18 @@ public class GlobalMap extends Map {
     public GlobalMap(String name, int xSize, int ySize, int zSize) {
         super(name, xSize, ySize, zSize);
         for (int y = 0; y < ySize; y++) {
-            for (int x = 0; x < ySize; x++) {
-                add(new Grass(this, new Point3D(x, y, MapLevel.ground)));
+            for (int x = 0; x < xSize; x++) {
+                new Grass(this, new Point3D(x, y, MapLevel.ground));
             }
         }
         for (int i = 0; i < xSize / 2; i++) {
-            add(new Tree(this));
+            new Tree(this);
         }
         for (int i = 0; i < xSize / 10; i++) {
-            add(new House(this));
+            new House(this);
         }
         for (int i = 0; i < xSize / 15; i++) {
-            add(new Village(this));
+            new Village(this);
         }
     }
 
