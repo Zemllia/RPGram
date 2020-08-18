@@ -29,13 +29,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
         <dependency>
@@ -55,9 +48,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.F1uctus</groupId>
+            <groupId>com.github.f1uctus</groupId>
             <artifactId>crown</artifactId>
-            <version>57676328e1</version>
+            <version>0.3.4</version>
         </dependency>
     </dependencies>
 </project>
