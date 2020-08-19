@@ -32,7 +32,7 @@ public class RPGram extends TelegramLongPollingBot {
                 int userId = update.getMessage().getFrom().getId();
                 Human p;
                 if (!gameState.hasPlayer(userId)) {
-                    var newPlayerName = update.getMessage().getFrom().getFirstName();
+                    var newPlayerName = update.getMessage().getFrom().getUserName();
                     p = gameState.addPlayer(userId, newPlayerName);
                     System.out.println("Created a new player:" + p);
                 } else {
@@ -46,7 +46,7 @@ public class RPGram extends TelegramLongPollingBot {
 //                    }
                 }
 
-                System.out.println(update.getMessage().getFrom().getFirstName() + ": " + update.getMessage().getText());
+                System.out.println(update.getMessage().getFrom().getUserName() + ": " + update.getMessage().getText());
 
                 String command = update.getMessage().getText();
                 String[] commandArray = command.toLowerCase().trim().split(" ");
