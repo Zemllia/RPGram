@@ -77,53 +77,46 @@ public class RPGram extends TelegramLongPollingBot {
                 }
             }
         } else if (update.hasCallbackQuery()) {
-            // Set variables
-            String call_data = update.getCallbackQuery().getData();
-            long message_id = update.getCallbackQuery().getMessage().getMessageId();
-            long chat_id = update.getCallbackQuery().getMessage().getChatId();
-            Human player = gameState.getPlayer(chat_id);
-            InlineKeyboardMarkup keyboard = null;
+            var callbackQuery = update.getCallbackQuery();
+            String callbackData = callbackQuery.getData();
+            long chatId = callbackQuery.getMessage().getChatId();
+            Human player = gameState.getPlayer(chatId);
+            InlineKeyboardMarkup keyboard = Keyboards.arrows(player);
             String answer = null;
             // move ^
-            if (Button.up.getCallback().equals(call_data)) {
+            if (Button.up.getCallback().equals(callbackData)) {
                 player.moveBy(0, -1);
                 answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
-                keyboard = Keyboards.arrows(player);
             }
             // move ->
-            else if (Button.right.getCallback().equals(call_data)) {
+            else if (Button.right.getCallback().equals(callbackData)) {
                 player.moveBy(1, 0);
                 answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
-                keyboard = Keyboards.arrows(player);
             }
             // move <-
-            else if (Button.left.getCallback().equals(call_data)) {
+            else if (Button.left.getCallback().equals(callbackData)) {
                 player.moveBy(-1, 0);
                 answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
-                keyboard = Keyboards.arrows(player);
             }
             // move v
-            else if (Button.down.getCallback().equals(call_data)) {
+            else if (Button.down.getCallback().equals(callbackData)) {
                 player.moveBy(0, 1);
                 answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
-                keyboard = Keyboards.arrows(player);
             }
             // show inventory
-            else if (Button.inventory.getCallback().equals(call_data)) {
+            else if (Button.inventory.getCallback().equals(callbackData)) {
                 answer = player.getStats().getLocalized(player.lang);
-                keyboard = Keyboards.arrows(player);
             }
             // show main view (map + stats)
-            else if (Button.map.getCallback().equals(call_data) || Button.back.getCallback().equals(call_data)) {
+            else if (Button.map.getCallback().equals(callbackData) || Button.back.getCallback().equals(callbackData)) {
                 answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
-                keyboard = Keyboards.arrows(player);
             }
             // sleep
-            else if (Button.sleep.getCallback().equals(call_data)) {
+            else if (Button.sleep.getCallback().equals(callbackData)) {
                 answer = player.sleep().getLocalized(player.lang);
-                keyboard = Keyboards.arrows(player);
             }
-            sendEditedMessage(update, (int) message_id, answer, keyboard);
+            long messageId = callbackQuery.getMessage().getMessageId();
+            sendEditedMessage(update, (int) messageId, answer, keyboard);
         }
     }
 
