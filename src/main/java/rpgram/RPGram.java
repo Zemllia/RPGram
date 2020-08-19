@@ -168,9 +168,9 @@ public class RPGram extends TelegramLongPollingBot {
 
     private String statsToMarkup(Human player) {
         return "🧭 " + (player.getPt0().x + 1) + ", " + (player.getPt0().y + 1)
-            + " ⭐ " + player.getLevel() + "/" + player.getXp()
-            + " ♥ " + player.getHp()
-            + " ⚡ " + player.getEnergy();
+            + "  ⭐ " + player.getLevel() + "/" + player.getXp()
+            + "  ♥ " + player.getHp()
+            + "  ⚡ " + player.getEnergy();
     }
 
     private String mapToMarkup(Human player) {
@@ -180,7 +180,6 @@ public class RPGram extends TelegramLongPollingBot {
         );
         StringBuilder answer = new StringBuilder();
         answer.append("<code>\n");
-        answer.append("\n");
         for (MapIcon<?>[] mapIcons : area) {
             for (int x = 0; x < area[0].length; x++) {
                 answer.append(mapIcons[x].get()).append(" ");
