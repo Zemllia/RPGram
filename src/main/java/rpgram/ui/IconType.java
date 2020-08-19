@@ -6,19 +6,19 @@ public enum IconType {
     emptiness("#"),
     defaultPlayer("@"),
     grass(" "),
-    tree(" ^ \n"
-       + "/|\\\n"
-       + " | "
+    tree(" ^ "
+       + "/|\\"
+       + "\\|/"
     ),
     rock("*"),
     house(
-        " ^  \n" +
-        "/#\\\n" +
-        "|0|\n"
+        " ^  " +
+        "/#\\" +
+        "|0|"
     ),
-    village(".^.\n"
-          + "^..\n"
-          + "^.^\n"
+    village(".^."
+          + "^.."
+          + "^.^"
     );
 
     // @formatter:on
