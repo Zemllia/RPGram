@@ -18,7 +18,7 @@ public class GameState extends BaseGameState {
     }
 
     public Human addPlayer(long telegramId, String name) {
-        Point3D pt = Random.getFreePoint(getGlobalMap(), new Point3D(-1, -1, MapLevel.ground + 1));
+        Point3D pt = Random.getFreePoint(getGlobalMap()).withZ(MapLevel.ground + 1);
         var p = new Wanderer(telegramId, name, getGlobalMap(), pt);
         players.add(p);
         return p;

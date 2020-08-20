@@ -1,7 +1,6 @@
 package rpgram.ui;
 
 import com.crown.i18n.I18n;
-import com.crown.i18n.ITemplate;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import rpgram.creatures.Human;

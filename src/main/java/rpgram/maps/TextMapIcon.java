@@ -3,7 +3,6 @@ package rpgram.maps;
 import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
 import com.crown.maps.MapIcon;
-import rpgram.ui.IconType;
 
 public class TextMapIcon extends MapIcon<String> {
     private final String text;
