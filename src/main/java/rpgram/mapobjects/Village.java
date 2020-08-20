@@ -16,7 +16,7 @@ public class Village extends MapObject {
             MapIcons.getIcons().get(IconType.village),
             MapWeight.OBSTACLE,
             LargeObjectTemplates.getSquareLinearZTemplate(
-                Random.getPoint(map, size, size).withZ(MapLevel.ground + 1),
+                Random.getFreePoint(map, size, size).withZ(MapLevel.ground + 1),
                 size
             )
         );
