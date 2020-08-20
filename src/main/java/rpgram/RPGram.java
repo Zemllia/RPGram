@@ -1,7 +1,6 @@
 package rpgram;
 
 import com.crown.i18n.I18n;
-import com.crown.maps.MapIcon;
 import com.crown.maps.Point3D;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,6 +13,7 @@ import rpgram.core.Config;
 import rpgram.creatures.Human;
 import rpgram.ui.Button;
 import rpgram.ui.Keyboards;
+import rpgram.ui.views.MapView;
 
 public class RPGram extends TelegramLongPollingBot {
     private final Config config;
@@ -86,22 +86,22 @@ public class RPGram extends TelegramLongPollingBot {
             // move ^
             if (Button.up.getCallback().equals(callbackData)) {
                 player.moveBy(0, -1);
-                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                answer = MapView.markup(player);
             }
             // move ->
             else if (Button.right.getCallback().equals(callbackData)) {
                 player.moveBy(1, 0);
-                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                answer = MapView.markup(player);
             }
             // move <-
             else if (Button.left.getCallback().equals(callbackData)) {
                 player.moveBy(-1, 0);
-                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                answer = MapView.markup(player);
             }
             // move v
             else if (Button.down.getCallback().equals(callbackData)) {
                 player.moveBy(0, 1);
-                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                answer = MapView.markup(player);
             }
             // show inventory
             else if (Button.inventory.getCallback().equals(callbackData)) {
@@ -109,7 +109,7 @@ public class RPGram extends TelegramLongPollingBot {
             }
             // show main view (map + stats)
             else if (Button.map.getCallback().equals(callbackData) || Button.back.getCallback().equals(callbackData)) {
-                answer = statsToMarkup(player) + "\n" + mapToMarkup(player);
+                answer = MapView.markup(player);
             }
             // sleep
             else if (Button.sleep.getCallback().equals(callbackData)) {
@@ -157,29 +157,5 @@ public class RPGram extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-    }
-
-    private String statsToMarkup(Human player) {
-        return "🧭 " + (player.getPt0().x + 1) + ", " + (player.getPt0().y + 1)
-            + "  ⭐ " + player.getLevel() + "/" + player.getXp()
-            + "  ♥ " + player.getHp()
-            + "  ⚡ " + player.getEnergy();
-    }
-
-    private String mapToMarkup(Human player) {
-        var area = player.getMap().get2DArea(
-            player.getPt0(),
-            player.getFov()
-        );
-        StringBuilder answer = new StringBuilder();
-        answer.append("<code>\n");
-        for (MapIcon<?>[] mapIcons : area) {
-            for (int x = 0; x < area[0].length; x++) {
-                answer.append(mapIcons[x].get()).append(" ");
-            }
-            answer.append("\n");
-        }
-        answer.append("\n</code>");
-        return answer.toString();
     }
 }
