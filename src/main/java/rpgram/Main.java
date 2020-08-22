@@ -16,10 +16,9 @@ import java.util.*;
 
 public class Main {
     public static final HashMap<String, ResourceBundle> bundles = new HashMap<>();
-    public static final int MAP_SIZE = 11;
+    public static final int MAP_SIZE = 21;
 
-    private static final String PROXY_HOST = "127.0.0.1";
-    private static final Integer PROXY_PORT = 9050;
+    public static final Config config = new Config();
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -33,12 +32,7 @@ public class Main {
         System.out.println("Resources initialized.");
 
         System.out.println("Loading config...");
-        Config config = new Config(args[0]);
-        config.load();
-
-        String isProxyOn = config.get("proxy.enabled");
-        String proxyHost = config.get("proxy.host");
-        String proxyPort = config.get("proxy.port");
+        config.load(args[0]);
         System.out.println("Config loaded.");
 
         GameState gameState;
@@ -66,9 +60,9 @@ public class Main {
         TelegramBotsApi botsApi = new TelegramBotsApi();
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        if (isProxyOn == null || Boolean.parseBoolean(isProxyOn)) {
-            botOptions.setProxyHost(proxyHost != null ? proxyHost : PROXY_HOST);
-            botOptions.setProxyPort(proxyPort != null ? Integer.parseInt(proxyPort) : PROXY_PORT);
+        if (config.isProxyEnabled()) {
+            botOptions.setProxyHost(config.getProxyHost());
+            botOptions.setProxyPort(config.getProxyPort());
             botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
         }
         System.out.println("Telegram API loaded.");
