@@ -10,7 +10,7 @@ public class Grass extends MapObject {
             "Grass",
             map,
             MapIcons.getIcons().get(IconType.grass),
-            MapWeight.BLOCKS_LIGHT,
+            MapWeight.OBSTACLE,
             pt
         );
     }
