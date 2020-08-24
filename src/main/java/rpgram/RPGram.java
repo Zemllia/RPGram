@@ -110,6 +110,7 @@ public class RPGram extends TelegramLongPollingBot {
             // show inventory
             else if (Button.inventory.getCallback().equals(callbackData)) {
                 answer = player.getStats().getLocalized(player.lang);
+                keyboard = Keyboards.arrows(player);
             }
             // show main view (map + stats)
             else if (Button.map.getCallback().equals(callbackData) || Button.back.getCallback().equals(callbackData)) {
