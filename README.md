@@ -1,3 +1,5 @@
+![RPGram Logo](RPGram.png)
+
 # RPGram
 
 ## Dependencies
