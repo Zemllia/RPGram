@@ -1,6 +1,7 @@
 package rpgram;
 
 import com.crown.i18n.I18n;
+import com.crown.i18n.ITemplate;
 import com.crown.maps.Point3D;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -30,29 +31,36 @@ public class RPGram extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (isUser(update.getMessage().getChatId())) {
+                var messageText = update.getMessage().getText();
                 int userId = update.getMessage().getFrom().getId();
+                var userName = update.getMessage().getFrom().getUserName();
                 Human p;
-                if (!gameState.hasPlayer(userId)) {
-                    var newPlayerName = update.getMessage().getFrom().getUserName();
-                    p = gameState.addPlayer(userId, newPlayerName);
-                    System.out.println("Created a new player:" + p);
-                } else {
+                if (gameState.hasPlayer(userId)) {
                     p = gameState.getPlayer(userId);
-//                    ArrayList<Integer> messageSenders = p.saySomethingToAll(players);
-//                    if (messageSenders.size() != 0) {
-//                        for (int id : messageSenders) {
-//                            sendMessage(id, p.getName() + ": " + update.getMessage().getText());
-//                        }
-//                        return;
-//                    }
+                    var messageReceivers = p.getMap().getAll(
+                        Human.class,
+                        p.getPt0(),
+                        p.getFov()
+                    );
+                    for (var receiver : messageReceivers) {
+                        if (receiver != p) {
+                            sendMessage(
+                                (int) receiver.telegramId,
+                                userName + ": " + messageText
+                            );
+                        }
+                    }
+                } else {
+                    p = gameState.addPlayer(userId, userName);
+                    System.out.println("New player: " + p);
                 }
 
-                System.out.println(update.getMessage().getFrom().getUserName() + ": " + update.getMessage().getText());
+                System.out.println(userName + ": " + messageText);
 
-                String command = update.getMessage().getText();
-                String[] commandArray = command.toLowerCase().trim().split(" ");
+                var command = update.getMessage().getText();
+                var commandArray = command.toLowerCase().trim().split(" ");
 
-                StringBuilder answer = new StringBuilder();
+                ITemplate answer;
                 if (commandArray[0].equals("тп")) {
                     var absPoint = new Point3D(
                         Integer.parseInt(commandArray[1]),
@@ -60,16 +68,18 @@ public class RPGram extends TelegramLongPollingBot {
                         0
                     ).minus(p.getPt0());
                     p.move(absPoint.x, absPoint.y, absPoint.z);
-                    answer.append(I18n.of("rpgram.tpUsed"));
+                    answer = I18n.of("rpgram.tpUsed");
                 } else if (commandArray[0].equals("/start")) {
-                    answer.append(I18n.of("rpgram.welcome"));
+                    answer = I18n.of("rpgram.welcome");
+                } else {
+                    answer = I18n.empty;
                 }
 
-                SendMessage message = new SendMessage()
+                var message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText(p.getName() + ": " + answer).enableHtml(true);
-
-                message.setReplyMarkup(Keyboards.arrows(p));
+                    .setText(MapView.markup(p, answer))
+                    .enableHtml(true)
+                    .setReplyMarkup(Keyboards.arrows(p));
 
                 try {
                     execute(message);
