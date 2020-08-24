@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.github.f1uctus</groupId>
             <artifactId>crown</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.2-alpha</version>
         </dependency>
     </dependencies>
 </project>
