@@ -2,6 +2,7 @@
 
 ## Dependencies
 - [TelegramBots](https://mvnrepository.com/artifact/org.telegram/telegrambots)
+- [Crown](https://github.com/F1uctus/crown)
 
 ## Building from sources
 ```
@@ -11,7 +12,7 @@ $ mvn compile
 ```
 
 ## Configuration
-A configuration file example:
+A configuration file (`config.properties`) example:
 ```
 bot.token=123456789:your-secret-token
 bot.name=my_rpgram_bot

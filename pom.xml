@@ -6,6 +6,10 @@
     <groupId>ru.malies</groupId>
     <artifactId>1</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -14,8 +18,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>10</source>
+                    <target>10</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -55,10 +59,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.fabio-t</groupId>
-            <artifactId>rlforj-alt</artifactId>
-            <version>0.3.0</version>
+            <groupId>com.github.f1uctus</groupId>
+            <artifactId>crown</artifactId>
+            <version>0.7.2-alpha</version>
         </dependency>
     </dependencies>
-
 </project>
