@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="26.616868"
-     inkscape:cy="36.819038"
+     inkscape:zoom="89.6"
+     inkscape:cx="57.796899"
+     inkscape:cy="41.806031"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -92,6 +92,11 @@
        inkscape:locked="false"
        inkscape:label=""
        inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="12.277694,9.3878419"
+       orientation="0,1"
+       id="guide5505"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4723">
@@ -120,7 +125,7 @@
        inkscape:export-ydpi="302" />
     <g
        aria-label="G"
-       transform="matrix(1.0811482,-0.08072889,0.16559804,0.91257745,0,-0.01670435)"
+       transform="matrix(1.0841579,-4.9950269e-4,0.09761066,0.92232992,11.215091,-5.1212656)"
        style="font-style:normal;font-weight:normal;font-size:6.41560364px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.16039009"
        id="text4659"
        inkscape:export-filename="/home/avp/Downloads/RPGram.png"
@@ -136,33 +141,33 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:6.42362642px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.16059068"
-       x="35.725533"
-       y="168.14003"
+       x="47.658104"
+       y="162.43639"
        id="text4659-3"
-       transform="matrix(1.0769391,-0.09242528,0.17465298,0.91356852,0,0)"
+       transform="matrix(1.0808969,-0.00146818,0.09715257,0.92502565,0,0)"
        inkscape:export-filename="/home/avp/Downloads/RPGram.png"
        inkscape:export-xdpi="302"
        inkscape:export-ydpi="302"><tspan
          sodipodi:role="line"
          id="tspan4657-5"
-         x="35.725533"
-         y="168.14003"
-         style="font-size:3.17499995px;line-height:0.25;fill:#000000;stroke-width:0.16059068">RP</tspan></text>
+         x="47.658104"
+         y="162.43639"
+         style="font-size:3.52777767px;line-height:0.25;fill:#000000;stroke-width:0.16059068">RP</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:6.41560316px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.16039009"
-       x="43.668976"
-       y="169.31891"
+       x="55.975964"
+       y="162.95555"
        id="text4659-3-6"
-       transform="matrix(1.0802391,-0.09209818,0.17518926,0.91078484,0,0)"
+       transform="matrix(1.0841567,-0.00165108,0.09859029,0.92222573,0,0)"
        inkscape:export-filename="/home/avp/Downloads/RPGram.png"
        inkscape:export-xdpi="302"
        inkscape:export-ydpi="302"><tspan
          sodipodi:role="line"
          id="tspan4657-5-2"
-         x="43.668976"
-         y="169.31891"
-         style="font-size:2.11666656px;fill:#000000;stroke-width:0.16039009">ram</tspan></text>
+         x="55.975964"
+         y="162.95555"
+         style="font-size:2.11666668px;fill:#000000;stroke-width:0.16039009">ram</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="m 75.405368,152.20705 -10.684789,-2.63513 9.064981,-6.37575 0.62343,3.49276"
