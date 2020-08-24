@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import rpgram.core.Config;
 import rpgram.creatures.Human;
 import rpgram.ui.Button;
@@ -163,6 +164,9 @@ public class RPGram extends TelegramLongPollingBot {
             .setReplyMarkup(km);
         try {
             execute(new_message);
+        } catch (TelegramApiRequestException e) {
+            if (e.getApiResponse().contains("message is not modified")) return;
+            e.printStackTrace();
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
