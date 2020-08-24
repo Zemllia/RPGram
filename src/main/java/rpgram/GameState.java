@@ -4,7 +4,7 @@ import com.crown.BaseGameState;
 import com.crown.common.utils.Random;
 import com.crown.creatures.Organism;
 import com.crown.maps.Map;
-import com.crown.maps.Point3D;
+import com.crown.maps.MapWeight;
 import rpgram.creatures.Human;
 import rpgram.creatures.Wanderer;
 import rpgram.maps.MapLevel;
@@ -18,8 +18,18 @@ public class GameState extends BaseGameState {
     }
 
     public Human addPlayer(long telegramId, String name) {
-        Point3D pt = Random.getFreePoint(getGlobalMap()).withZ(MapLevel.ground + 1);
-        var p = new Wanderer(telegramId, name, getGlobalMap(), pt);
+        var pt = Random.getFreePoint(getGlobalMap());
+        var column = getGlobalMap().getColumn(pt.withZ(MapLevel.height));
+        int placementHeight = 0;
+        for (int i = 0; i < column.length; i++) {
+            placementHeight++;
+            if (column[i] != null && column[i].getMapWeight() == MapWeight.OBSTACLE
+                && i < column.length - 1
+                && (column[i + 1] == null || column[i + 1].getMapWeight() != MapWeight.OBSTACLE)) {
+                break;
+            }
+        }
+        var p = new Wanderer(telegramId, name, getGlobalMap(), pt.withZ(placementHeight));
         players.add(p);
         return p;
     }
