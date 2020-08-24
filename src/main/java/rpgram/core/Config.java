@@ -7,6 +7,8 @@ public class Config {
     public static final String DEFAULT_PROXY_HOST = "127.0.0.1";
     public static final Integer DEFAULT_PROXY_PORT = 9050;
 
+    public static final Integer DEFAULT_MAP_SIZE = 101;
+
     private final Properties properties = new Properties();
 
     public static class ConfigException extends Exception {
@@ -36,22 +38,29 @@ public class Config {
     }
 
     public boolean isProxyEnabled() {
-        var isProxyOn = get("proxy.enabled");
-        return isProxyOn == null || Boolean.parseBoolean(isProxyOn);
+        var value = get("proxy.enabled");
+        return value == null || Boolean.parseBoolean(value);
     }
 
     public String getProxyHost() {
-        String proxyHost = get("proxy.host");
-        return proxyHost != null
-            ? proxyHost
+        String value = get("proxy.host");
+        return value != null
+            ? value
             : DEFAULT_PROXY_HOST;
     }
 
     public int getProxyPort() {
-        String proxyPort = get("proxy.port");
-        return proxyPort != null
-            ? Integer.parseInt(proxyPort)
+        String value = get("proxy.port");
+        return value != null
+            ? Integer.parseInt(value)
             : DEFAULT_PROXY_PORT;
+    }
+
+    public int getMapSize() {
+        String value = get("game.map.size");
+        return value != null
+            ? Integer.parseInt(value)
+            : DEFAULT_MAP_SIZE;
     }
 
     /**

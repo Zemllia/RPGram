@@ -16,8 +16,6 @@ import java.util.*;
 
 public class Main {
     public static final HashMap<String, ResourceBundle> bundles = new HashMap<>();
-    public static final int MAP_SIZE = 21;
-
     public static final Config config = new Config();
 
     public static void main(String[] args) throws Exception {
@@ -37,13 +35,9 @@ public class Main {
 
         GameState gameState;
         System.out.println("Constructing new game state...");
+        int mapSize = config.getMapSize();
         gameState = new GameState(
-            new GlobalMap(
-                "Global map",
-                MAP_SIZE,
-                MAP_SIZE,
-                MapLevel.height
-            )
+            new GlobalMap("Global map", mapSize, mapSize, MapLevel.height)
         );
         System.out.println("Game state created.");
 
