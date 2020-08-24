@@ -85,26 +85,26 @@ public class RPGram extends TelegramLongPollingBot {
             String answer = null;
             // move ^
             if (Button.up.getCallback().equals(callbackData)) {
-                player.moveBy(0, -1);
-                answer = MapView.markup(player);
+                var result = player.moveBy(0, -1);
+                answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
             // move ->
             else if (Button.right.getCallback().equals(callbackData)) {
-                player.moveBy(1, 0);
-                answer = MapView.markup(player);
+                var result = player.moveBy(1, 0);
+                answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
             // move <-
             else if (Button.left.getCallback().equals(callbackData)) {
-                player.moveBy(-1, 0);
-                answer = MapView.markup(player);
+                var result = player.moveBy(-1, 0);
+                answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
             // move v
             else if (Button.down.getCallback().equals(callbackData)) {
-                player.moveBy(0, 1);
-                answer = MapView.markup(player);
+                var result = player.moveBy(0, 1);
+                answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
             // show inventory
@@ -113,13 +113,15 @@ public class RPGram extends TelegramLongPollingBot {
                 keyboard = Keyboards.arrows(player);
             }
             // show main view (map + stats)
-            else if (Button.map.getCallback().equals(callbackData) || Button.back.getCallback().equals(callbackData)) {
+            else if (Button.map.getCallback().equals(callbackData)
+                || Button.back.getCallback().equals(callbackData)) {
                 answer = MapView.markup(player);
                 keyboard = Keyboards.arrows(player);
             }
             // sleep
             else if (Button.sleep.getCallback().equals(callbackData)) {
-                answer = player.sleep().getLocalized(player.lang);
+                var result = player.sleep();
+                answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
             long messageId = callbackQuery.getMessage().getMessageId();

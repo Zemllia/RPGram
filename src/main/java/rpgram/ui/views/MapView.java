@@ -1,5 +1,7 @@
 package rpgram.ui.views;
 
+import com.crown.i18n.I18n;
+import com.crown.i18n.ITemplate;
 import com.crown.maps.MapObject;
 import com.crown.maps.Point3D;
 import rpgram.Main;
@@ -8,6 +10,14 @@ import rpgram.maps.MapLevel;
 import rpgram.maps.TextMapIcon;
 
 public class MapView {
+    public static String markup(Human player, ITemplate message) {
+        var result = statsToMarkup(player) + "\n";
+        if (message != I18n.okMessage) {
+            result += message;
+        }
+        return result + mapToMarkup(player);
+    }
+
     public static String markup(Human player) {
         return statsToMarkup(player) + "\n" + mapToMarkup(player);
     }
@@ -45,7 +55,7 @@ public class MapView {
             var above = m.get(p.plus(0, 0, 1));
             answer.append("above: ").append(shortName(above)).append("\n");
         }
-        answer.append("\n</code>");
+        answer.append("</code>");
         return answer.toString();
     }
 
