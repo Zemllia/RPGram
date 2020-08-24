@@ -74,8 +74,8 @@ public class Main {
             botsApi.registerBot(bot);
             System.out.println("Successful connection to Telegram.");
         } catch (TelegramApiException e) {
-            e.printStackTrace();
             System.out.println("Failed to connect to Telegram.");
+            e.printStackTrace();
             System.exit(1);
         }
         System.out.println("Server successfully started!");
