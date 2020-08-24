@@ -12,6 +12,7 @@ public enum Button {
     inventory("inventory", "rpgram.ui.inventory"),
     map("map", "map"),
     actions("actions", "rpgram.ui.actions"),
+    legend("legend", "?"),
     talk("talk", "rpgram.ui.talk"),
     talkStop("stop-talk", "rpgram.ui.talk.stop"),
     upgradeFov("upgrade-fov", "rpgram.ui.adjust.fov"),
