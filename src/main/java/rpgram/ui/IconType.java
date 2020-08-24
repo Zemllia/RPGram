@@ -12,7 +12,7 @@ public enum IconType {
     ),
     rock("*"),
     house(
-        " ^  " +
+        " ^ " +
         "/#\\" +
         "|0|"
     ),
