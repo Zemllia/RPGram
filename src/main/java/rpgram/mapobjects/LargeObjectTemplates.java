@@ -23,10 +23,9 @@ public class LargeObjectTemplates {
         assert size > 1;
 
         var points = new Point3D[size * size];
-        int idx = 0;
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                points[idx++] = new Point3D(
+                points[y * size + x] = new Point3D(
                     pt0.x + x,
                     pt0.y + y,
                     pt0.z + size - y - 1
