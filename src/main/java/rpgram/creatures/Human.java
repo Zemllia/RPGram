@@ -5,6 +5,7 @@ import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
 import com.crown.maps.*;
 import com.crown.time.Action;
+import rpgram.Main;
 import rpgram.ui.MapIcons;
 
 public class Human extends Organism {
@@ -35,7 +36,7 @@ public class Human extends Organism {
         );
         this.telegramId = telegramId;
         xp = 100;
-        fov = 5;
+        fov = (Main.config.isDebugEnabled()) ? 10 : 5;
     }
 
     public ITemplate getStats() {

@@ -2,6 +2,7 @@ package rpgram.ui.views;
 
 import com.crown.maps.MapObject;
 import com.crown.maps.Point3D;
+import rpgram.Main;
 import rpgram.creatures.Human;
 import rpgram.maps.MapLevel;
 import rpgram.maps.TextMapIcon;
@@ -28,8 +29,29 @@ public class MapView {
             }
             answer.append("\n");
         }
+        if (Main.config.isDebugEnabled()) {
+            var m = player.getMap();
+            var p = player.getPt0();
+            var left = m.get(p.minus(1, 0, 0));
+            answer.append("← ").append(shortName(left)).append("\t");
+            var right = m.get(p.plus(1, 0, 0));
+            answer.append("→ ").append(shortName(right)).append("\n");
+            var up = m.get(p.minus(0, 1, 0));
+            answer.append("↑ ").append(shortName(up)).append("\t");
+            var down = m.get(p.plus(0, 1, 0));
+            answer.append("↓ ").append(shortName(down)).append("\n");
+            var below = m.get(p.minus(0, 0, 1));
+            answer.append("below: ").append(shortName(below)).append("\t");
+            var above = m.get(p.plus(0, 0, 1));
+            answer.append("above: ").append(shortName(above)).append("\n");
+        }
         answer.append("\n</code>");
         return answer.toString();
+    }
+
+    private static String shortName(MapObject obj) {
+        if (obj == null) return "none";
+        return obj.getKeyName() + " " + obj.getPt0();
     }
 
     private static char[][] mapToCharMatrix(Human player) {

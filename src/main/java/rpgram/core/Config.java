@@ -37,6 +37,11 @@ public class Config {
         }
     }
 
+    public boolean isDebugEnabled() {
+        var value = get("debug.enabled");
+        return Boolean.parseBoolean(value);
+    }
+
     public boolean isProxyEnabled() {
         var value = get("proxy.enabled");
         return value == null || Boolean.parseBoolean(value);
