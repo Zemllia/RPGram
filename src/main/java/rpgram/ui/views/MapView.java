@@ -6,24 +6,22 @@ import rpgram.creatures.Human;
 import rpgram.maps.MapLevel;
 import rpgram.maps.TextMapIcon;
 
-import java.util.HashSet;
-
 public class MapView {
     public static String markup(Human player) {
         return statsToMarkup(player) + "\n" + mapToMarkup(player);
     }
 
     private static String statsToMarkup(Human player) {
-        return "🧭 " + (player.getPt0().x + 1) + ", " + (player.getPt0().y + 1)
+        var p = player.getPt0();
+        return "🧭 " + (p.x + 1) + ", " + (p.y + 1) + ", " + (p.z + 1)
             + "  ⭐ " + player.getLevel() + "/" + player.getXp()
             + "  ♥ " + player.getHp()
             + "  ⚡ " + player.getEnergy();
     }
 
     private static String mapToMarkup(Human player) {
-        var map = mapToCharMatrix(player);
         StringBuilder answer = new StringBuilder("<code>\n");
-
+        var map = mapToCharMatrix(player);
         for (var row : map) {
             for (var c : row) {
                 answer.append(c).append(" ");
