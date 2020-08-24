@@ -44,7 +44,9 @@ public class Main {
             botsApi.registerBot(bot);
             System.out.println("Successful connection to Telegram");
         } catch (TelegramApiException e) {
+            System.out.println("ERROR: Could not register the bot: " + e.getMessage());
             e.printStackTrace();
+            System.exit(1);
         }
         System.out.println("Server successfully started!");
     }
