@@ -1,7 +1,6 @@
 package rpgram;
 
 import com.crown.i18n.I18n;
-import com.crown.i18n.ITemplate;
 import com.crown.maps.Point3D;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -34,20 +33,24 @@ public class RPGram extends TelegramLongPollingBot {
                 var messageText = update.getMessage().getText();
                 int userId = update.getMessage().getFrom().getId();
                 var userName = update.getMessage().getFrom().getUserName();
+                var nameAndText = userName + ": " + messageText;
                 Human p;
                 if (gameState.hasPlayer(userId)) {
                     p = gameState.getPlayer(userId);
-                    var messageReceivers = p.getMap().getAll(
-                        Human.class,
-                        p.getPt0(),
-                        p.getFov()
-                    );
-                    for (var receiver : messageReceivers) {
-                        if (receiver != p) {
-                            sendMessage(
-                                (int) receiver.telegramId,
-                                userName + ": " + messageText
-                            );
+                    // do not broadcast user commands to other players
+                    if (!messageText.startsWith("/")) {
+                        var messageReceivers = p.getMap().getAll(
+                            Human.class,
+                            p.getPt0(),
+                            p.getFov()
+                        );
+                        for (var receiver : messageReceivers) {
+                            if (receiver != p) {
+                                sendMessage(
+                                    (int) receiver.telegramId,
+                                    nameAndText
+                                );
+                            }
                         }
                     }
                 } else {
@@ -55,24 +58,23 @@ public class RPGram extends TelegramLongPollingBot {
                     System.out.println("New player: " + p);
                 }
 
-                System.out.println(userName + ": " + messageText);
+                System.out.println(nameAndText);
 
-                var command = update.getMessage().getText();
-                var commandArray = command.toLowerCase().trim().split(" ");
+                var cmdArray = messageText.toLowerCase().trim().split(" ");
 
-                ITemplate answer;
-                if (commandArray[0].equals("тп")) {
+                var answer = I18n.empty;
+                switch (cmdArray[0]) {
+                case "/tp":
                     var absPoint = new Point3D(
-                        Integer.parseInt(commandArray[1]),
-                        Integer.parseInt(commandArray[2]),
+                        Integer.parseInt(cmdArray[1]),
+                        Integer.parseInt(cmdArray[2]),
                         0
                     ).minus(p.getPt0());
-                    p.move(absPoint.x, absPoint.y, absPoint.z);
-                    answer = I18n.of("rpgram.tpUsed");
-                } else if (commandArray[0].equals("/start")) {
+                    answer = p.move(absPoint.x, absPoint.y, 0);
+                    break;
+                case "/start":
                     answer = I18n.of("rpgram.welcome");
-                } else {
-                    answer = I18n.empty;
+                    break;
                 }
 
                 var message = new SendMessage()
