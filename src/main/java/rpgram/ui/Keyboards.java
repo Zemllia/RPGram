@@ -30,7 +30,7 @@ public class Keyboards {
                 // list(Button.talk.get(player)), TODO: talk button handler
                 list(Button.sleep.get(player)),
                 list(
-                    // Button.upgradeFov.get(player),
+                    Button.upgradeFov.get(player),
                     Button.upgradeHp.get(player)
                 ),
                 list(Button.back.get(player))

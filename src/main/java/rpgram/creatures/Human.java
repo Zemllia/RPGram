@@ -88,7 +88,6 @@ public class Human extends Organism {
      * Timeline support included.
      */
     public ITemplate changeFovBy(int delta) {
-        // BUG: crown can't handle properties of derived classes.
         return getTimeline().perform(Action.change(this, "changeFov", delta));
     }
 
