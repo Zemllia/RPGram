@@ -27,10 +27,10 @@ public class Keyboards {
     public static InlineKeyboardMarkup actionsMenu(Human player) {
         return new InlineKeyboardMarkup()
             .setKeyboard(list(
-                list(Button.talk.get(player)),
+                // list(Button.talk.get(player)), TODO: talk button handler
                 list(Button.sleep.get(player)),
                 list(
-                    Button.upgradeFov.get(player),
+                    // Button.upgradeFov.get(player),
                     Button.upgradeHp.get(player)
                 ),
                 list(Button.back.get(player))

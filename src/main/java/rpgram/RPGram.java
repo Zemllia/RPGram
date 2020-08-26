@@ -120,15 +120,26 @@ public class RPGram extends TelegramLongPollingBot {
                 answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
+
+            // region actions menu
+
+            else if (Button.actions.getCallback().equals(callbackData)) {
+                answer = I18n.of("rpgram.whatCanIDo").getLocalized(player.lang);
+                keyboard = Keyboards.actionsMenu(player);
+            }
+            // upgrade fov
+            else if (Button.upgradeFov.getCallback().equals(callbackData)) {
+                answer = player.changeFovBy(1).getLocalized(player.lang);
+                keyboard = Keyboards.actionsMenu(player);
+            }
+            // upgrade hp
+            else if (Button.upgradeHp.getCallback().equals(callbackData)) {
+                answer = player.changeHpBy(1).getLocalized(player.lang);
+                keyboard = Keyboards.actionsMenu(player);
+            }
             // show inventory
             else if (Button.inventory.getCallback().equals(callbackData)) {
                 answer = player.getStats().getLocalized(player.lang);
-                keyboard = Keyboards.arrows(player);
-            }
-            // show main view (map + stats)
-            else if (Button.map.getCallback().equals(callbackData)
-                || Button.back.getCallback().equals(callbackData)) {
-                answer = MapView.markup(player);
                 keyboard = Keyboards.arrows(player);
             }
             // sleep
@@ -137,6 +148,15 @@ public class RPGram extends TelegramLongPollingBot {
                 answer = MapView.markup(player, result);
                 keyboard = Keyboards.arrows(player);
             }
+            // show main view (map + stats)
+            else if (Button.map.getCallback().equals(callbackData)
+                || Button.back.getCallback().equals(callbackData)) {
+                answer = MapView.markup(player);
+                keyboard = Keyboards.arrows(player);
+            }
+
+            // endregion
+
             long messageId = callbackQuery.getMessage().getMessageId();
             sendEditedMessage(update, (int) messageId, answer, keyboard);
         }
