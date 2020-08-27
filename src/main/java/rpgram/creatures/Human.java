@@ -3,6 +3,7 @@ package rpgram.creatures;
 import com.crown.creatures.Organism;
 import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
+import com.crown.items.InventoryItem;
 import com.crown.maps.*;
 import com.crown.time.Action;
 import rpgram.Main;
@@ -107,5 +108,10 @@ public class Human extends Organism {
     @Override
     public MapIcon<?> getMapIcon() {
         return MapIcons.getIcons().get(getMapIconId());
+    }
+
+    @Override
+    public InventoryItem[] drop() {
+        return getInventory().toArray(new InventoryItem[0]);
     }
 }

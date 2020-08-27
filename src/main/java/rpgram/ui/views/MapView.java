@@ -102,10 +102,10 @@ public class MapView {
     }
 
     private static char getParticleByPoint(MapObject obj, Point3D pt) {
-        var particles = obj.getParticles();
+        var points = obj.getPoints();
         var part = '\0';
-        for (int i = 0; i < particles.length; i++) {
-            if (particles[i].x == pt.x && particles[i].y == pt.y) {
+        for (int i = 0; i < points.length; i++) {
+            if (points[i].x == pt.x && points[i].y == pt.y) {
                 part = ((TextMapIcon) obj.getMapIcon()).get().charAt(i);
             }
         }

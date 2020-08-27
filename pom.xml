@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.github.f1uctus</groupId>
             <artifactId>crown</artifactId>
-            <version>0.7.5-gamma</version>
+            <version>0.7.8</version>
         </dependency>
     </dependencies>
 </project>
