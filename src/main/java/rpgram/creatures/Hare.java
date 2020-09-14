@@ -61,7 +61,7 @@ public class Hare extends Creature implements NonPlayable, Sighted {
         directions.remove(Direction.down);
         directions.remove(Direction.up);
         // remove directions causing npc to go out of map bounds.
-        directions.removeIf(dir -> !getMap().inBounds(pt0.plus(dir.point)));
+        directions.removeIf(dir -> !getMap().isWalkable(pt0.plus(dir.point)));
         // remove directions that are occupied by dangers
         for (var danger : dangers) {
             var deltaPt = pt0.minus(danger.getPt0()).minus();
