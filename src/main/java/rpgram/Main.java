@@ -23,33 +23,32 @@ public class Main {
             throw new Exception("No configuration file specified.");
         }
 
-        System.out.println("Initializing resources...");
+        System.out.print("Initializing resources...");
         bundles.put("ru", ResourceBundle.getBundle("gameMessages", new Locale("ru_RU")));
         bundles.put("en", ResourceBundle.getBundle("gameMessages", new Locale("en_US")));
         I18n.init(bundles);
-        System.out.println("Resources initialized.");
+        System.out.println("OK.");
 
-        System.out.println("Loading config...");
+        System.out.print("Loading config...");
         config.load(args[0]);
-        System.out.println("Config loaded.");
+        System.out.println("OK.");
 
         GameState gameState;
-        System.out.println("Constructing new game state...");
+        System.out.print("Constructing new game state...");
         int mapSize = config.getMapSize();
-        gameState = new GameState(
-            new GlobalMap("Global map", mapSize, mapSize, MapLevel.height)
-        );
-        System.out.println("Game state created.");
+        var map = new GlobalMap("Global map", mapSize, mapSize, MapLevel.height);
+        gameState = new GameState(map);
+        System.out.println("OK.");
 
-        System.out.println("Constructing main timeline...");
+        System.out.print("Constructing main timeline...");
         Timeline.init(
             new VirtualClock(1000, () -> {
             }).startAtRnd(),
             gameState
         );
-        System.out.println("Main timeline created.");
+        System.out.println("OK.");
 
-        System.out.println("Loading Telegram API...");
+        System.out.print("Loading Telegram API...");
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
@@ -59,16 +58,16 @@ public class Main {
             botOptions.setProxyPort(config.getProxyPort());
             botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
         }
-        System.out.println("Telegram API loaded.");
+        System.out.println("OK.");
 
-        RPGram bot = new RPGram(botOptions, config, gameState);
+        var bot = new RPGram(botOptions, config, gameState);
 
         try {
-            System.out.println("Connecting to Telegram...");
+            System.out.print("Connecting to Telegram...");
             botsApi.registerBot(bot);
-            System.out.println("Successful connection to Telegram.");
+            System.out.println("OK.");
         } catch (TelegramApiException e) {
-            System.out.println("Failed to connect to Telegram.");
+            System.out.println("Failed.");
             e.printStackTrace();
             System.exit(1);
         }
