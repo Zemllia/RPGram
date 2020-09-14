@@ -5,6 +5,7 @@ public enum IconType {
 
     emptiness("#"),
     defaultPlayer("@"),
+    hare("&"),
     grass("\""),
     tree(" ^ "
        + "/|\\"

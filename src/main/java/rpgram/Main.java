@@ -48,6 +48,10 @@ public class Main {
         );
         System.out.println("OK.");
 
+        System.out.print("Initializing NPCs...");
+        map.initializeNpcs();
+        System.out.println("OK.");
+
         System.out.print("Loading Telegram API...");
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();

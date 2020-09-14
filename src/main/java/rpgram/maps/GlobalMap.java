@@ -1,9 +1,11 @@
 package rpgram.maps;
 
+import com.crown.common.utils.Random;
 import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
 import com.crown.maps.Map;
 import com.crown.maps.Point3D;
+import rpgram.creatures.Hare;
 import rpgram.mapobjects.*;
 import rpgram.ui.IconType;
 import rpgram.ui.MapIcons;
@@ -24,7 +26,10 @@ public class GlobalMap extends Map {
         }
         for (int i = 0; i < xSize / 15; i++) {
             new Village(this);
-        }
+    }
+
+    public void initializeNpcs() {
+        new Hare(this, Random.getFreePoint(this).withZ(MapLevel.ground + 1));
     }
 
     @Override
