@@ -26,6 +26,7 @@ public class GlobalMap extends Map {
         }
         for (int i = 0; i < xSize / 15; i++) {
             new Village(this);
+        }
     }
 
     public void initializeNpcs() {
