@@ -1,15 +1,12 @@
 package rpgram.creatures;
 
-import com.crown.creatures.Organism;
 import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
-import com.crown.items.InventoryItem;
 import com.crown.maps.*;
 import com.crown.time.Action;
 import rpgram.Main;
-import rpgram.ui.MapIcons;
 
-public class Human extends Organism {
+public abstract class Human extends Creature implements Sighted {
     public String lang = "en";
     public final long telegramId;
 
@@ -37,7 +34,7 @@ public class Human extends Organism {
         );
         this.telegramId = telegramId;
         xp = 100;
-        fov = (Main.config.isDebugEnabled()) ? 10 : 5;
+        fov = (Main.config.isDebugEnabled()) ? 7 : 5;
     }
 
     public ITemplate getStats() {
@@ -104,14 +101,4 @@ public class Human extends Organism {
     }
 
     // endregion
-
-    @Override
-    public MapIcon<?> getMapIcon() {
-        return MapIcons.getIcons().get(getMapIconId());
-    }
-
-    @Override
-    public InventoryItem[] drop() {
-        return getInventory().toArray(new InventoryItem[0]);
-    }
 }
