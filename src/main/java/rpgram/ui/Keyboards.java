@@ -18,9 +18,9 @@ public class Keyboards {
             list(
                 Button.inventory.get(player),
                 Button.map.get(player),
-                Button.actions.get(player),
-                Button.legend.get()
-            )
+                Button.actions.get(player)
+            ),
+            list(Button.legend.get())
         ));
     }
 
