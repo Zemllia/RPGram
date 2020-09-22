@@ -11,8 +11,8 @@ public class Wanderer extends Human {
             name,
             map,
             MapIcons.getIcons().get(IconType.defaultPlayer),
-            MapWeight.OBSTACLE,
             pt
         );
+        setWalkable(false);
     }
 }

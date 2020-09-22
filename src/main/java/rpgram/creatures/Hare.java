@@ -18,7 +18,6 @@ public class Hare extends Creature implements NonPlayable, Sighted {
             "object.nominative.hare",
             map,
             MapIcons.getIcons().get(IconType.hare),
-            MapWeight.OBSTACLE,
             pt,
             200,
             20,

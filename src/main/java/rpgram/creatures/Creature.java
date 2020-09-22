@@ -1,5 +1,6 @@
 package rpgram.creatures;
 
+import com.crown.common.interfaces.IDroppable;
 import com.crown.creatures.Organism;
 import com.crown.i18n.I18n;
 import com.crown.i18n.ITemplate;
@@ -7,12 +8,11 @@ import com.crown.items.InventoryItem;
 import com.crown.maps.*;
 import rpgram.ui.MapIcons;
 
-public abstract class Creature extends Organism {
+public abstract class Creature extends Organism implements IDroppable {
     public Creature(
         String name,
         Map map,
         MapIcon<?> mapIcon,
-        MapWeight mapWeight,
         Point3D position,
         int maxEnergy,
         int maxHp,
@@ -23,13 +23,13 @@ public abstract class Creature extends Organism {
             name,
             map,
             mapIcon,
-            mapWeight,
             position,
             maxEnergy,
             maxHp,
             level,
             speed
         );
+        setWalkable(false);
     }
 
     public ITemplate getStats() {

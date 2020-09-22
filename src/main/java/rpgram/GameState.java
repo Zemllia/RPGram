@@ -4,7 +4,6 @@ import com.crown.BaseGameState;
 import com.crown.common.utils.Random;
 import com.crown.creatures.Organism;
 import com.crown.maps.Map;
-import com.crown.maps.MapWeight;
 import rpgram.creatures.Human;
 import rpgram.creatures.Wanderer;
 import rpgram.maps.MapLevel;
@@ -23,9 +22,9 @@ public class GameState extends BaseGameState {
         int placementHeight = 0;
         for (int i = 0; i < column.length; i++) {
             placementHeight++;
-            if (column[i] != null && column[i].getMapWeight() == MapWeight.OBSTACLE
+            if (column[i] != null && !column[i].isWalkable()
                 && i < column.length - 1
-                && (column[i + 1] == null || column[i + 1].getMapWeight() != MapWeight.OBSTACLE)) {
+                && (column[i + 1] == null || column[i + 1].isWalkable())) {
                 break;
             }
         }

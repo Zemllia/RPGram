@@ -1,5 +1,6 @@
 package rpgram.mapobjects;
 
+import com.crown.common.interfaces.IDroppable;
 import com.crown.common.utils.Random;
 import com.crown.items.InventoryItem;
 import com.crown.maps.*;
@@ -7,7 +8,7 @@ import rpgram.maps.MapLevel;
 import rpgram.ui.IconType;
 import rpgram.ui.MapIcons;
 
-public class House extends MapObject {
+public class House extends MapObject implements IDroppable {
     public static final int size = 3;
 
     public House(Map map) {
@@ -15,12 +16,12 @@ public class House extends MapObject {
             "House",
             map,
             MapIcons.getIcons().get(IconType.house),
-            MapWeight.OBSTACLE,
             LargeObjectTemplates.getSquareLinearZTemplate(
                 Random.getFreePoint(map, size, size).withZ(MapLevel.ground + 1),
                 size
             )
         );
+        setWalkable(false);
     }
 
     @Override
